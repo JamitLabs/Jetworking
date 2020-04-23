@@ -3,10 +3,18 @@ import XCTest
 
 final class JetworkingTests: XCTestCase {
     func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-        XCTAssertEqual(Jetworking().text, "Hello, World!")
+        let configuration = ClientConfiguration(baseURL: URL(string: "://")!, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let client = Client(clientConfiguration: configuration)
+
+        client.get(endpoint: "") { (result: Result<String, Error>) in
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+        }
     }
 
     static var allTests = [
