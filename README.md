@@ -1,2 +1,3 @@
 # Jetworking
-A JamitLabs Networking abstraction for iOS 
+
+The best of networking
