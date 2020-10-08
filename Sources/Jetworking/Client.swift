@@ -15,7 +15,18 @@ public final class Client {
 
     // MARK: - Methods
     public func get<ResponseType: Codable>(endpoint: String, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
-        let dataTask = session.dataTask(with: clientConfiguration.baseURL.appendingPathComponent(endpoint)) { [weak self] data, urlResponse, error in
+        let url = clientConfiguration.baseURL.appendingPathComponent(endpoint)
+        var request: URLRequest = .init(url: url)
+
+        if
+            let authorizationHeader: [String: String] = getAuthorizationHeader(),
+            let authorizationKey = authorizationHeader.keys.first,
+            let authorizationValue = authorizationHeader.values.first
+        {
+            request.addValue(authorizationValue, forHTTPHeaderField: authorizationKey)
+        }
+
+        let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
             if let error = error { return completion(.failure(error)) }
 
             guard let urlResponse = urlResponse else { return print("URLResonse is nil") }
@@ -54,6 +65,31 @@ public final class Client {
 
     public func delete<ResponseType: Codable>(endpoint: String, parameter: [String: Any] = [:], _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
 
+    }
+
+    private func getAuthorizationHeader() -> [String: String]? {
+        let authorizationHeaderKey: String = "Authorization"
+
+        switch clientConfiguration.authenticationMethod {
+        case .none:
+            return nil
+
+        case let .basicAuthentication(username, password):
+            var authString: String = ""
+            let credentialsString = "\(username):\(password)"
+            if let credentialsData = credentialsString.data(using: .utf8) {
+                let base64Credentials = credentialsData.base64EncodedString(options: [])
+                authString = "Basic \(base64Credentials)"
+            }
+
+            return [authorizationHeaderKey: authString]
+
+        case let .bearerToken(token):
+            return [authorizationHeaderKey: token]
+
+        case let .custom(headerKey, headerValue):
+            return [headerKey: headerValue]
+        }
     }
 
     private func handleURLResponse(_ response: URLResponse, responseHandler: @escaping (Result<[AnyHashable: Any], Error>) -> Void) {

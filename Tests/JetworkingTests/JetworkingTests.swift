@@ -7,7 +7,12 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testExample() {
-        let configuration = ClientConfiguration(baseURL: URL(string: "https://postman-echo.com")!, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let configuration = ClientConfiguration(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            authenticationMethod: .basicAuthentication(username: "username", password: "password"),
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
         let client = Client(clientConfiguration: configuration)
 
         let expectation = self.expectation(description: "Wait for get")
