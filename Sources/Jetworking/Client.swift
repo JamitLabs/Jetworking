@@ -1,6 +1,7 @@
 import Foundation
 
 enum APIError: Error {
+    case unexpectedError
     case responseMissing
     case decodingError
 }
@@ -38,9 +39,9 @@ public final class Client {
         dataTask.resume()
     }
 
-    public func put<BodyType: Codable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
+    public func put<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
         let request: URLRequest = createRequest(forHttpMethod: .PUT, andPathComponent: endpoint.pathComponent)
-        let bodyData: Data = try! clientConfiguration.encoder.encode(body)
+        let bodyData: Data = try! clientConfiguration.encoder.encode(body) // TODO: remove force unwrap --> Error handling
         let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
             self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
         }
@@ -48,9 +49,9 @@ public final class Client {
         dataTask.resume()
     }
 
-    public func patch<BodyType: Codable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
+    public func patch<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
         let request: URLRequest = createRequest(forHttpMethod: .PATCH, andPathComponent: endpoint.pathComponent)
-        let bodyData: Data = try! clientConfiguration.encoder.encode(body)
+        let bodyData: Data = try! clientConfiguration.encoder.encode(body) // TODO: remove force unwrap --> Error handling
         let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
             self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
         }
@@ -141,7 +142,7 @@ public final class Client {
             completion(.success(decodedData))
             
         case .clientError, .serverError:
-            guard let error = error else { return }
+            guard let error = error else { return completion(.failure(APIError.unexpectedError)) }
 
             completion(.failure(error))
 
