@@ -6,6 +6,14 @@ final class JetworkingTests: XCTestCase {
         let url: String
     }
 
+    private enum Endpoints {
+        static let get: Endpoint<GetResult> = .init(pathComponent: "get")
+        static let post: Endpoint<VoidResult> = .init(pathComponent: "post")
+        static let patch: Endpoint<VoidResult> = .init(pathComponent: "patch")
+        static let put: Endpoint<VoidResult> = .init(pathComponent: "put")
+        static let delete: Endpoint<VoidResult> = .init(pathComponent: "delete")
+    }
+
     private struct Body: Codable {
         let foo1: String
         let foo2: String
@@ -24,7 +32,7 @@ final class JetworkingTests: XCTestCase {
 
         let expectation = self.expectation(description: "Wait for get")
 
-        client.get(endpoint: "get") { (result: Result<GetResult, Error>) in
+        client.get(endpoint: Endpoints.get) { result in
             switch result {
             case .failure:
                 break
@@ -46,7 +54,7 @@ final class JetworkingTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         let body: Body = .init(foo1: "bar1", foo2: "bar2")
-        client.post(endpoint: "post", body: body) { (result: Result<VoidResult, Error>) in
+        client.post(endpoint: Endpoints.post, body: body) { result in
             switch result {
             case .failure:
                 break
@@ -68,7 +76,7 @@ final class JetworkingTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         let body: Body = .init(foo1: "bar1", foo2: "bar2")
-        client.put(endpoint: "put", body: body) { (result: Result<VoidResult, Error>) in
+        client.put(endpoint: Endpoints.put, body: body) { result in
             switch result {
             case .failure:
                 break
@@ -90,7 +98,7 @@ final class JetworkingTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         let body: Body = .init(foo1: "bar1", foo2: "bar2")
-        client.patch(endpoint: "patch", body: body) { (result: Result<VoidResult, Error>) in
+        client.patch(endpoint: Endpoints.patch, body: body) { result in
             switch result {
             case .failure:
                 break
@@ -111,7 +119,7 @@ final class JetworkingTests: XCTestCase {
 
         let expectation = self.expectation(description: "Wait for post")
 
-        client.delete(endpoint: "delete") { (result: Result<VoidResult, Error>) in
+        client.delete(endpoint: Endpoints.delete) { result in
             switch result {
             case .failure:
                 break
