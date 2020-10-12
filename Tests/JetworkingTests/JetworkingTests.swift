@@ -7,7 +7,7 @@ final class JetworkingTests: XCTestCase {
     }
 
     private enum Endpoints {
-        static let get: Endpoint<GetResult> = .init(pathComponent: "get")
+        static var get: Endpoint<GetResult> = .init(pathComponent: "get")
         static let post: Endpoint<VoidResult> = .init(pathComponent: "post")
         static let patch: Endpoint<VoidResult> = .init(pathComponent: "patch")
         static let put: Endpoint<VoidResult> = .init(pathComponent: "put")
@@ -47,7 +47,7 @@ final class JetworkingTests: XCTestCase {
 
         let expectation = self.expectation(description: "Wait for get")
 
-        client.get(endpoint: Endpoints.get) { result in
+        client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { result in
             switch result {
             case .failure:
                 break
