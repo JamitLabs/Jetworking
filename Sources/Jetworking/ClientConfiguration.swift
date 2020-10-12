@@ -2,18 +2,18 @@ import Foundation
 
 public struct ClientConfiguration {
     let baseURL: URL
-    let authenticationMethod: AuthenticationMethod
+    let middlewareComponents: [MiddlewareComponent]
     let encoder: JSONEncoder
     let decoder: JSONDecoder
 
     init(
         baseURL: URL,
-        authenticationMethod: AuthenticationMethod,
+        middlewareComponents: [MiddlewareComponent],
         encoder: JSONEncoder,
         decoder: JSONDecoder
     ) {
         self.baseURL = baseURL
-        self.authenticationMethod = authenticationMethod
+        self.middlewareComponents = middlewareComponents
         self.encoder = encoder
         self.decoder = decoder
     }

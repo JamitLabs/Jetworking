@@ -69,55 +69,16 @@ public final class Client {
     }
 
     private func createRequest(forHttpMethod httpMethod: HTTPMethod, andPathComponent pathComponent: String) -> URLRequest {
-        return .init(
-            url: clientConfiguration.baseURL.appendingPathComponent(pathComponent),
-            httpMethod: httpMethod,
-            headerFields: getHeaderFields()
-        )
-    }
-
-    private func getHeaderFields() -> [String: String] {
-        var headerFields: [String: String] = [
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        ]
-
-        if
-            let authorizationHeader: [String: String] = getAuthorizationHeader(),
-            let authorizationKey = authorizationHeader.keys.first,
-            let authorizationValue = authorizationHeader.values.first
-        {
-            headerFields[authorizationKey] = authorizationValue
+        var request = URLRequest(url: clientConfiguration.baseURL.appendingPathComponent(pathComponent), httpMethod: httpMethod)
+        
+        clientConfiguration.middlewareComponents.forEach { middlewareComponent in
+            request = middlewareComponent.process(request: request)
         }
-
-        return headerFields
+        
+        return request
     }
 
-    private func getAuthorizationHeader() -> [String: String]? {
-        let authorizationHeaderKey: String = "Authorization"
-
-        switch clientConfiguration.authenticationMethod {
-        case .none:
-            return nil
-
-        case let .basicAuthentication(username, password):
-            var authString: String = ""
-            let credentialsString = "\(username):\(password)"
-            if let credentialsData = credentialsString.data(using: .utf8) {
-                let base64Credentials = credentialsData.base64EncodedString(options: [])
-                authString = "Basic \(base64Credentials)"
-            }
-
-            return [authorizationHeaderKey: authString]
-
-        case let .bearerToken(token):
-            return [authorizationHeaderKey: "Bearer \(token)"]
-
-        case let .custom(headerKey, headerValue):
-            return [headerKey: headerValue]
-        }
-    }
-
+    // TODO: Improve this function (Error handling, evaluation of header fields, status code evalutation, ...)
     private func handleResponse<ResponseType>(
         data: Data?,
         urlResponse: URLResponse?,

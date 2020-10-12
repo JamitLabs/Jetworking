@@ -24,7 +24,15 @@ final class JetworkingTests: XCTestCase {
     func testGetRequest() {
 		let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            authenticationMethod: .basicAuthentication(username: "username", password: "password"),
+            middlewareComponents: [
+                AuthenticationMiddlewareComponent(authenticationMethod: .basicAuthentication(username: "username", password: "password")),
+                HeaderFieldsMiddlewareComponent(
+                    headerFields: [
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    ]
+                )
+            ],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -48,7 +56,20 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPostRequest() {
-        let configuration = ClientConfiguration(baseURL: URL(string: "https://postman-echo.com")!, authenticationMethod: .none, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let configuration = ClientConfiguration(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            middlewareComponents: [
+                AuthenticationMiddlewareComponent(authenticationMethod: .none),
+                HeaderFieldsMiddlewareComponent(
+                    headerFields: [
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    ]
+                )
+            ],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
         let client = Client(clientConfiguration: configuration)
 
         let expectation = self.expectation(description: "Wait for post")
@@ -70,7 +91,20 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPutRequest() {
-        let configuration = ClientConfiguration(baseURL: URL(string: "https://postman-echo.com")!, authenticationMethod: .none, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let configuration = ClientConfiguration(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            middlewareComponents: [
+                AuthenticationMiddlewareComponent(authenticationMethod: .none),
+                HeaderFieldsMiddlewareComponent(
+                    headerFields: [
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    ]
+                )
+            ],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
         let client = Client(clientConfiguration: configuration)
 
         let expectation = self.expectation(description: "Wait for post")
@@ -92,7 +126,20 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPatchRequest() {
-        let configuration = ClientConfiguration(baseURL: URL(string: "https://postman-echo.com")!, authenticationMethod: .none, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let configuration = ClientConfiguration(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            middlewareComponents: [
+                AuthenticationMiddlewareComponent(authenticationMethod: .none),
+                HeaderFieldsMiddlewareComponent(
+                    headerFields: [
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    ]
+                )
+            ],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
         let client = Client(clientConfiguration: configuration)
 
         let expectation = self.expectation(description: "Wait for post")
@@ -114,7 +161,20 @@ final class JetworkingTests: XCTestCase {
     }
     
     func testDeleteRequest() {
-        let configuration = ClientConfiguration(baseURL: URL(string: "https://postman-echo.com")!, authenticationMethod: .none, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let configuration = ClientConfiguration(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            middlewareComponents: [
+                AuthenticationMiddlewareComponent(authenticationMethod: .none),
+                HeaderFieldsMiddlewareComponent(
+                    headerFields: [
+                        "Accept": "application/json",
+                        "Content-Type": "application/json"
+                    ]
+                )
+            ],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
         let client = Client(clientConfiguration: configuration)
 
         let expectation = self.expectation(description: "Wait for post")
