@@ -36,7 +36,6 @@ public final class Client {
 
     public func post<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
         do {
-
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint)
             let bodyData: Data = try clientConfiguration.encoder.encode(body)
             let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
@@ -82,16 +81,23 @@ public final class Client {
     }
 
     public func delete<ResponseType>(endpoint: Endpoint<ResponseType>, parameter: [String: Any] = [:], _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
-        let request: URLRequest = try! createRequest(forHttpMethod: .DELETE, and: endpoint)
-        let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
-            self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
-        }
+        do {
+            let request: URLRequest = try createRequest(forHttpMethod: .DELETE, and: endpoint)
+            let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
+                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+            }
 
-        dataTask.resume()
+            dataTask.resume()
+        } catch {
+            completion(.failure(error))
+        }
     }
 
-    private func createRequest(forHttpMethod httpMethod: HTTPMethod, andPathComponent pathComponent: String) -> URLRequest {
-        let request = URLRequest(url: clientConfiguration.baseURL.appendingPathComponent(pathComponent), httpMethod: httpMethod)
+    private func createRequest<ResponseType>(forHttpMethod httpMethod: HTTPMethod, and endpoint: Endpoint<ResponseType>) throws -> URLRequest {
+        let request = URLRequest(
+            url: try URLFactory.makeURL(from: endpoint, withBaseURL: clientConfiguration.baseURL),
+            httpMethod: httpMethod
+        )
         return clientConfiguration.requestInterceptors.reduce(request) { request, interceptor in
             return interceptor.intercept(request)
         }
