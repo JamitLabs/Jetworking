@@ -39,14 +39,14 @@ public final class AuthenticationRequestInterceptor: RequestInterceptor {
             return nil
 
         case let .basicAuthentication(username, password):
-            var authString: String = ""
             let credentialsString = "\(username):\(password)"
             if let credentialsData = credentialsString.data(using: .utf8) {
                 let base64Credentials = credentialsData.base64EncodedString(options: [])
-                authString = "\(Constants.basicAuthStringPrefix) \(base64Credentials)"
+                let authString = "\(Constants.basicAuthStringPrefix) \(base64Credentials)"
+                return [Constants.authorizationHeaderKey: authString]
             }
 
-            return [Constants.authorizationHeaderKey: authString]
+            return nil
 
         case let .bearerToken(token):
             return [Constants.authorizationHeaderKey: "\(Constants.bearerAuthStringPrefix) \(token)"]
