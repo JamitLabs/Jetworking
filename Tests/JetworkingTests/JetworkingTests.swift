@@ -185,6 +185,30 @@ final class JetworkingTests: XCTestCase {
         waitForExpectations(timeout: 5.0, handler: nil)
     }
 
+    func testRequestCancellation() throws {
+        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
+        let expectation = self.expectation(description: "Wait for get")
+
+        let cancellableRequest = client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { result in
+            switch result {
+            case let .failure(error as URLError):
+                XCTAssertEqual(error.code, URLError.cancelled)
+
+            case .failure:
+                XCTFail("Should not executed since error should be URLError")
+
+            case .success:
+                XCTFail("Should not succeed due to cancellation")
+            }
+
+            expectation.fulfill()
+        }
+
+        cancellableRequest?.cancel()
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
     static var allTests = [
         ("testGetRequest", testGetRequest),
         ("testPostRequest", testPostRequest),
@@ -192,4 +216,19 @@ final class JetworkingTests: XCTestCase {
         ("testPatchRequest", testPatchRequest),
         ("testDeleteRequest", testDeleteRequest)
     ]
+}
+
+extension JetworkingTests {
+    func makeDefaultClientConfiguration() -> ClientConfiguration {
+        return .init(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: .none),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
+            ],
+            responseInterceptors: [],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
+    }
 }
