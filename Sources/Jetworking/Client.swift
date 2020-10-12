@@ -42,9 +42,9 @@ public final class Client {
     @discardableResult
     public func post<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
-            let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint)
             let bodyData: Data = try clientConfiguration.encoder.encode(body)
-            let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
+            let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint, and: bodyData)
+            let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
             }
 
@@ -61,9 +61,9 @@ public final class Client {
     @discardableResult
     public func put<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
-            let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint)
             let bodyData: Data = try clientConfiguration.encoder.encode(body)
-            let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
+            let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint, and: bodyData)
+            let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
             }
 
@@ -84,9 +84,9 @@ public final class Client {
         _ completion: @escaping (Result<ResponseType, Error>) -> Void
     ) -> CancellableRequest? {
         do {
-            let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint)
             let bodyData: Data = try clientConfiguration.encoder.encode(body)
-            let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
+            let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint, and: bodyData)
+            let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
             }
 
@@ -118,10 +118,11 @@ public final class Client {
         return nil
     }
 
-    private func createRequest<ResponseType>(forHttpMethod httpMethod: HTTPMethod, and endpoint: Endpoint<ResponseType>) throws -> URLRequest {
+    private func createRequest<ResponseType>(forHttpMethod httpMethod: HTTPMethod, and endpoint: Endpoint<ResponseType>, and body: Data? = nil) throws -> URLRequest {
         let request = URLRequest(
             url: try URLFactory.makeURL(from: endpoint, withBaseURL: clientConfiguration.baseURL),
-            httpMethod: httpMethod
+            httpMethod: httpMethod,
+            httpBody: body
         )
         return clientConfiguration.requestInterceptors.reduce(request) { request, interceptor in
             return interceptor.intercept(request)
@@ -139,8 +140,8 @@ public final class Client {
         if let error = error { return completion(.failure(error)) }
 
         if var currentURLResponse = urlResponse {
-            clientConfiguration.responseMiddlewareComponents.forEach { component in
-                currentURLResponse = component.process(response: currentURLResponse)
+            clientConfiguration.responseInterceptors.forEach { component in
+                currentURLResponse = component.intercept(currentURLResponse)
             }
         }
 
