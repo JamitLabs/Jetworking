@@ -4,6 +4,7 @@ enum APIError: Error {
     case unexpectedError
     case responseMissing
     case decodingError
+    case invalidURLComponents
 }
 
 public final class Client {
@@ -21,46 +22,67 @@ public final class Client {
 
     // MARK: - Methods
     public func get<ResponseType>(endpoint: Endpoint<ResponseType>, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
-        let request: URLRequest = createRequest(forHttpMethod: .GET, andPathComponent: endpoint.pathComponent)
-        let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
-            self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
-        }
+        do {
+            let request: URLRequest = try createRequest(forHttpMethod: .GET, and: endpoint)
+            let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
+                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+            }
 
-        dataTask.resume()
+            dataTask.resume()
+        } catch {
+            completion(.failure(error))
+        }
     }
 
     public func post<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
-        let request: URLRequest = createRequest(forHttpMethod: .POST, andPathComponent: endpoint.pathComponent)
-        let bodyData: Data = try! clientConfiguration.encoder.encode(body) // TODO: remove force unwrap --> Error handling
-        let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
-            self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
-        }
+        do {
 
-        dataTask.resume()
+            let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint)
+            let bodyData: Data = try clientConfiguration.encoder.encode(body)
+            let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
+                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+            }
+
+            dataTask.resume()
+        } catch {
+            completion(.failure(error))
+        }
     }
 
     public func put<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
-        let request: URLRequest = createRequest(forHttpMethod: .PUT, andPathComponent: endpoint.pathComponent)
-        let bodyData: Data = try! clientConfiguration.encoder.encode(body) // TODO: remove force unwrap --> Error handling
-        let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
-            self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
-        }
+        do {
+            let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint)
+            let bodyData: Data = try clientConfiguration.encoder.encode(body)
+            let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
+                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+            }
 
-        dataTask.resume()
+            dataTask.resume()
+        } catch {
+            completion(.failure(error))
+        }
     }
 
-    public func patch<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
-        let request: URLRequest = createRequest(forHttpMethod: .PATCH, andPathComponent: endpoint.pathComponent)
-        let bodyData: Data = try! clientConfiguration.encoder.encode(body) // TODO: remove force unwrap --> Error handling
-        let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
-            self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
-        }
+    public func patch<BodyType: Encodable, ResponseType>(
+        endpoint: Endpoint<ResponseType>,
+        body: BodyType,
+        _ completion: @escaping (Result<ResponseType, Error>) -> Void
+    ) {
+        do {
+            let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint)
+            let bodyData: Data = try clientConfiguration.encoder.encode(body)
+            let dataTask = session.uploadTask(with: request, from: bodyData) { [weak self] data, urlResponse, error in
+                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+            }
 
-        dataTask.resume()
+            dataTask.resume()
+        } catch {
+            completion(.failure(error))
+        }
     }
 
     public func delete<ResponseType>(endpoint: Endpoint<ResponseType>, parameter: [String: Any] = [:], _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
-        let request: URLRequest = createRequest(forHttpMethod: .DELETE, andPathComponent: endpoint.pathComponent)
+        let request: URLRequest = try! createRequest(forHttpMethod: .DELETE, and: endpoint)
         let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
             self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
         }
