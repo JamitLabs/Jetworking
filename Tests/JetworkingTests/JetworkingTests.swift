@@ -33,18 +33,7 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testGetRequest() {
-		let configuration = ClientConfiguration(
-            baseURL: URL(string: "https://postman-echo.com")!,
-            requestInterceptors: [
-                AuthenticationRequestInterceptor(authenticationMethod: self.getAuthenticationMethod()),
-                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
-            ],
-            responseInterceptors: [],
-            encoder: JSONEncoder(),
-            decoder: JSONDecoder()
-        )
-        let client = Client(clientConfiguration: configuration)
-
+        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for get")
 
         client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { result in
@@ -63,18 +52,7 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPostRequest() {
-        let configuration = ClientConfiguration(
-            baseURL: URL(string: "https://postman-echo.com")!,
-            requestInterceptors: [
-                AuthenticationRequestInterceptor(authenticationMethod: .none),
-                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
-            ],
-            responseInterceptors: [],
-            encoder: JSONEncoder(),
-            decoder: JSONDecoder()
-        )
-        let client = Client(clientConfiguration: configuration)
-
+        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")
 
         let body: Body = .init(foo1: "bar1", foo2: "bar2")
@@ -94,18 +72,7 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPutRequest() {
-        let configuration = ClientConfiguration(
-            baseURL: URL(string: "https://postman-echo.com")!,
-            requestInterceptors: [
-                AuthenticationRequestInterceptor(authenticationMethod: .none),
-                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
-            ],
-            responseInterceptors: [],
-            encoder: JSONEncoder(),
-            decoder: JSONDecoder()
-        )
-        let client = Client(clientConfiguration: configuration)
-
+        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")
 
         let body: Body = .init(foo1: "bar1", foo2: "bar2")
@@ -125,18 +92,7 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPatchRequest() {
-        let configuration = ClientConfiguration(
-            baseURL: URL(string: "https://postman-echo.com")!,
-            requestInterceptors: [
-                AuthenticationRequestInterceptor(authenticationMethod: .none),
-                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
-            ],
-            responseInterceptors: [],
-            encoder: JSONEncoder(),
-            decoder: JSONDecoder()
-        )
-        let client = Client(clientConfiguration: configuration)
-
+        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")
 
         let body: Body = .init(foo1: "bar1", foo2: "bar2")
@@ -156,17 +112,7 @@ final class JetworkingTests: XCTestCase {
     }
     
     func testDeleteRequest() {
-        let configuration = ClientConfiguration(
-            baseURL: URL(string: "https://postman-echo.com")!,
-            requestInterceptors: [
-                AuthenticationRequestInterceptor(authenticationMethod: .none),
-                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
-            ],
-            responseInterceptors: [],
-            encoder: JSONEncoder(),
-            decoder: JSONDecoder()
-        )
-        let client = Client(clientConfiguration: configuration)
+        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
 
         let expectation = self.expectation(description: "Wait for post")
 
