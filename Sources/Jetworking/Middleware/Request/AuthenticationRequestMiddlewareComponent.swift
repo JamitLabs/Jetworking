@@ -1,7 +1,11 @@
 import Foundation
 
 public final class AuthenticationRequestMiddlewareComponent: RequestMiddlewareComponent {
-    private var authenticationMethod: AuthenticationMethod
+    private struct Constants {
+        static let authorizationHeaderKey: String = "Authorization"
+        static let basicAuthStringPrefix: String = "Basic"
+        static let bearerAuthStringPrefix: String = "Bearer"
+    }
 
     public enum AuthenticationMethod {
         case none
@@ -9,6 +13,8 @@ public final class AuthenticationRequestMiddlewareComponent: RequestMiddlewareCo
         case bearerToken(token: String)
         case custom(headerKey: String, headerValue: String)
     }
+
+    private var authenticationMethod: AuthenticationMethod
 
     init(authenticationMethod: AuthenticationMethod) {
         self.authenticationMethod = authenticationMethod
@@ -23,13 +29,11 @@ public final class AuthenticationRequestMiddlewareComponent: RequestMiddlewareCo
         {
             mutatedRequest.addValue(authorizationValue, forHTTPHeaderField: authorizationKey)
         }
-        
+
         return mutatedRequest
     }
-    
-    private func getAuthorizationHeader() -> [String: String]? {
-        let authorizationHeaderKey: String = "Authorization"
 
+    private func getAuthorizationHeader() -> [String: String]? {
         switch authenticationMethod {
         case .none:
             return nil
@@ -39,13 +43,13 @@ public final class AuthenticationRequestMiddlewareComponent: RequestMiddlewareCo
             let credentialsString = "\(username):\(password)"
             if let credentialsData = credentialsString.data(using: .utf8) {
                 let base64Credentials = credentialsData.base64EncodedString(options: [])
-                authString = "Basic \(base64Credentials)"
+                authString = "\(Constants.basicAuthStringPrefix) \(base64Credentials)"
             }
 
-            return [authorizationHeaderKey: authString]
+            return [Constants.authorizationHeaderKey: authString]
 
         case let .bearerToken(token):
-            return [authorizationHeaderKey: "Bearer \(token)"]
+            return [Constants.authorizationHeaderKey: "\(Constants.bearerAuthStringPrefix) \(token)"]
 
         case let .custom(headerKey, headerValue):
             return [headerKey: headerValue]
