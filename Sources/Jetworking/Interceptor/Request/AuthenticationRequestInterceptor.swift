@@ -40,13 +40,11 @@ public final class AuthenticationRequestInterceptor: RequestInterceptor {
 
         case let .basicAuthentication(username, password):
             let credentialsString = "\(username):\(password)"
-            if let credentialsData = credentialsString.data(using: .utf8) {
-                let base64Credentials = credentialsData.base64EncodedString(options: [])
-                let authString = "\(Constants.basicAuthStringPrefix) \(base64Credentials)"
-                return [Constants.authorizationHeaderKey: authString]
-            }
+            guard let credentialsData = credentialsString.data(using: .utf8) else { return nil }
 
-            return nil
+            let base64Credentials = credentialsData.base64EncodedString(options: [])
+            let authString = "\(Constants.basicAuthStringPrefix) \(base64Credentials)"
+            return [Constants.authorizationHeaderKey: authString]
 
         case let .bearerToken(token):
             return [Constants.authorizationHeaderKey: "\(Constants.bearerAuthStringPrefix) \(token)"]

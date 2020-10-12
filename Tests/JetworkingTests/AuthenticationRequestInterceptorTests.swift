@@ -2,13 +2,6 @@ import XCTest
 @testable import Jetworking
 
 final class AuthenticationRequestInterceptorTests: XCTestCase {
-    static var allTests = [
-        ("testAuthenticationMethodNone", testAuthenticationMethodNone),
-        ("testAuthenticationMethodBasicAuthentication", testAuthenticationMethodBasicAuthentication),
-        ("testAuthenticationMethodBearerToken", testAuthenticationMethodBearerToken),
-        ("testAuthenticationMethodCustom", testAuthenticationMethodCustom),
-    ]
-
     func testAuthenticationMethodNone() {
         let authenticationRequestInterceptor: AuthenticationRequestInterceptor = .init(authenticationMethod: .none)
 
@@ -17,19 +10,16 @@ final class AuthenticationRequestInterceptorTests: XCTestCase {
 
         XCTAssertTrue(request.allHTTPHeaderFields == nil)
     }
-    
+
     func testAuthenticationMethodBasicAuthentication() {
         let authenticationRequestInterceptor: AuthenticationRequestInterceptor = .init(authenticationMethod: .basicAuthentication(username: "username", password: "password"))
 
         var request: URLRequest = .init(url: URL(string: "https://www.google.com")!)
         request = authenticationRequestInterceptor.intercept(request)
 
-        if let headerFields = request.allHTTPHeaderFields {
-            print(headerFields)
-            XCTAssertTrue((headerFields.contains(where: { $0.key == "Authorization" && $0.value == "Basic dXNlcm5hbWU6cGFzc3dvcmQ=" })))
-        } else {
-            assertionFailure()
-        }
+        guard let headerFields = request.allHTTPHeaderFields else { return XCTFail("Header field for basic authentication not found.") }
+
+        XCTAssertTrue((headerFields.contains(where: { $0.key == "Authorization" && $0.value == "Basic dXNlcm5hbWU6cGFzc3dvcmQ=" })))
     }
 
     func testAuthenticationMethodBearerToken() {
@@ -38,11 +28,9 @@ final class AuthenticationRequestInterceptorTests: XCTestCase {
         var request: URLRequest = .init(url: URL(string: "https://www.google.com")!)
         request = authenticationRequestInterceptor.intercept(request)
 
-        if let headerFields = request.allHTTPHeaderFields {
-            XCTAssertTrue((headerFields.contains(where: { $0.key == "Authorization" && $0.value == "Bearer token" })))
-        } else {
-            assertionFailure()
-        }
+        guard let headerFields = request.allHTTPHeaderFields else { return XCTFail("Header field for bearer token authentication not found.") }
+
+        XCTAssertTrue((headerFields.contains(where: { $0.key == "Authorization" && $0.value == "Bearer token" })))
     }
 
     func testAuthenticationMethodCustom() {
@@ -53,10 +41,8 @@ final class AuthenticationRequestInterceptorTests: XCTestCase {
         var request: URLRequest = .init(url: URL(string: "https://www.google.com")!)
         request = authenticationRequestInterceptor.intercept(request)
 
-        if let headerFields = request.allHTTPHeaderFields {
-            XCTAssertTrue((headerFields.contains(where: { $0.key == "CustomAuthorizationHeaderKey" && $0.value == "CustomAuthorizationHeaderValue" })))
-        } else {
-            assertionFailure()
-        }
+        guard let headerFields = request.allHTTPHeaderFields else { return XCTFail("Header field for custom authentication not found.") }
+
+        XCTAssertTrue((headerFields.contains(where: { $0.key == "CustomAuthorizationHeaderKey" && $0.value == "CustomAuthorizationHeaderValue" })))
     }
 }
