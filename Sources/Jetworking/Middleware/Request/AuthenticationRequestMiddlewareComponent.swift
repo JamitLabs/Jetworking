@@ -1,13 +1,20 @@
 import Foundation
 
-final class AuthenticationMiddlewareComponent: MiddlewareComponent {
+public final class AuthenticationRequestMiddlewareComponent: RequestMiddlewareComponent {
     private var authenticationMethod: AuthenticationMethod
-    
+
+    public enum AuthenticationMethod {
+        case none
+        case basicAuthentication(username: String, password: String)
+        case bearerToken(token: String)
+        case custom(headerKey: String, headerValue: String)
+    }
+
     init(authenticationMethod: AuthenticationMethod) {
         self.authenticationMethod = authenticationMethod
     }
     
-    func process(request: URLRequest) -> URLRequest {
+    public func process(request: URLRequest) -> URLRequest {
         var mutatedRequest: URLRequest = request
         if
             let authorizationHeader: [String: String] = getAuthorizationHeader(),

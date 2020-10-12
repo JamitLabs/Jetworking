@@ -69,13 +69,10 @@ public final class Client {
     }
 
     private func createRequest(forHttpMethod httpMethod: HTTPMethod, andPathComponent pathComponent: String) -> URLRequest {
-        var request = URLRequest(url: clientConfiguration.baseURL.appendingPathComponent(pathComponent), httpMethod: httpMethod)
-        
-        clientConfiguration.middlewareComponents.forEach { middlewareComponent in
-            request = middlewareComponent.process(request: request)
+        let request = URLRequest(url: clientConfiguration.baseURL.appendingPathComponent(pathComponent), httpMethod: httpMethod)
+        return clientConfiguration.requestMiddlewareComponents.reduce(request) { request, component in
+            return component.process(request: request)
         }
-        
-        return request
     }
 
     // TODO: Improve this function (Error handling, evaluation of header fields, status code evalutation, ...)

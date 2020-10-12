@@ -1,5 +1,5 @@
 import Foundation
 
-public protocol MiddlewareComponent {
+public protocol RequestMiddlewareComponent {
     func process(request: URLRequest) -> URLRequest
 }

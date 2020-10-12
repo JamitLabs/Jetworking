@@ -24,15 +24,16 @@ final class JetworkingTests: XCTestCase {
     func testGetRequest() {
 		let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            middlewareComponents: [
-                AuthenticationMiddlewareComponent(authenticationMethod: .basicAuthentication(username: "username", password: "password")),
-                HeaderFieldsMiddlewareComponent(
+            requestMiddlewareComponents: [
+                AuthenticationRequestMiddlewareComponent(authenticationMethod: .basicAuthentication(username: "username", password: "password")),
+                HeaderFieldsRequestMiddlewareComponent(
                     headerFields: [
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     ]
                 )
             ],
+            responseMiddlewareComponents: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -58,15 +59,16 @@ final class JetworkingTests: XCTestCase {
     func testPostRequest() {
         let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            middlewareComponents: [
-                AuthenticationMiddlewareComponent(authenticationMethod: .none),
-                HeaderFieldsMiddlewareComponent(
+            requestMiddlewareComponents: [
+                AuthenticationRequestMiddlewareComponent(authenticationMethod: .none),
+                HeaderFieldsRequestMiddlewareComponent(
                     headerFields: [
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     ]
                 )
             ],
+            responseMiddlewareComponents: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -93,15 +95,16 @@ final class JetworkingTests: XCTestCase {
     func testPutRequest() {
         let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            middlewareComponents: [
-                AuthenticationMiddlewareComponent(authenticationMethod: .none),
-                HeaderFieldsMiddlewareComponent(
+            requestMiddlewareComponents: [
+                AuthenticationRequestMiddlewareComponent(authenticationMethod: .none),
+                HeaderFieldsRequestMiddlewareComponent(
                     headerFields: [
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     ]
                 )
             ],
+            responseMiddlewareComponents: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -128,15 +131,16 @@ final class JetworkingTests: XCTestCase {
     func testPatchRequest() {
         let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            middlewareComponents: [
-                AuthenticationMiddlewareComponent(authenticationMethod: .none),
-                HeaderFieldsMiddlewareComponent(
+            requestMiddlewareComponents: [
+                AuthenticationRequestMiddlewareComponent(authenticationMethod: .none),
+                HeaderFieldsRequestMiddlewareComponent(
                     headerFields: [
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     ]
                 )
             ],
+            responseMiddlewareComponents: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -163,15 +167,16 @@ final class JetworkingTests: XCTestCase {
     func testDeleteRequest() {
         let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            middlewareComponents: [
-                AuthenticationMiddlewareComponent(authenticationMethod: .none),
-                HeaderFieldsMiddlewareComponent(
+            requestMiddlewareComponents: [
+                AuthenticationRequestMiddlewareComponent(authenticationMethod: .none),
+                HeaderFieldsRequestMiddlewareComponent(
                     headerFields: [
                         "Accept": "application/json",
                         "Content-Type": "application/json"
                     ]
                 )
             ],
+            responseMiddlewareComponents: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
