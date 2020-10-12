@@ -2,21 +2,21 @@ import Foundation
 
 public struct ClientConfiguration {
     let baseURL: URL
-    let requestMiddlewareComponents: [RequestMiddlewareComponent]
-    let responseMiddlewareComponents: [ResponseMiddlewareComponent]
+    let requestInterceptors: [RequestInterceptor]
+    let responseInterceptors: [ResponseInterceptor]
     let encoder: JSONEncoder
     let decoder: JSONDecoder
 
     init(
         baseURL: URL,
-        requestMiddlewareComponents: [RequestMiddlewareComponent],
-        responseMiddlewareComponents: [ResponseMiddlewareComponent],
+        requestInterceptors: [RequestInterceptor],
+        responseInterceptors: [ResponseInterceptor],
         encoder: JSONEncoder,
         decoder: JSONDecoder
     ) {
         self.baseURL = baseURL
-        self.requestMiddlewareComponents = requestMiddlewareComponents
-        self.responseMiddlewareComponents = responseMiddlewareComponents
+        self.requestInterceptors = requestInterceptors
+        self.responseInterceptors = responseInterceptors
         self.encoder = encoder
         self.decoder = decoder
     }

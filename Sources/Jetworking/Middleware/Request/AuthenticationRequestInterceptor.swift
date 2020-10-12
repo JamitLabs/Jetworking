@@ -1,6 +1,6 @@
 import Foundation
 
-public final class AuthenticationRequestMiddlewareComponent: RequestMiddlewareComponent {
+public final class AuthenticationRequestInterceptor: RequestInterceptor {
     private struct Constants {
         static let authorizationHeaderKey: String = "Authorization"
         static let basicAuthStringPrefix: String = "Basic"
@@ -14,13 +14,13 @@ public final class AuthenticationRequestMiddlewareComponent: RequestMiddlewareCo
         case custom(headerKey: String, headerValue: String)
     }
 
-    private var authenticationMethod: AuthenticationMethod
+    private var authenticationMethod: () -> AuthenticationMethod
 
-    init(authenticationMethod: AuthenticationMethod) {
+    init(authenticationMethod: @escaping @autoclosure (() -> AuthenticationMethod)) {
         self.authenticationMethod = authenticationMethod
     }
     
-    public func process(request: URLRequest) -> URLRequest {
+    public func intercept(_ request: URLRequest) -> URLRequest {
         var mutatedRequest: URLRequest = request
         if
             let authorizationHeader: [String: String] = getAuthorizationHeader(),
@@ -34,7 +34,7 @@ public final class AuthenticationRequestMiddlewareComponent: RequestMiddlewareCo
     }
 
     private func getAuthorizationHeader() -> [String: String]? {
-        switch authenticationMethod {
+        switch authenticationMethod() {
         case .none:
             return nil
 

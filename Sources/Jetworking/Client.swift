@@ -70,8 +70,8 @@ public final class Client {
 
     private func createRequest(forHttpMethod httpMethod: HTTPMethod, andPathComponent pathComponent: String) -> URLRequest {
         let request = URLRequest(url: clientConfiguration.baseURL.appendingPathComponent(pathComponent), httpMethod: httpMethod)
-        return clientConfiguration.requestMiddlewareComponents.reduce(request) { request, component in
-            return component.process(request: request)
+        return clientConfiguration.requestInterceptors.reduce(request) { request, interceptor in
+            return interceptor.intercept(request)
         }
     }
 

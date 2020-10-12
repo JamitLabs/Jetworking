@@ -20,20 +20,26 @@ final class JetworkingTests: XCTestCase {
     }
 
     private struct VoidResult: Codable {}
+    
+    func getAuthenticationMethod() -> AuthenticationRequestInterceptor.AuthenticationMethod {
+        return .basicAuthentication(username: "username", password: "password")
+    }
+    
+    func getHeaderFields() -> [String: String] {
+        return [
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        ]
+    }
 
     func testGetRequest() {
 		let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            requestMiddlewareComponents: [
-                AuthenticationRequestMiddlewareComponent(authenticationMethod: .basicAuthentication(username: "username", password: "password")),
-                HeaderFieldsRequestMiddlewareComponent(
-                    headerFields: [
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    ]
-                )
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: self.getAuthenticationMethod()),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
             ],
-            responseMiddlewareComponents: [],
+            responseInterceptors: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -59,16 +65,11 @@ final class JetworkingTests: XCTestCase {
     func testPostRequest() {
         let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            requestMiddlewareComponents: [
-                AuthenticationRequestMiddlewareComponent(authenticationMethod: .none),
-                HeaderFieldsRequestMiddlewareComponent(
-                    headerFields: [
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    ]
-                )
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: .none),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
             ],
-            responseMiddlewareComponents: [],
+            responseInterceptors: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -95,16 +96,11 @@ final class JetworkingTests: XCTestCase {
     func testPutRequest() {
         let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            requestMiddlewareComponents: [
-                AuthenticationRequestMiddlewareComponent(authenticationMethod: .none),
-                HeaderFieldsRequestMiddlewareComponent(
-                    headerFields: [
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    ]
-                )
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: .none),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
             ],
-            responseMiddlewareComponents: [],
+            responseInterceptors: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -131,16 +127,11 @@ final class JetworkingTests: XCTestCase {
     func testPatchRequest() {
         let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            requestMiddlewareComponents: [
-                AuthenticationRequestMiddlewareComponent(authenticationMethod: .none),
-                HeaderFieldsRequestMiddlewareComponent(
-                    headerFields: [
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    ]
-                )
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: .none),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
             ],
-            responseMiddlewareComponents: [],
+            responseInterceptors: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -167,16 +158,11 @@ final class JetworkingTests: XCTestCase {
     func testDeleteRequest() {
         let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            requestMiddlewareComponents: [
-                AuthenticationRequestMiddlewareComponent(authenticationMethod: .none),
-                HeaderFieldsRequestMiddlewareComponent(
-                    headerFields: [
-                        "Accept": "application/json",
-                        "Content-Type": "application/json"
-                    ]
-                )
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: .none),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
             ],
-            responseMiddlewareComponents: [],
+            responseInterceptors: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
