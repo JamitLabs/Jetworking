@@ -138,6 +138,12 @@ public final class Client {
     ) {
         if let error = error { return completion(.failure(error)) }
 
+        if var currentURLResponse = urlResponse {
+            clientConfiguration.responseMiddlewareComponents.forEach { component in
+                currentURLResponse = component.process(response: currentURLResponse)
+            }
+        }
+
         guard let urlResponse = urlResponse as? HTTPURLResponse else { return completion(.failure(APIError.responseMissing)) }
 
         let statusCode = HTTPStatusCodeType(statusCode: urlResponse.statusCode)
