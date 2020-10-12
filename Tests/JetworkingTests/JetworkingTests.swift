@@ -20,11 +20,26 @@ final class JetworkingTests: XCTestCase {
     }
 
     private struct VoidResult: Codable {}
+    
+    func getAuthenticationMethod() -> AuthenticationRequestInterceptor.AuthenticationMethod {
+        return .basicAuthentication(username: "username", password: "password")
+    }
+    
+    func getHeaderFields() -> [String: String] {
+        return [
+            "Accept": "application/json",
+            "Content-Type": "application/json"
+        ]
+    }
 
     func testGetRequest() {
 		let configuration = ClientConfiguration(
             baseURL: URL(string: "https://postman-echo.com")!,
-            authenticationMethod: .basicAuthentication(username: "username", password: "password"),
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: self.getAuthenticationMethod()),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
+            ],
+            responseInterceptors: [],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )
@@ -48,7 +63,16 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPostRequest() {
-        let configuration = ClientConfiguration(baseURL: URL(string: "https://postman-echo.com")!, authenticationMethod: .none, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let configuration = ClientConfiguration(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: .none),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
+            ],
+            responseInterceptors: [],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
         let client = Client(clientConfiguration: configuration)
 
         let expectation = self.expectation(description: "Wait for post")
@@ -70,7 +94,16 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPutRequest() {
-        let configuration = ClientConfiguration(baseURL: URL(string: "https://postman-echo.com")!, authenticationMethod: .none, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let configuration = ClientConfiguration(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: .none),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
+            ],
+            responseInterceptors: [],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
         let client = Client(clientConfiguration: configuration)
 
         let expectation = self.expectation(description: "Wait for post")
@@ -92,7 +125,16 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPatchRequest() {
-        let configuration = ClientConfiguration(baseURL: URL(string: "https://postman-echo.com")!, authenticationMethod: .none, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let configuration = ClientConfiguration(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: .none),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
+            ],
+            responseInterceptors: [],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
         let client = Client(clientConfiguration: configuration)
 
         let expectation = self.expectation(description: "Wait for post")
@@ -114,7 +156,16 @@ final class JetworkingTests: XCTestCase {
     }
     
     func testDeleteRequest() {
-        let configuration = ClientConfiguration(baseURL: URL(string: "https://postman-echo.com")!, authenticationMethod: .none, encoder: JSONEncoder(), decoder: JSONDecoder())
+        let configuration = ClientConfiguration(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(authenticationMethod: .none),
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
+            ],
+            responseInterceptors: [],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder()
+        )
         let client = Client(clientConfiguration: configuration)
 
         let expectation = self.expectation(description: "Wait for post")

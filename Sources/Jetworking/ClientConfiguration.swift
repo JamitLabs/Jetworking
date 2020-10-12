@@ -2,18 +2,21 @@ import Foundation
 
 public struct ClientConfiguration {
     let baseURL: URL
-    let authenticationMethod: AuthenticationMethod
+    let requestInterceptors: [RequestInterceptor]
+    let responseInterceptors: [ResponseInterceptor]
     let encoder: JSONEncoder
     let decoder: JSONDecoder
 
     init(
         baseURL: URL,
-        authenticationMethod: AuthenticationMethod,
+        requestInterceptors: [RequestInterceptor],
+        responseInterceptors: [ResponseInterceptor],
         encoder: JSONEncoder,
         decoder: JSONDecoder
     ) {
         self.baseURL = baseURL
-        self.authenticationMethod = authenticationMethod
+        self.requestInterceptors = requestInterceptors
+        self.responseInterceptors = responseInterceptors
         self.encoder = encoder
         self.decoder = decoder
     }
