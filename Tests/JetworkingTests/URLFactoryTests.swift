@@ -69,8 +69,10 @@ final class URLFactoryTests: XCTestCase {
                 withBaseURL: baseURl
             )
             print(url.absoluteString)
+        } catch let error as APIError {
+            XCTAssertEqual(error, .invalidURLComponents)
         } catch {
-            XCTAssertEqual(error as? APIError, APIError.invalidURLComponents)
+            XCTFail("Unexpected error occured!")
         }
     }
 }
