@@ -21,7 +21,8 @@ public final class Client {
     }
 
     // MARK: - Methods
-    public func get<ResponseType>(endpoint: Endpoint<ResponseType>, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
+    @discardableResult
+    public func get<ResponseType>(endpoint: Endpoint<ResponseType>, _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .GET, and: endpoint)
             let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
@@ -29,12 +30,17 @@ public final class Client {
             }
 
             dataTask.resume()
+
+            return dataTask
         } catch {
             completion(.failure(error))
         }
+
+        return nil
     }
 
-    public func post<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
+    @discardableResult
+    public func post<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint)
             let bodyData: Data = try clientConfiguration.encoder.encode(body)
@@ -43,12 +49,17 @@ public final class Client {
             }
 
             dataTask.resume()
+
+            return dataTask
         } catch {
             completion(.failure(error))
         }
+
+        return nil
     }
 
-    public func put<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
+    @discardableResult
+    public func put<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint)
             let bodyData: Data = try clientConfiguration.encoder.encode(body)
@@ -57,16 +68,21 @@ public final class Client {
             }
 
             dataTask.resume()
+
+            return dataTask
         } catch {
             completion(.failure(error))
         }
+
+        return nil
     }
 
+    @discardableResult
     public func patch<BodyType: Encodable, ResponseType>(
         endpoint: Endpoint<ResponseType>,
         body: BodyType,
         _ completion: @escaping (Result<ResponseType, Error>) -> Void
-    ) {
+    ) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint)
             let bodyData: Data = try clientConfiguration.encoder.encode(body)
@@ -75,12 +91,17 @@ public final class Client {
             }
 
             dataTask.resume()
+
+            return dataTask
         } catch {
             completion(.failure(error))
         }
+
+        return nil
     }
 
-    public func delete<ResponseType>(endpoint: Endpoint<ResponseType>, parameter: [String: Any] = [:], _ completion: @escaping (Result<ResponseType, Error>) -> Void) {
+    @discardableResult
+    public func delete<ResponseType>(endpoint: Endpoint<ResponseType>, parameter: [String: Any] = [:], _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .DELETE, and: endpoint)
             let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
@@ -88,9 +109,13 @@ public final class Client {
             }
 
             dataTask.resume()
+
+            return dataTask
         } catch {
             completion(.failure(error))
         }
+
+        return nil
     }
 
     private func createRequest<ResponseType>(forHttpMethod httpMethod: HTTPMethod, and endpoint: Endpoint<ResponseType>) throws -> URLRequest {
