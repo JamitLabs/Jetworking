@@ -137,14 +137,13 @@ public final class Client {
         endpoint: Endpoint<ResponseType>,
         completion: @escaping (Result<ResponseType, Error>) -> Void
     ) {
-        if let error = error { return completion(.failure(error)) }
-
-        if var currentURLResponse = urlResponse {
-            clientConfiguration.responseInterceptors.forEach { component in
-                currentURLResponse = component.intercept(currentURLResponse)
-            }
+        var currentURLResponse = urlResponse
+        clientConfiguration.responseInterceptors.forEach { component in
+            currentURLResponse = component.intercept(data: data, response: currentURLResponse, error: error)
         }
 
+        if let error = error { return completion(.failure(error)) }
+        
         guard let urlResponse = urlResponse as? HTTPURLResponse else { return completion(.failure(APIError.responseMissing)) }
 
         let statusCode = HTTPStatusCodeType(statusCode: urlResponse.statusCode)

@@ -1,50 +1,31 @@
 import Foundation
 
 public final class LoggingRequestInterceptor: RequestInterceptor {
-    private struct Constants {
-        static let loggingPrefix: String = "LoggingRequestMiddlewareComponent"
+    private var logger: Logger
+
+    init(logger: Logger) {
+        self.logger = logger
     }
 
-    private var logLevel: LogLevel
-
-    init(logLevel: LogLevel) {
-        self.logLevel = logLevel
-    }
-
-    // TODO: Do we need to log something else? Do we only want to log verbose?
     public func intercept(_ request: URLRequest) -> URLRequest {
-        switch logLevel {
-        case .verbose:
-            print("---------------------------------------------------------------")
-            if let url = request.url {
-                print("\(Constants.loggingPrefix): Logging the URL: \(url)")
-            } else {
-                print("\(Constants.loggingPrefix): The URL is nil.")
-            }
-
-            if let allHTTPHeaderFields = request.allHTTPHeaderFields {
-                print("\(Constants.loggingPrefix): Logging all HTTP header fields: \(allHTTPHeaderFields)")
-            } else {
-                print("\(Constants.loggingPrefix): There are no HTTP header fields set.")
-            }
-
-            if let httpMethod = request.httpMethod {
-                print("\(Constants.loggingPrefix): Logging the HTTP method: \(httpMethod)")
-            } else {
-                print("\(Constants.loggingPrefix): The http method is nil.")
-            }
-
-            // TODO: Find out how to generally log the request body
-//            if let httpBody = request.httpBody {
-//                let body = try? JSONDecoder().decode(Body.self, from: httpBody)
-//                print("Logging the HTTP body: \(body)")
-//            }
-
-            print("---------------------------------------------------------------")
-
-        case .none, .debug, .warning, .error:
-            break
+        var message: String = "\(String(describing: self)):\n"
+        if let url = request.url {
+            message.append("Request URL: \(url)\n")
         }
+
+        if let allHTTPHeaderFields = request.allHTTPHeaderFields {
+            message.append("All HTTP header fields: \(allHTTPHeaderFields)\n")
+        }
+
+        if let httpMethod = request.httpMethod {
+            message.append("HTTP method: \(httpMethod)\n")
+        }
+
+        if let body = request.httpBody, let bodyString = String(data: body, encoding: .utf8) {
+            message.append("HTTP Body: \(bodyString)")
+        }
+
+        logger.log(message)
 
         return request
     }
