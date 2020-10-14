@@ -168,7 +168,7 @@ final class JetworkingTests: XCTestCase {
 }
 
 extension JetworkingTests {
-    func makeDefaultClientConfiguration() -> ClientConfiguration {
+    func makeDefaultClientConfiguration() -> Configuration {
         return .init(
             baseURL: URL(string: "https://postman-echo.com")!,
             requestInterceptors: [
