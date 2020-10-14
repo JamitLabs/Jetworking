@@ -9,7 +9,7 @@ enum APIError: Error {
 
 public final class Client {
     // MARK: - Properties
-    private let configuration: ClientConfiguration
+    private let configuration: Configuration
 
     private lazy var session: URLSession = .init(configuration: .default)
 
@@ -21,7 +21,7 @@ public final class Client {
      * - Parameter sessionConfiguration: A function to configure the URLSession as inout parameter.
      */
     init(
-        configuration: ClientConfiguration,
+        configuration: Configuration,
         sessionConfiguration: ((inout URLSession) -> Void)? = nil
     ) {
         self.configuration = configuration

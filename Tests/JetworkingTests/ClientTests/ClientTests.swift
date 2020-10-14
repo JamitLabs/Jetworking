@@ -1,31 +1,8 @@
 import XCTest
 @testable import Jetworking
 
-final class JetworkingTests: XCTestCase {
-    private struct GetResult: Codable {
-        let url: String
-    }
-
-    private enum Endpoints {
-        static var get: Endpoint<GetResult> = .init(pathComponent: "get")
-        static let post: Endpoint<VoidResult> = .init(pathComponent: "post")
-        static let patch: Endpoint<VoidResult> = .init(pathComponent: "patch")
-        static let put: Endpoint<VoidResult> = .init(pathComponent: "put")
-        static let delete: Endpoint<VoidResult> = .init(pathComponent: "delete")
-    }
-
-    private struct Body: Codable {
-        let foo1: String
-        let foo2: String
-    }
-
-    private struct VoidResult: Codable {}
-    
-    func getAuthenticationMethod() -> AuthenticationRequestInterceptor.AuthenticationMethod {
-        return .basicAuthentication(username: "username", password: "password")
-    }
-    
-    func getHeaderFields() -> [String: String] {
+final class ClientTests: XCTestCase {
+    func additionalHeaderFields() -> [String: String] {
         return [
             "Accept": "application/json",
             "Content-Type": "application/json"
@@ -45,7 +22,7 @@ final class JetworkingTests: XCTestCase {
                 break
 
             case let .success(resultData):
-                print(resultData.url)
+                print(resultData)
             }
 
             expectation.fulfill()
@@ -58,7 +35,7 @@ final class JetworkingTests: XCTestCase {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")
 
-        let body: Body = .init(foo1: "bar1", foo2: "bar2")
+        let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
         client.post(endpoint: Endpoints.post, body: body) { result in
             switch result {
             case .failure:
@@ -78,7 +55,7 @@ final class JetworkingTests: XCTestCase {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")
 
-        let body: Body = .init(foo1: "bar1", foo2: "bar2")
+        let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
         client.put(endpoint: Endpoints.put, body: body) { result in
             switch result {
             case .failure:
@@ -98,7 +75,7 @@ final class JetworkingTests: XCTestCase {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")
 
-        let body: Body = .init(foo1: "bar1", foo2: "bar2")
+        let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
         client.patch(endpoint: Endpoints.patch, body: body) { result in
             switch result {
             case .failure:
@@ -157,23 +134,17 @@ final class JetworkingTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-
-    static var allTests = [
-        ("testGetRequest", testGetRequest),
-        ("testPostRequest", testPostRequest),
-        ("testPutRequest", testPutRequest),
-        ("testPatchRequest", testPatchRequest),
-        ("testDeleteRequest", testDeleteRequest)
-    ]
 }
 
-extension JetworkingTests {
-    func makeDefaultClientConfiguration() -> ClientConfiguration {
+extension ClientTests {
+    func makeDefaultClientConfiguration() -> Configuration {
         return .init(
             baseURL: URL(string: "https://postman-echo.com")!,
             requestInterceptors: [
-                AuthenticationRequestInterceptor(authenticationMethod: .none),
-                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields()),
+                AuthenticationRequestInterceptor(
+                    authenticationMethod: .basicAuthentication(username: "username", password: "password")
+                ),
+                HeaderFieldsRequestInterceptor(headerFields: self.additionalHeaderFields()),
                 LoggingRequestInterceptor()
             ],
             responseInterceptors: [

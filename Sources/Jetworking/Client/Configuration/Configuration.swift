@@ -1,6 +1,6 @@
 import Foundation
 
-public struct ClientConfiguration {
+public struct Configuration {
     let baseURL: URL
     let requestInterceptors: [RequestInterceptor]
     let responseInterceptors: [ResponseInterceptor]

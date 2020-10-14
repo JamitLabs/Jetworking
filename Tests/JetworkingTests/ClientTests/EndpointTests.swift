@@ -2,14 +2,8 @@ import XCTest
 @testable import Jetworking
 
 final class EndpointTests: XCTestCase {
-    struct TestStruct: Codable { }
-
-    enum Endpoints {
-        static let someEndpoint: Endpoint<TestStruct> = .init(pathComponent: "testStruct")
-    }
-
     func testAddingSingleQueryParameter() throws {
-        let endpointWithParams = Endpoints.someEndpoint.addQueryParameter(
+        let endpointWithParams = Endpoints.get.addQueryParameter(
             key: "QueryParamKey",
             value: "QueryParamValue"
         )
@@ -18,12 +12,12 @@ final class EndpointTests: XCTestCase {
     }
 
     func testAddingNilValueAsQueryParamter() throws {
-        let endpointWithParams = Endpoints.someEndpoint.addQueryParameter(key: "QueryParamKey", value: nil)
+        let endpointWithParams = Endpoints.get.addQueryParameter(key: "QueryParamKey", value: nil)
         XCTAssertEqual(endpointWithParams.queryParameters, ["QueryParamKey": nil])
     }
 
     func testOverridingAnExistingQueryParamter() throws {
-        let endpointWithParams = Endpoints.someEndpoint.addQueryParameter(key: "QueryParamKey", value: "ValueToOverride")
+        let endpointWithParams = Endpoints.get.addQueryParameter(key: "QueryParamKey", value: "ValueToOverride")
         XCTAssertEqual(endpointWithParams.queryParameters, ["QueryParamKey": "ValueToOverride"])
 
         let endpointWithOverridenParams = endpointWithParams.addQueryParameter(
@@ -41,7 +35,7 @@ final class EndpointTests: XCTestCase {
             "KeyWithoutValue": nil
         ]
 
-        let endpointWithParameters = Endpoints.someEndpoint.addQueryParameters(parameters)
+        let endpointWithParameters = Endpoints.get.addQueryParameters(parameters)
 
         XCTAssertEqual(endpointWithParameters.queryParameters, parameters)
     }
@@ -59,7 +53,7 @@ final class EndpointTests: XCTestCase {
             "SomeNewKey": "ANewValue"
         ]
 
-        let endpointWithParameters = Endpoints.someEndpoint.addQueryParameters(parameters)
+        let endpointWithParameters = Endpoints.get.addQueryParameters(parameters)
         let endpointWithMoreParameters = endpointWithParameters.addQueryParameters(parmetersToMerge)
 
         XCTAssertEqual(
