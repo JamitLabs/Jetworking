@@ -1,7 +1,7 @@
 import XCTest
 @testable import Jetworking
 
-final class JetworkingTests: XCTestCase {
+final class ClientTests: XCTestCase {
     func additionalHeaderFields() -> [String: String] {
         return [
             "Accept": "application/json",
@@ -144,7 +144,7 @@ final class JetworkingTests: XCTestCase {
     ]
 }
 
-extension JetworkingTests {
+extension ClientTests {
     func makeDefaultClientConfiguration() -> Configuration {
         return .init(
             baseURL: URL(string: "https://postman-echo.com")!,
