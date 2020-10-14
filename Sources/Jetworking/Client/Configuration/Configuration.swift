@@ -6,7 +6,7 @@ public struct Configuration {
     let responseInterceptors: [ResponseInterceptor]
     let encoder: JSONEncoder
     let decoder: JSONDecoder
-    let queueRequests: Bool
+    let requestExecuterType: RequestExecuterType
 
     init(
         baseURL: URL,
@@ -14,13 +14,13 @@ public struct Configuration {
         responseInterceptors: [ResponseInterceptor],
         encoder: JSONEncoder,
         decoder: JSONDecoder,
-        queueRequests: Bool = false
+        requestExecuterType: RequestExecuterType = .async
     ) {
         self.baseURL = baseURL
         self.requestInterceptors = requestInterceptors
         self.responseInterceptors = responseInterceptors
         self.encoder = encoder
         self.decoder = decoder
-        self.queueRequests = queueRequests
+        self.requestExecuterType = requestExecuterType
     }
 }
