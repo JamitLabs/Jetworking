@@ -134,14 +134,6 @@ final class ClientTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-
-    static var allTests = [
-        ("testGetRequest", testGetRequest),
-        ("testPostRequest", testPostRequest),
-        ("testPutRequest", testPutRequest),
-        ("testPatchRequest", testPatchRequest),
-        ("testDeleteRequest", testDeleteRequest)
-    ]
 }
 
 extension ClientTests {
