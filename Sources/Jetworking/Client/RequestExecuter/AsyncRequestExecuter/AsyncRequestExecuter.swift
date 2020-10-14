@@ -1,6 +1,6 @@
 import Foundation
 
-final class AsyncRequestExecuter: RequestExecuter {
+final class AsyncRequestExecutor: RequestExecutor {
     internal let session: URLSession
 
     init(session: URLSession) {

@@ -13,17 +13,22 @@ public final class Client {
 
     private lazy var session: URLSession = .init(configuration: .default)
 
-    private lazy var requestExecuter: RequestExecuter = {
-        switch configuration.requestExecuterType {
-        case .sync: return SyncRequestExecuter(session: session)
-        case .async: return AsyncRequestExecuter(session: session)
-        case let .custom(executerType):
-            return executerType.init(session: session)
+    private lazy var requestExecutor: RequestExecutor = {
+        switch configuration.requestExecutorType {
+        case .sync:
+            return SyncRequestExecutor(session: session)
+
+        case .async:
+            return AsyncRequestExecutor(session: session)
+
+        case let .custom(executorType):
+            return executorType.init(session: session)
         }
     }()
+
     // MARK: - Initialisation
     /**
-     * Initializes a new client instance with a default url session.
+     * Initialises a new client instance with a default url session.
      *
      * - Parameter configuration: The client configuration.
      * - Parameter sessionConfiguration: A function to configure the URLSession as inout parameter.
@@ -41,7 +46,7 @@ public final class Client {
     public func get<ResponseType>(endpoint: Endpoint<ResponseType>, _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .GET, and: endpoint)
-            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
             }
         } catch {
@@ -56,7 +61,7 @@ public final class Client {
         do {
             let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint, and: bodyData)
-            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
             }
         } catch {
@@ -71,7 +76,7 @@ public final class Client {
         do {
             let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint, and: bodyData)
-            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
             }
         } catch {
@@ -90,7 +95,7 @@ public final class Client {
         do {
             let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint, and: bodyData)
-            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
             }
         } catch {
@@ -104,7 +109,7 @@ public final class Client {
     public func delete<ResponseType>(endpoint: Endpoint<ResponseType>, parameter: [String: Any] = [:], _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .DELETE, and: endpoint)
-            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
             }
         } catch {

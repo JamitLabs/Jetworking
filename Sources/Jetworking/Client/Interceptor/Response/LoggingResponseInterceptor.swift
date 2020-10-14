@@ -1,12 +1,12 @@
 import Foundation
 
-// Implementation of a response interceptor which logs the response information.
+/// Implementation of a response interceptor which logs the response information.
 public final class LoggingResponseInterceptor: ResponseInterceptor {
     private var logger: Logger
 
     /**
      * # Summary
-     * The initializer for the `LoggingResponseInterceptor`
+     * The initialiser for the `LoggingResponseInterceptor`
      *
      * - Parameter logger:
      *  The logger to be used to pass the response information to. Default value for the logger is the `DefaultLogger`.
