@@ -170,9 +170,12 @@ extension JetworkingTests {
             baseURL: URL(string: "https://postman-echo.com")!,
             requestInterceptors: [
                 AuthenticationRequestInterceptor(authenticationMethod: .none),
-                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields())
+                HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields()),
+                LoggingRequestInterceptor()
             ],
-            responseInterceptors: [],
+            responseInterceptors: [
+                LoggingResponseInterceptor()
+            ],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
         )

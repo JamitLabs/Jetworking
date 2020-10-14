@@ -1,9 +1,10 @@
 import Foundation
 
 extension URLRequest {
-    init(url: URL, httpMethod: HTTPMethod) {
+    init(url: URL, httpMethod: HTTPMethod, httpBody: Data? = nil) {
         self = URLRequest(url: url)
 
         self.httpMethod = httpMethod.rawValue
+        self.httpBody = httpBody
     }
 }
