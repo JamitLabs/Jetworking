@@ -1,11 +1,34 @@
 import Foundation
 
+// Implementation of a response interceptor which logs the response information.
 public final class LoggingResponseInterceptor: ResponseInterceptor {
     private var logger: Logger
 
-    init(logger: Logger) {
+    /**
+     * # Summary
+     * The initializer for the `LoggingResponseInterceptor`
+     *
+     * - Parameter logger:
+     *  The logger to be used to pass the response information to. Default value for the logger is the `DefaultLogger`.
+     */
+    init(logger: Logger = DefaultLogger()) {
         self.logger = logger
     }
+
+    /**
+     * # Summary
+     * Intercepting the response by taking its information and creating a message to be logged.
+     *
+     * - Parameter data:
+     *  The data returned by the data task.
+     * - Parameter response:
+     *  The response returned by the data task
+     * - Parameter error:
+     *  The error returned by the data task.
+     *
+     * - Returns:
+     * The intercepted response.
+     */
     public func intercept(data: Data?, response: URLResponse?, error: Error?) -> URLResponse? {
         var message: String = "\(String(describing: self)):\n"
 

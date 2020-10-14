@@ -1,12 +1,30 @@
 import Foundation
 
+// Implementation of a request interceptor which logs the request information.
 public final class LoggingRequestInterceptor: RequestInterceptor {
     private var logger: Logger
 
-    init(logger: Logger) {
+    /**
+     * # Summary
+     * The initializer for the `LoggingRequestInterceptor`
+     *
+     * - Parameter logger:
+     *  The logger to be used to pass the request information to. Default value for the logger is the `DefaultLogger`.
+     */
+    init(logger: Logger = DefaultLogger()) {
         self.logger = logger
     }
 
+    /**
+     * # Summary
+     * Intercepting the request by taking its information and creating a message to be logged.
+     *
+     * - Parameter request:
+     *  The request to be intercepted.
+     *
+     * - Returns:
+     * The intercepted request.
+     */
     public func intercept(_ request: URLRequest) -> URLRequest {
         var message: String = "\(String(describing: self)):\n"
         if let url = request.url {

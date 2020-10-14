@@ -171,10 +171,10 @@ extension JetworkingTests {
             requestInterceptors: [
                 AuthenticationRequestInterceptor(authenticationMethod: .none),
                 HeaderFieldsRequestInterceptor(headerFields: self.getHeaderFields()),
-                LoggingRequestInterceptor(logger: DefaultLogger())
+                LoggingRequestInterceptor()
             ],
             responseInterceptors: [
-                LoggingResponseInterceptor(logger: DefaultLogger())
+                LoggingResponseInterceptor()
             ],
             encoder: JSONEncoder(),
             decoder: JSONDecoder()
