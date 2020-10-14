@@ -33,7 +33,10 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testGetRequest() {
-        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
+        let client = Client(configuration: makeDefaultClientConfiguration()) { session in
+            session.configuration.timeoutIntervalForRequest = 30
+        }
+
         let expectation = self.expectation(description: "Wait for get")
 
         client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { result in
@@ -52,7 +55,7 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPostRequest() {
-        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
+        let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")
 
         let body: Body = .init(foo1: "bar1", foo2: "bar2")
@@ -72,7 +75,7 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPutRequest() {
-        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
+        let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")
 
         let body: Body = .init(foo1: "bar1", foo2: "bar2")
@@ -92,7 +95,7 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testPatchRequest() {
-        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
+        let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")
 
         let body: Body = .init(foo1: "bar1", foo2: "bar2")
@@ -112,7 +115,7 @@ final class JetworkingTests: XCTestCase {
     }
     
     func testDeleteRequest() {
-        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
+        let client = Client(configuration: makeDefaultClientConfiguration())
 
         let expectation = self.expectation(description: "Wait for post")
 
@@ -132,7 +135,7 @@ final class JetworkingTests: XCTestCase {
     }
 
     func testRequestCancellation() throws {
-        let client = Client(clientConfiguration: makeDefaultClientConfiguration())
+        let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for get")
 
         let cancellableRequest = client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { result in

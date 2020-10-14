@@ -9,15 +9,23 @@ enum APIError: Error {
 
 public final class Client {
     // MARK: - Properties
-    private let clientConfiguration: ClientConfiguration
+    private let configuration: ClientConfiguration
 
-    private lazy var session: URLSession = .init(
-        configuration: .default
-    )
+    private lazy var session: URLSession = .init(configuration: .default)
 
     // MARK: - Initialisation
-    init(clientConfiguration: ClientConfiguration) {
-        self.clientConfiguration = clientConfiguration
+    /**
+     * Initializes a new client instance with a default url session.
+     *
+     * - Parameter configuration: The client configuration.
+     * - Parameter sessionConfiguration: A function to configure the URLSession as inout parameter.
+     */
+    init(
+        configuration: ClientConfiguration,
+        sessionConfiguration: ((inout URLSession) -> Void)? = nil
+    ) {
+        self.configuration = configuration
+        sessionConfiguration?(&session)
     }
 
     // MARK: - Methods
@@ -42,7 +50,7 @@ public final class Client {
     @discardableResult
     public func post<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
-            let bodyData: Data = try clientConfiguration.encoder.encode(body)
+            let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint, and: bodyData)
             let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
@@ -61,7 +69,7 @@ public final class Client {
     @discardableResult
     public func put<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping (Result<ResponseType, Error>) -> Void) -> CancellableRequest? {
         do {
-            let bodyData: Data = try clientConfiguration.encoder.encode(body)
+            let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint, and: bodyData)
             let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
@@ -84,7 +92,7 @@ public final class Client {
         _ completion: @escaping (Result<ResponseType, Error>) -> Void
     ) -> CancellableRequest? {
         do {
-            let bodyData: Data = try clientConfiguration.encoder.encode(body)
+            let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint, and: bodyData)
             let dataTask = session.dataTask(with: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
@@ -120,11 +128,11 @@ public final class Client {
 
     private func createRequest<ResponseType>(forHttpMethod httpMethod: HTTPMethod, and endpoint: Endpoint<ResponseType>, and body: Data? = nil) throws -> URLRequest {
         let request = URLRequest(
-            url: try URLFactory.makeURL(from: endpoint, withBaseURL: clientConfiguration.baseURL),
+            url: try URLFactory.makeURL(from: endpoint, withBaseURL: configuration.baseURL),
             httpMethod: httpMethod,
             httpBody: body
         )
-        return clientConfiguration.requestInterceptors.reduce(request) { request, interceptor in
+        return configuration.requestInterceptors.reduce(request) { request, interceptor in
             return interceptor.intercept(request)
         }
     }
@@ -138,7 +146,7 @@ public final class Client {
         completion: @escaping (Result<ResponseType, Error>) -> Void
     ) {
         var currentURLResponse = urlResponse
-        clientConfiguration.responseInterceptors.forEach { component in
+        configuration.responseInterceptors.forEach { component in
             currentURLResponse = component.intercept(data: data, response: currentURLResponse, error: error)
         }
 
@@ -152,7 +160,7 @@ public final class Client {
         case .successful:
             guard
                 let data = data,
-                let decodedData = try? clientConfiguration.decoder.decode(ResponseType.self, from: data)
+                let decodedData = try? configuration.decoder.decode(ResponseType.self, from: data)
             else { return completion(.failure(APIError.decodingError)) }
             // Evaluate Header fields --> urlResponse.allHeaderFields
 
