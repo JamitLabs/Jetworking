@@ -120,6 +120,12 @@ public final class Client {
         return nil
     }
 
+    @discardableResult
+    public func download(url: URL,_ completion: @escaping ((URL?, URLResponse?, Error?) -> Void)) -> CancellableRequest? {
+        let request: URLRequest = .init(url: url)
+        return requestExecutor.download(request: request, completion)
+    }
+
     private func createRequest<ResponseType>(
         forHttpMethod httpMethod: HTTPMethod,
         and endpoint: Endpoint<ResponseType>,

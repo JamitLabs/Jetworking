@@ -28,4 +28,18 @@ public protocol RequestExecutor {
      *  The request to be able to cancel it if necessary.
      */
     func send(request: URLRequest, _ completion: @escaping ((Data?, URLResponse?, Error?) -> Void)) -> CancellableRequest?
+
+    /**
+     * # Summary
+     *  Downloading the given request
+     *
+     * - Parameter request:
+     *  The request to be downloaded.
+     * - Parameter completion:
+     *  The completion which will be called when the request was downloaded.
+     *
+     * - Returns:
+     *  The request to be able to cancel it if necessary.
+     */
+    func download(request: URLRequest, _ completion: @escaping ((URL?, URLResponse?, Error?) -> Void)) -> CancellableRequest?
 }

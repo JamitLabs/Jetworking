@@ -19,4 +19,11 @@ final class SyncRequestExecutor: RequestExecutor {
 
         return operation
     }
+
+    func download(request: URLRequest, _ completion: @escaping ((URL?, URLResponse?, Error?) -> Void)) -> CancellableRequest? {
+        let operation = DownloadOperation(session: session, request: request, completion: completion)
+        operationQueue.addOperation(operation)
+
+        return operation
+    }
 }
