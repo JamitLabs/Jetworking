@@ -6,7 +6,7 @@ public final class HeaderFieldsRequestInterceptor: RequestInterceptor {
 
     /**
      * # Summary
-     * The initializer for the `HeaderFieldsRequestInterceptor`
+     * The initialiser for the `HeaderFieldsRequestInterceptor`
      *
      * - Parameter headerFields:
      *  Either pass in a dictionary of header fields to be added or an `autoclosure` which then returns a dictionary of header fields to be added.

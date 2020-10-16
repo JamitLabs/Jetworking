@@ -23,7 +23,7 @@ public final class AuthenticationRequestInterceptor: RequestInterceptor {
 
     /**
      * # Summary
-     * The initializer for the `AuthenticationRequestInterceptor`
+     * The initialiser for the `AuthenticationRequestInterceptor`
      *
      * - Parameter authenticationMethod:
      *  Either pass in an enum case or an `autoclosure` which then returns an `AuthenticationMethod`

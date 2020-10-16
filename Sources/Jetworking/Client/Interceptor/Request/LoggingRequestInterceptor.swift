@@ -1,12 +1,12 @@
 import Foundation
 
-// Implementation of a request interceptor which logs the request information.
+/// Implementation of a request interceptor which logs the request information.
 public final class LoggingRequestInterceptor: RequestInterceptor {
     private var logger: Logger
 
     /**
      * # Summary
-     * The initializer for the `LoggingRequestInterceptor`
+     * The initialiser for the `LoggingRequestInterceptor`
      *
      * - Parameter logger:
      *  The logger to be used to pass the request information to. Default value for the logger is the `DefaultLogger`.
