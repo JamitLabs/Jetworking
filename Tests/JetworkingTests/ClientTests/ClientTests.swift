@@ -216,23 +216,25 @@ final class ClientTests: XCTestCase {
         client.download(url: url) { localURL, response, error in
             guard let localURL = localURL else { return }
 
-            expectation.fulfill()
-            
             do {
-                let documentsURL = try
-                    FileManager.default.url(for: .documentDirectory,
-                                            in: .userDomainMask,
-                                            appropriateFor: nil,
-                                            create: false)
+                let documentsURL = try FileManager.default.url(
+                    for: .documentDirectory,
+                    in: .userDomainMask,
+                    appropriateFor: nil,
+                    create: false
+                )
                 let savedURL = documentsURL.appendingPathComponent(localURL.lastPathComponent)
+                print("SAVED_URL: \(savedURL)")
                 try FileManager.default.moveItem(at: localURL, to: savedURL)
                 try FileManager.default.removeItem(at: localURL)
             } catch {
                 // handle filesystem error
             }
+
+            expectation.fulfill()
         }
         
-        waitForExpectations(timeout: 60.0, handler: nil)
+        waitForExpectations(timeout: 140.0, handler: nil)
     }
 }
 
