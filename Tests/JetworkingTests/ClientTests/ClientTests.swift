@@ -134,6 +134,65 @@ final class ClientTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
+
+    func testSequentialRequestsCorrectOrder() {
+        let client = Client(configuration: .init(
+            baseURL: URL(string: "https://postman-echo.com")!,
+            requestInterceptors: [
+                AuthenticationRequestInterceptor(
+                    authenticationMethod: .basicAuthentication(username: "username", password: "password")
+                ),
+                HeaderFieldsRequestInterceptor(headerFields: self.additionalHeaderFields()),
+                LoggingRequestInterceptor()
+            ],
+            responseInterceptors: [
+                LoggingResponseInterceptor()
+            ],
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder(),
+            requestExecutorType: .sync
+        ))
+
+        let firstExpectation = expectation(description: "Wait for first get")
+        let secondExpectation = expectation(description: "Wait for second get")
+        let thirdExpectation = expectation(description: "Wait for third get")
+        let fourthExpectation = expectation(description: "Wait for fourth get")
+
+        client.get(endpoint: Endpoints.get) { _ in firstExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _ in secondExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _ in thirdExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _ in fourthExpectation.fulfill() }
+
+        let result = XCTWaiter().wait(
+            for: [firstExpectation, secondExpectation, thirdExpectation, fourthExpectation],
+            timeout: 20,
+            enforceOrder: true
+        )
+
+        XCTAssertTrue(result == .completed)
+    }
+    
+    func testIncorrectOrderDueToAsyncRequestExecutor() {
+        let client = Client(configuration: makeDefaultClientConfiguration())
+
+        let firstExpectation = expectation(description: "Wait for first get")
+        let secondExpectation = expectation(description: "Wait for second get")
+        let thirdExpectation = expectation(description: "Wait for third get")
+        let fourthExpectation = expectation(description: "Wait for fourth get")
+
+        client.get(endpoint: Endpoints.get) { _ in firstExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _ in secondExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _ in thirdExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _ in fourthExpectation.fulfill() }
+
+        let result = XCTWaiter().wait(
+            for: [firstExpectation, secondExpectation, thirdExpectation, fourthExpectation],
+            timeout: 20,
+            enforceOrder: true
+        )
+
+        XCTAssertTrue(result == .incorrectOrder)
+    }
 }
 
 extension ClientTests {
@@ -151,7 +210,8 @@ extension ClientTests {
                 LoggingResponseInterceptor()
             ],
             encoder: JSONEncoder(),
-            decoder: JSONDecoder()
+            decoder: JSONDecoder(),
+            requestExecutorType: .async
         )
     }
 }
