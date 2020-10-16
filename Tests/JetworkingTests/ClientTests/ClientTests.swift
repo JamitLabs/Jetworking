@@ -206,6 +206,33 @@ final class ClientTests: XCTestCase {
         )
 
         XCTAssertTrue(result == .incorrectOrder)
+	}
+    
+    func testFileDownload() {
+        let client = Client(configuration: makeDefaultClientConfiguration())
+        let expectation = self.expectation(description: "Wait for download")
+
+        let url = URL(string: "https://speed.hetzner.de/100MB.bin")!
+        client.download(url: url) { localURL, response, error in
+            guard let localURL = localURL else { return }
+
+            expectation.fulfill()
+            
+            do {
+                let documentsURL = try
+                    FileManager.default.url(for: .documentDirectory,
+                                            in: .userDomainMask,
+                                            appropriateFor: nil,
+                                            create: false)
+                let savedURL = documentsURL.appendingPathComponent(localURL.lastPathComponent)
+                try FileManager.default.moveItem(at: localURL, to: savedURL)
+                try FileManager.default.removeItem(at: localURL)
+            } catch {
+                // handle filesystem error
+            }
+        }
+        
+        waitForExpectations(timeout: 60.0, handler: nil)
     }
 }
 

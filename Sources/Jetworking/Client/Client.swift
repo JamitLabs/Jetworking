@@ -27,6 +27,8 @@ public final class Client {
         }
     }()
 
+    private lazy var downloadExecutor: DownloadExecutor = .init()
+
     // MARK: - Initialisation
     /**
      * Initialises a new client instance with a default url session.
@@ -120,10 +122,12 @@ public final class Client {
         return nil
     }
 
+    // TODO add documentation that the programmer needs to set background mode for the app which uses the download feature
     @discardableResult
     public func download(url: URL,_ completion: @escaping ((URL?, URLResponse?, Error?) -> Void)) -> CancellableRequest? {
+        // TODO: Only HTTP and HTTPS protocols are supported (no custom protocols).
         let request: URLRequest = .init(url: url)
-        return requestExecutor.download(request: request, completion)
+        return downloadExecutor.download(request: request, completion)
     }
 
     private func createRequest<ResponseType>(

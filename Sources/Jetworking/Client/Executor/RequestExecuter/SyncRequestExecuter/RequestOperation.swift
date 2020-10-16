@@ -1,7 +1,7 @@
 import Foundation
 
-final class DownloadOperation : Operation, CancellableRequest {
-    private var task: URLSessionDownloadTask?
+class RequestOperation : Operation, CancellableRequest {
+    private var task: URLSessionTask?
 
     enum OperationState : Int {
         case ready
@@ -25,12 +25,12 @@ final class DownloadOperation : Operation, CancellableRequest {
     override var isExecuting: Bool { return state == .executing }
     override var isFinished: Bool { return state == .finished }
 
-    init(session: URLSession, request: URLRequest, completion: @escaping ((URL?, URLResponse?, Error?) -> Void)) {
+    init(session: URLSession, request: URLRequest, completion: @escaping ((Data?, URLResponse?, Error?) -> Void)) {
         super.init()
 
-        task = session.downloadTask(with: request) { [weak self] url, response, error in
-            completion(url, response, error)
-            
+        task = session.dataTask(with: request) { [weak self] data, response, error in
+            completion(data, response, error)
+
             self?.state = .finished
         }
     }

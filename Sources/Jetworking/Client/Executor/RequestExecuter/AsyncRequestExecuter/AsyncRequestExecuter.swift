@@ -13,11 +13,4 @@ final class AsyncRequestExecutor: RequestExecutor {
 
         return dataTask
     }
-
-    func download(request: URLRequest, _ completion: @escaping ((URL?, URLResponse?, Error?) -> Void)) -> CancellableRequest? {
-        let downloadTask = session.downloadTask(with: request, completionHandler: completion)
-        downloadTask.resume()
-
-        return downloadTask
-    }
 }
