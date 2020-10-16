@@ -27,7 +27,28 @@ public final class Client {
         }
     }()
 
-    private lazy var downloadExecutor: DownloadExecutor = .init()
+    private var executingDownloads: [Int: DownloadHandler] = [:]
+    private lazy var downloadExecutor: DownloadExecutor = {
+        switch configuration.downloadExecutorType {
+        case .default:
+            return DefaultDownloadExecutor(
+                sessionConfiguration: session.configuration,
+                downloadExecutorDelegate: self
+            )
+
+        case .background:
+            return BackgroundDownloadExecutor(
+                sessionConfiguration: session.configuration,
+                downloadExecutorDelegate: self
+            )
+
+        case let .custom(executorType):
+            return executorType.init(
+                sessionConfiguration: session.configuration,
+                downloadExecutorDelegate: self
+            )
+        }
+    }()
 
     // MARK: - Initialisation
     /**
@@ -122,12 +143,17 @@ public final class Client {
         return nil
     }
 
-    // TODO add documentation that the programmer needs to set background mode for the app which uses the download feature
     @discardableResult
-    public func download(url: URL,_ completion: @escaping ((URL?, URLResponse?, Error?) -> Void)) -> CancellableRequest? {
-        // TODO: Only HTTP and HTTPS protocols are supported (no custom protocols).
+    public func download(
+        url: URL,
+        progressHandler: DownloadHandler.ProgressHandler,
+        _ completion: @escaping DownloadHandler.CompletionHandler
+    ) -> CancellableRequest? {
+        // TODO: Only HTTP and HTTPS protocols are supported (no custom protocols). --> Error Handling
         let request: URLRequest = .init(url: url)
-        return downloadExecutor.download(request: request, completion)
+        let task = downloadExecutor.download(request: request)
+        task.flatMap { executingDownloads[$0.identifier] = DownloadHandler(progressHandler: progressHandler, completionHandler: completion) }
+        return task
     }
 
     private func createRequest<ResponseType>(
@@ -183,5 +209,26 @@ public final class Client {
         default:
             return
         }
+    }
+}
+
+extension Client: DownloadExecutorDelegate {
+    public func downloadExecutor(
+        _ downloadTask: URLSessionDownloadTask,
+        didWriteData bytesWritten: Int64,
+        totalBytesWritten: Int64,
+        totalBytesExpectedToWrite: Int64
+    ) {
+        executingDownloads[downloadTask.identifier]?.progressHandler?(totalBytesWritten, totalBytesExpectedToWrite)
+    }
+
+    public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        // TODO handle response before calling the completion
+        executingDownloads[downloadTask.identifier]?.completionHandler(location, downloadTask.response, downloadTask.error)
+    }
+
+    public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?) {
+        // TODO handle response before calling the completion
+        executingDownloads[downloadTask.identifier]?.completionHandler(nil, downloadTask.response, error)
     }
 }

@@ -8,6 +8,7 @@ public struct Configuration {
     let encoder: JSONEncoder
     let decoder: JSONDecoder
     let requestExecutorType: RequestExecutorType
+    let downloadExecutorType: DownloadExecutorType
 
     /**
      * Initialises a new configuration instance to use within the client.
@@ -18,6 +19,7 @@ public struct Configuration {
      * - Parameter encoder: The encoder to use to encode the request body data before sending it.
      * - Parameter decoder: The decoder to use to decode the response body data before returning it.
      * - Parameter requestExecutorType: The request executor type to use to execute the requests.
+     * - Parameter downloadExecutorType: The download executor type to use to execute downloads.
      */
     init(
         baseURL: URL,
@@ -25,7 +27,8 @@ public struct Configuration {
         responseInterceptors: [ResponseInterceptor],
         encoder: JSONEncoder,
         decoder: JSONDecoder,
-        requestExecutorType: RequestExecutorType = .async
+        requestExecutorType: RequestExecutorType = .async,
+        downloadExecutorType: DownloadExecutorType = .default
     ) {
         self.baseURL = baseURL
         self.requestInterceptors = requestInterceptors
@@ -33,5 +36,6 @@ public struct Configuration {
         self.encoder = encoder
         self.decoder = decoder
         self.requestExecutorType = requestExecutorType
+        self.downloadExecutorType = downloadExecutorType
     }
 }

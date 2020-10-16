@@ -213,7 +213,13 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for download")
 
         let url = URL(string: "https://speed.hetzner.de/100MB.bin")!
-        client.download(url: url) { localURL, response, error in
+        client.download(
+            url: url,
+            progressHandler: { (totalBytesWritten, totalBytesExpectedToWrite) in
+                let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
+                print("Progress \(progress)")
+            }
+        ) { localURL, response, error in
             guard let localURL = localURL else { return }
 
             do {

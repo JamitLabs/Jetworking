@@ -1,6 +1,10 @@
 import Foundation
 
 class RequestOperation : Operation, CancellableRequest {
+    var identifier: Int {
+        return task?.identifier ?? 0
+    }
+    
     private var task: URLSessionTask?
 
     enum OperationState : Int {
