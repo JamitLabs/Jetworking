@@ -143,35 +143,32 @@ public final class Client {
         endpoint: Endpoint<ResponseType>,
         completion: @escaping RequestCompletion<ResponseType>
     ) {
-        var currentURLResponse = urlResponse
-        configuration.responseInterceptors.forEach { component in
-            currentURLResponse = component.intercept(data: data, response: currentURLResponse, error: error)
+        let interceptedResponse = configuration.responseInterceptors.reduce(urlResponse) { response, component in
+            return component.intercept(data: data, response: response, error: error)
         }
 
-        if let error = error { return completion(nil, .failure(error)) }
-        
-        guard let urlResponse = urlResponse as? HTTPURLResponse else {
-            return completion(nil, .failure(APIError.responseMissing))
+        guard let currentURLResponse = interceptedResponse as? HTTPURLResponse else {
+            return completion(nil, .failure(error ?? APIError.responseMissing))
         }
 
-        let statusCode = HTTPStatusCodeType(statusCode: urlResponse.statusCode)
+        if let error = error { return completion(currentURLResponse, .failure(error)) }
 
-        switch statusCode {
+        switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
         case .successful:
             guard
                 let data = data,
                 let decodedData = try? configuration.decoder.decode(ResponseType.self, from: data)
             else {
-                return completion(urlResponse, .failure(APIError.decodingError))
+                return completion(currentURLResponse, .failure(APIError.decodingError))
             }
             // Evaluate Header fields --> urlResponse.allHeaderFields
 
-            completion(urlResponse, .success(decodedData))
+            completion(currentURLResponse, .success(decodedData))
             
         case .clientError, .serverError:
-            guard let error = error else { return completion(urlResponse, .failure(APIError.unexpectedError)) }
+            guard let error = error else { return completion(currentURLResponse, .failure(APIError.unexpectedError)) }
 
-            completion(urlResponse, .failure(error))
+            completion(currentURLResponse, .failure(error))
 
         default:
             return

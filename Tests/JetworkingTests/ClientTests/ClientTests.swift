@@ -172,10 +172,10 @@ final class ClientTests: XCTestCase {
         let thirdExpectation = expectation(description: "Wait for third get")
         let fourthExpectation = expectation(description: "Wait for fourth get")
 
-        client.get(endpoint: Endpoints.get) { _ in firstExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in secondExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in thirdExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in fourthExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in firstExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in secondExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in thirdExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in fourthExpectation.fulfill() }
 
         let result = XCTWaiter().wait(
             for: [firstExpectation, secondExpectation, thirdExpectation, fourthExpectation],
@@ -194,10 +194,10 @@ final class ClientTests: XCTestCase {
         let thirdExpectation = expectation(description: "Wait for third get")
         let fourthExpectation = expectation(description: "Wait for fourth get")
 
-        client.get(endpoint: Endpoints.get) { _ in firstExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in secondExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in thirdExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in fourthExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in firstExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in secondExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in thirdExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in fourthExpectation.fulfill() }
 
         let result = XCTWaiter().wait(
             for: [firstExpectation, secondExpectation, thirdExpectation, fourthExpectation],
