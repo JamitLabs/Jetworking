@@ -2,7 +2,7 @@ import Foundation
 
 class RequestOperation : Operation, CancellableRequest {
     var identifier: Int {
-        return task?.identifier ?? 0
+        return task?.identifier ?? Int.random(in: Int.min..<Int.max)
     }
     
     private var task: URLSessionTask?
