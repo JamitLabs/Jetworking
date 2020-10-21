@@ -16,7 +16,7 @@ final class ClientTests: XCTestCase {
 
         let expectation = self.expectation(description: "Wait for get")
 
-        client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { result in
+        client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { response, result in
             switch result {
             case .failure:
                 break
@@ -25,6 +25,8 @@ final class ClientTests: XCTestCase {
                 print(resultData)
             }
 
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
             expectation.fulfill()
         }
 
@@ -36,7 +38,7 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
-        client.post(endpoint: Endpoints.post, body: body) { result in
+        client.post(endpoint: Endpoints.post, body: body) { response, result in
             switch result {
             case .failure:
                 break
@@ -45,6 +47,8 @@ final class ClientTests: XCTestCase {
                 print(resultData)
             }
 
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
             expectation.fulfill()
         }
 
@@ -56,7 +60,7 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
-        client.put(endpoint: Endpoints.put, body: body) { result in
+        client.put(endpoint: Endpoints.put, body: body) { response, result in
             switch result {
             case .failure:
                 break
@@ -65,6 +69,8 @@ final class ClientTests: XCTestCase {
                 print(resultData)
             }
 
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
             expectation.fulfill()
         }
 
@@ -76,7 +82,7 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
-        client.patch(endpoint: Endpoints.patch, body: body) { result in
+        client.patch(endpoint: Endpoints.patch, body: body) { response, result in
             switch result {
             case .failure:
                 break
@@ -85,6 +91,8 @@ final class ClientTests: XCTestCase {
                 print(resultData)
             }
 
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
             expectation.fulfill()
         }
 
@@ -96,7 +104,7 @@ final class ClientTests: XCTestCase {
 
         let expectation = self.expectation(description: "Wait for post")
 
-        client.delete(endpoint: Endpoints.delete) { result in
+        client.delete(endpoint: Endpoints.delete) { response, result in
             switch result {
             case .failure:
                 break
@@ -105,6 +113,8 @@ final class ClientTests: XCTestCase {
                 print(resultData)
             }
 
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
             expectation.fulfill()
         }
 
@@ -115,7 +125,11 @@ final class ClientTests: XCTestCase {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for get")
 
-        let cancellableRequest = client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { result in
+        let cancellableRequest = client.get(
+            endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")
+        ) { response, result in
+            XCTAssertNil(response)
+
             switch result {
             case let .failure(error as URLError):
                 XCTAssertEqual(error.code, URLError.cancelled)
@@ -158,10 +172,10 @@ final class ClientTests: XCTestCase {
         let thirdExpectation = expectation(description: "Wait for third get")
         let fourthExpectation = expectation(description: "Wait for fourth get")
 
-        client.get(endpoint: Endpoints.get) { _ in firstExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in secondExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in thirdExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in fourthExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in firstExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in secondExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in thirdExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in fourthExpectation.fulfill() }
 
         let result = XCTWaiter().wait(
             for: [firstExpectation, secondExpectation, thirdExpectation, fourthExpectation],
@@ -180,10 +194,10 @@ final class ClientTests: XCTestCase {
         let thirdExpectation = expectation(description: "Wait for third get")
         let fourthExpectation = expectation(description: "Wait for fourth get")
 
-        client.get(endpoint: Endpoints.get) { _ in firstExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in secondExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in thirdExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _ in fourthExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in firstExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in secondExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in thirdExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in fourthExpectation.fulfill() }
 
         let result = XCTWaiter().wait(
             for: [firstExpectation, secondExpectation, thirdExpectation, fourthExpectation],
