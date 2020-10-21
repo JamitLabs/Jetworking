@@ -254,6 +254,57 @@ final class ClientTests: XCTestCase {
         
         waitForExpectations(timeout: 140.0, handler: nil)
     }
+    func testUploadFile() {
+        let client = Client(configuration: makeDefaultClientConfiguration())
+        let expectation = self.expectation(description: "Wait for upload")
+        
+        let url = URL(string: "https://catbox.moe/user/api.php")!
+        let documentsUrl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let filename = "avatar.png"
+        let fileURL = documentsUrl.appendingPathComponent(filename)
+        client.upload(
+            url: url,
+            fileURL: fileURL,
+            progressHandler: { (bytesSent, bytesExpectedToSend) in
+                let progress = Float(bytesSent) / Float(bytesExpectedToSend)
+                print("Progress \(progress)")
+            }
+        ) { _, error in
+            guard error == nil else { return XCTFail("Error while uploading file") }
+
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+    
+    func testUploadMultipartData() {
+        let client = Client(configuration: makeDefaultClientConfiguration())
+        let expectation = self.expectation(description: "Wait for upload")
+        
+        let url = URL(string: "https://catbox.moe/user/api.php")!
+        let documentsUrl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let filename = "avatar.png"
+        let fileURL = documentsUrl.appendingPathComponent(filename)
+        client.upload(
+            url: url,
+            fileURL: fileURL,
+            formData: [
+                "reqtype": "fileupload",
+                "userhash": "caa3dce4fcb36cfdf9258ad9c"
+            ],
+            progressHandler: { (bytesSent, bytesExpectedToSend) in
+                let progress = Float(bytesSent) / Float(bytesExpectedToSend)
+                print("Progress \(progress)")
+            }
+        ) { _, error in
+            guard error == nil else { return XCTFail("Error while uploading multipart data") }
+
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
 }
 
 extension ClientTests {

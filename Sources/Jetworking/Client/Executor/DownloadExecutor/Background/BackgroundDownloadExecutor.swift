@@ -77,7 +77,9 @@ final class BackgroundDownloadExecutor: NSObject, DownloadExecutor {
      *  The request to be able to cancel it if necessary.
      */
     func download(request: URLRequest) -> CancellableRequest? {
-        return session.downloadTask(with: request)
+        let downloadTask = session.downloadTask(with: request)
+        downloadTask.resume()
+        return downloadTask
     }
 }
 
