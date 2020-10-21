@@ -289,6 +289,8 @@ final class ClientTests: XCTestCase {
         client.upload(
             url: url,
             fileURL: fileURL,
+            multipartType: .formData,
+            multipartFileContentType: .textPlain,
             formData: [
                 "reqtype": "fileupload",
                 "userhash": "caa3dce4fcb36cfdf9258ad9c"

@@ -196,16 +196,18 @@ public final class Client {
     public func upload(
         url: URL,
         fileURL: URL,
+        multipartType: MultipartType,
+        multipartFileContentType: MultipartContentType,
         formData: [String: String],
         progressHandler: UploadHandler.ProgressHandler,
         _ completion: @escaping UploadHandler.CompletionHandler
     ) -> CancellableRequest? {
         let boundary = UUID().uuidString
 
-        guard let multipartData = Data(boundary: boundary, formData: formData, fileURL: fileURL) else { return nil }
+        guard let multipartData = Data(boundary: boundary, formData: formData, fileURL: fileURL, multipartFileContentType: multipartFileContentType) else { return nil }
 
         var request: URLRequest = .init(url: url, httpMethod: .POST)
-        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.setValue("\(multipartType.rawValue); boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
         let task = uploadExecutor.upload(request: request, from: multipartData)
         task.flatMap { executingUploads[$0.identifier] = UploadHandler(progressHandler: progressHandler, completionHandler: completion) }
