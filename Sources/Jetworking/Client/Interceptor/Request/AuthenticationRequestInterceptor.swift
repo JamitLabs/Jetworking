@@ -28,7 +28,7 @@ public final class AuthenticationRequestInterceptor: RequestInterceptor {
      * - Parameter authenticationMethod:
      *  Either pass in an enum case or an `autoclosure` which then returns an `AuthenticationMethod`
      */
-    init(authenticationMethod: @escaping @autoclosure (() -> AuthenticationMethod)) {
+    public init(authenticationMethod: @escaping @autoclosure (() -> AuthenticationMethod)) {
         self.authenticationMethod = authenticationMethod
     }
     

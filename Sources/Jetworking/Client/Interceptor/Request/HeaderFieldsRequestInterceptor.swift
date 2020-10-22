@@ -11,7 +11,7 @@ public final class HeaderFieldsRequestInterceptor: RequestInterceptor {
      * - Parameter headerFields:
      *  Either pass in a dictionary of header fields to be added or an `autoclosure` which then returns a dictionary of header fields to be added.
      */
-    init(headerFields: @escaping @autoclosure (() -> [String: String])) {
+    public init(headerFields: @escaping @autoclosure (() -> [String: String])) {
         self.headerFields = headerFields
     }
 
