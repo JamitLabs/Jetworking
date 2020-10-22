@@ -4,9 +4,7 @@ final class DefaultDownloadExecutor: NSObject, DownloadExecutor {
     var delegate: DownloadExecutorDelegate?
     var sessionConfiguration: URLSessionConfiguration
 
-    private lazy var session: URLSession = {
-        return .init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
-    }()
+    private lazy var session: URLSession = .init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
 
     init(sessionConfiguration: URLSessionConfiguration, downloadExecutorDelegate: DownloadExecutorDelegate) {
         self.sessionConfiguration = sessionConfiguration

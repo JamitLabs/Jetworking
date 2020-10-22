@@ -4,9 +4,7 @@ final class DefaultUploadExecutor: NSObject, UploadExecutor {
     var delegate: UploadExecutorDelegate?
     var sessionConfiguration: URLSessionConfiguration
 
-    private lazy var session: URLSession = {
-        return .init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
-    }()
+    private lazy var session: URLSession = .init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
 
     init(sessionConfiguration: URLSessionConfiguration, uploadExecutorDelegate: UploadExecutorDelegate) {
         self.sessionConfiguration = sessionConfiguration
