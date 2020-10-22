@@ -1,5 +1,16 @@
 import Foundation
 
+/**
+ * # Summary
+ *  A background download may be useful when having a lot of data to download and not wanting the user to have to wait for a long time.
+ *  It may also be useful to download files in the background when the app does not directly need to use it.
+ *  For example when having a music playlist the user wants to download to be able to use it on the go without wasting mobile data.
+ *  As this download might take some time and one does not want the user to always have the app in foreground, the background download executor might be a good choice.
+ *  Furthermore for video downloads, when wanting to be able to watch them on the go when internet might not be availeble, it might be suitable.
+ *
+ * Nevertheless this background download executor is still a work in progress approach and needs some optimisations as well as some adjustments to the programmers app itself
+ * which need to be investigated further.
+ */
 final class BackgroundDownloadExecutor: NSObject, DownloadExecutor {
     var delegate: DownloadExecutorDelegate?
     var sessionConfiguration: URLSessionConfiguration
