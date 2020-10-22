@@ -90,6 +90,7 @@ final class BackgroundUploadExecutor: NSObject, UploadExecutor {
         do {
             try bodyData.write(to: fileURL)
         } catch {
+            // TODO: Add error handling.
             return nil
         }
 

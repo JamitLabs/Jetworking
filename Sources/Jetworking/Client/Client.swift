@@ -207,6 +207,7 @@ public final class Client {
         guard let multipartData = Data(boundary: boundary, formData: formData, fileURL: fileURL, multipartFileContentType: multipartFileContentType) else { return nil }
 
         var request: URLRequest = .init(url: url, httpMethod: .POST)
+        // TODO: Extract into constants
         request.setValue("\(multipartType.rawValue); boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
         let task = uploadExecutor.upload(request: request, from: multipartData)
