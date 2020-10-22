@@ -80,7 +80,7 @@ public final class Client {
      * - Parameter configuration: The client configuration.
      * - Parameter sessionConfiguration: A function to configure the URLSession as inout parameter.
      */
-    init(
+    public init(
         configuration: Configuration,
         sessionConfiguration: ((inout URLSession) -> Void)? = nil
     ) {

@@ -23,7 +23,7 @@ public struct Configuration {
      * - Parameter downloadExecutorType: The download executor type to use to execute downloads.
      * - Parameter uploadExecutorType: The upload executor type to use to execute uploads
      */
-    init(
+    public init(
         baseURL: URL,
         requestInterceptors: [RequestInterceptor],
         responseInterceptors: [ResponseInterceptor],
