@@ -1,6 +1,10 @@
 import Foundation
 
-final class RequestOperation : Operation, CancellableRequest {
+class RequestOperation : Operation, CancellableRequest {
+    var identifier: Int {
+        return task?.identifier ?? Int.random(in: Int.min..<Int.max)
+    }
+    
     private var task: URLSessionTask?
 
     enum OperationState : Int {

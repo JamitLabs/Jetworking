@@ -27,6 +27,29 @@ public final class Client {
         }
     }()
 
+    private var executingDownloads: [Int: DownloadHandler] = [:]
+    private lazy var downloadExecutor: DownloadExecutor = {
+        switch configuration.downloadExecutorType {
+        case .default:
+            return DefaultDownloadExecutor(
+                sessionConfiguration: session.configuration,
+                downloadExecutorDelegate: self
+            )
+
+        case .background:
+            return BackgroundDownloadExecutor(
+                sessionConfiguration: session.configuration,
+                downloadExecutorDelegate: self
+            )
+
+        case let .custom(executorType):
+            return executorType.init(
+                sessionConfiguration: session.configuration,
+                downloadExecutorDelegate: self
+            )
+        }
+    }()
+
     // MARK: - Initialisation
     /**
      * Initialises a new client instance with a default url session.
@@ -120,6 +143,27 @@ public final class Client {
         return nil
     }
 
+    @discardableResult
+    public func download(
+        url: URL,
+        progressHandler: DownloadHandler.ProgressHandler,
+        _ completion: @escaping DownloadHandler.CompletionHandler
+    ) -> CancellableRequest? {
+        // TODO: Add correct error handling
+        guard checkForValidDownloadURL(url) else { return nil }
+
+        let request: URLRequest = .init(url: url)
+        let task = downloadExecutor.download(request: request)
+        task.flatMap { executingDownloads[$0.identifier] = DownloadHandler(progressHandler: progressHandler, completionHandler: completion) }
+        return task
+    }
+
+    private func checkForValidDownloadURL(_ url: URL) -> Bool {
+        guard let scheme = URLComponents(string: url.absoluteString)?.scheme else { return false }
+
+        return scheme == "http" || scheme == "https"
+    }
+
     private func createRequest<ResponseType>(
         forHttpMethod httpMethod: HTTPMethod,
         and endpoint: Endpoint<ResponseType>,
@@ -173,5 +217,26 @@ public final class Client {
         default:
             return
         }
+    }
+}
+
+extension Client: DownloadExecutorDelegate {
+    public func downloadExecutor(
+        _ downloadTask: URLSessionDownloadTask,
+        didWriteData bytesWritten: Int64,
+        totalBytesWritten: Int64,
+        totalBytesExpectedToWrite: Int64
+    ) {
+        executingDownloads[downloadTask.identifier]?.progressHandler?(totalBytesWritten, totalBytesExpectedToWrite)
+    }
+
+    public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+        // TODO handle response before calling the completion
+        executingDownloads[downloadTask.identifier]?.completionHandler(location, downloadTask.response, downloadTask.error)
+    }
+
+    public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?) {
+        // TODO handle response before calling the completion
+        executingDownloads[downloadTask.identifier]?.completionHandler(nil, downloadTask.response, error)
     }
 }
