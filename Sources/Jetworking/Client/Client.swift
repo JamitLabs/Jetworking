@@ -50,6 +50,29 @@ public final class Client {
         }
     }()
 
+    private var executingUploads: [Int: UploadHandler] = [:]
+    private lazy var uploadExecutor: UploadExecutor = {
+        switch configuration.uploadExecutorType {
+        case .default:
+            return DefaultUploadExecutor(
+                sessionConfiguration: session.configuration,
+                uploadExecutorDelegate: self
+            )
+
+        case .background:
+            return BackgroundUploadExecutor(
+                sessionConfiguration: session.configuration,
+                uploadExecutorDelegate: self
+            )
+
+        case let .custom(executorType):
+            return executorType.init(
+                sessionConfiguration: session.configuration,
+                uploadExecutorDelegate: self
+            )
+        }
+    }()
+
     // MARK: - Initialisation
     /**
      * Initialises a new client instance with a default url session.
@@ -157,7 +180,41 @@ public final class Client {
         task.flatMap { executingDownloads[$0.identifier] = DownloadHandler(progressHandler: progressHandler, completionHandler: completion) }
         return task
     }
+    
+    public func upload(
+        url: URL,
+        fileURL: URL,
+        progressHandler: UploadHandler.ProgressHandler,
+        _ completion: @escaping UploadHandler.CompletionHandler
+    ) -> CancellableRequest? {
+        let request: URLRequest = .init(url: url, httpMethod: .POST)
+        let task = uploadExecutor.upload(request: request, fromFile: fileURL)
+        task.flatMap { executingUploads[$0.identifier] = UploadHandler(progressHandler: progressHandler, completionHandler: completion) }
+        return task
+    }
 
+    public func upload(
+        url: URL,
+        fileURL: URL,
+        multipartType: MultipartType,
+        multipartFileContentType: MultipartContentType,
+        formData: [String: String],
+        progressHandler: UploadHandler.ProgressHandler,
+        _ completion: @escaping UploadHandler.CompletionHandler
+    ) -> CancellableRequest? {
+        let boundary = UUID().uuidString
+
+        guard let multipartData = Data(boundary: boundary, formData: formData, fileURL: fileURL, multipartFileContentType: multipartFileContentType) else { return nil }
+
+        var request: URLRequest = .init(url: url, httpMethod: .POST)
+        // TODO: Extract into constants
+        request.setValue("\(multipartType.rawValue); boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+
+        let task = uploadExecutor.upload(request: request, from: multipartData)
+        task.flatMap { executingUploads[$0.identifier] = UploadHandler(progressHandler: progressHandler, completionHandler: completion) }
+        return task
+    }
+    
     private func checkForValidDownloadURL(_ url: URL) -> Bool {
         guard let scheme = URLComponents(string: url.absoluteString)?.scheme else { return false }
 
@@ -238,5 +295,21 @@ extension Client: DownloadExecutorDelegate {
     public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?) {
         // TODO handle response before calling the completion
         executingDownloads[downloadTask.identifier]?.completionHandler(nil, downloadTask.response, error)
+    }
+}
+
+extension Client: UploadExecutorDelegate {
+    public func uploadExecutor(_ uploadTask: URLSessionUploadTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
+        executingUploads[uploadTask.identifier]?.progressHandler?(totalBytesSent, totalBytesExpectedToSend)
+    }
+    
+    public func uploadExecutor(didFinishWith uploadTask: URLSessionUploadTask) {
+        // TODO handle response before calling the completion
+        executingUploads[uploadTask.identifier]?.completionHandler(uploadTask.response, uploadTask.error)
+    }
+    
+    public func uploadExecutor(_ uploadTask: URLSessionUploadTask, didCompleteWithError error: Error?) {
+        // TODO handle response before calling the completion
+        executingUploads[uploadTask.identifier]?.completionHandler(uploadTask.response, error)
     }
 }
