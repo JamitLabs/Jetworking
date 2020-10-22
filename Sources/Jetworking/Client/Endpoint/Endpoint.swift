@@ -4,6 +4,9 @@ public struct Endpoint<ResponseType: Decodable> {
     var pathComponent: String
     var queryParameters: [String: String?] = [:]
 
+    public init(pathComponent: String) {
+        self.pathComponent = pathComponent
+    }
     /**
      * # Summary
      * Adding a dictionary of query parameters to the endpoint.
