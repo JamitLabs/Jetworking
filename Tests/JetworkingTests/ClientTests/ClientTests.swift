@@ -208,6 +208,18 @@ final class ClientTests: XCTestCase {
         XCTAssertTrue(result == .incorrectOrder)
 	}
     
+    func testDownloadWithInvalidURL() {
+        let client = Client(configuration: makeDefaultClientConfiguration())
+        
+        let url = URL(string: "smtp://www.mail.com")!
+        let task = client.download(
+            url: url,
+            progressHandler: { (_, _) in }
+        ) { _, _, _ in }
+
+        XCTAssertNil(task, "The task was not nil")
+    }
+
     func testFileDownload() {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for download")

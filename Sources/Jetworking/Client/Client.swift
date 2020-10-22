@@ -149,11 +149,19 @@ public final class Client {
         progressHandler: DownloadHandler.ProgressHandler,
         _ completion: @escaping DownloadHandler.CompletionHandler
     ) -> CancellableRequest? {
-        // TODO: Only HTTP and HTTPS protocols are supported (no custom protocols). --> Error Handling
+        // TODO: Add correct error handling
+        guard checkForValidDownloadURL(url) else { return nil }
+
         let request: URLRequest = .init(url: url)
         let task = downloadExecutor.download(request: request)
         task.flatMap { executingDownloads[$0.identifier] = DownloadHandler(progressHandler: progressHandler, completionHandler: completion) }
         return task
+    }
+
+    private func checkForValidDownloadURL(_ url: URL) -> Bool {
+        guard let scheme = URLComponents(string: url.absoluteString)?.scheme else { return false }
+
+        return scheme == "http" || scheme == "https"
     }
 
     private func createRequest<ResponseType>(
