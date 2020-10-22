@@ -228,8 +228,12 @@ final class ClientTests: XCTestCase {
         client.download(
             url: url,
             progressHandler: { (totalBytesWritten, totalBytesExpectedToWrite) in
+                XCTAssertTrue(totalBytesWritten <= totalBytesExpectedToWrite)
+
                 let progress = Float(totalBytesWritten) / Float(totalBytesExpectedToWrite)
                 print("Progress \(progress)")
+                XCTAssertTrue(progress > 0.0)
+                XCTAssertTrue(progress <= 1.0)
             }
         ) { localURL, response, error in
             guard let localURL = localURL else { return }
@@ -266,8 +270,12 @@ final class ClientTests: XCTestCase {
             url: url,
             fileURL: fileURL,
             progressHandler: { (bytesSent, bytesExpectedToSend) in
+                XCTAssertTrue(bytesSent <= bytesExpectedToSend)
+
                 let progress = Float(bytesSent) / Float(bytesExpectedToSend)
                 print("Progress \(progress)")
+                XCTAssertTrue(progress > 0.0)
+                XCTAssertTrue(progress <= 1.0)
             }
         ) { _, error in
             guard error == nil else { return XCTFail("Error while uploading file") }
@@ -290,7 +298,7 @@ final class ClientTests: XCTestCase {
             url: url,
             fileURL: fileURL,
             multipartType: .formData,
-            multipartFileContentType: .textPlain,
+            multipartFileContentType: .imagePNG,
             formData: [
                 "reqtype": "fileupload",
                 "userhash": "caa3dce4fcb36cfdf9258ad9c"
