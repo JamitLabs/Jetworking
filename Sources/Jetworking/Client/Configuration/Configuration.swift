@@ -10,6 +10,7 @@ public struct Configuration {
     let requestExecutorType: RequestExecutorType
     let downloadExecutorType: DownloadExecutorType
     let uploadExecutorType: UploadExecutorType
+    let responseQueue: DispatchQueue
 
     /**
      * Initialises a new configuration instance to use within the client.
@@ -31,7 +32,8 @@ public struct Configuration {
         decoder: JSONDecoder,
         requestExecutorType: RequestExecutorType = .async,
         downloadExecutorType: DownloadExecutorType = .default,
-        uploadExecutorType: UploadExecutorType = .default
+        uploadExecutorType: UploadExecutorType = .default,
+        responseQueue: DispatchQueue = .main
     ) {
         self.baseURL = baseURL
         self.requestInterceptors = requestInterceptors
@@ -41,5 +43,6 @@ public struct Configuration {
         self.requestExecutorType = requestExecutorType
         self.downloadExecutorType = downloadExecutorType
         self.uploadExecutorType = uploadExecutorType
+        self.responseQueue = responseQueue
     }
 }
