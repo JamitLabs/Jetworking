@@ -1,4 +1,5 @@
 import XCTest
+import Foundation
 @testable import Jetworking
 
 final class ClientTests: XCTestCase {
@@ -284,12 +285,10 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for upload")
         
         let url = URL(string: "https://catbox.moe/user/api.php")!
-        let documentsUrl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let filename = "avatar.png"
-        let fileURL = documentsUrl.appendingPathComponent(filename)
+        let path = Bundle.module.path(forResource: "avatar", ofType: "png")!
         client.upload(
             url: url,
-            fileURL: fileURL,
+            fileURL: URL(string: path)!,
             progressHandler: { (bytesSent, bytesExpectedToSend) in
                 dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
                 XCTAssertTrue(bytesSent <= bytesExpectedToSend)
@@ -314,12 +313,15 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for upload")
         
         let url = URL(string: "https://catbox.moe/user/api.php")!
-        let documentsUrl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        let filename = "avatar.png"
-        let fileURL = documentsUrl.appendingPathComponent(filename)
+
+        let filePath = Bundle.module.path(forResource: "avatar", ofType: ".png")!
+        var components: URLComponents = .init()
+        components.scheme = "file"
+        components.path = filePath
+
         client.upload(
             url: url,
-            fileURL: fileURL,
+            fileURL: components.url!,
             multipartType: .formData,
             multipartFileContentType: .imagePNG,
             formData: [

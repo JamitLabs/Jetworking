@@ -4,9 +4,14 @@ import XCTest
 final class DataExtensionTests: XCTestCase {
     func testMultipartDataInitialisation() {
         let boundary = UUID().uuidString
-        let documentsUrl: URL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let filename = "avatar.png"
-        let fileURL = documentsUrl.appendingPathComponent(filename)
+        let filePath = Bundle.module.path(forResource: "avatar", ofType: ".png")!
+
+        var components: URLComponents = .init()
+        components.scheme = "file"
+        components.path = filePath
+
+        let fileURL = components.url!
         let multipartFileContentType: MultipartContentType = .imagePNG
         let userhashKey: String = "userhash"
         let userhashValue: String = "caa3dce4fcb36cfdf9258ad9c"
