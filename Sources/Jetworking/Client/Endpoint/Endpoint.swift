@@ -18,7 +18,7 @@ public struct Endpoint<ResponseType: Decodable> {
      * - Returns:
      * A new endpoint instance with the merged parameters.
      */
-    func addQueryParameters(_ parameters: [String: String?]) -> Endpoint<ResponseType> {
+    public func addQueryParameters(_ parameters: [String: String?]) -> Endpoint<ResponseType> {
         var endpoint = self
 
         endpoint.queryParameters = endpoint.queryParameters.merging(
@@ -39,7 +39,7 @@ public struct Endpoint<ResponseType: Decodable> {
      * - Returns:
      * A new endpoint instance with the added parameter.
      */
-    func addQueryParameter(key: String, value: String?) -> Endpoint<ResponseType> {
+    public func addQueryParameter(key: String, value: String?) -> Endpoint<ResponseType> {
         return addQueryParameters([key: value])
     }
 }
