@@ -7,6 +7,7 @@ public struct Endpoint<ResponseType: Decodable> {
     public init(pathComponent: String) {
         self.pathComponent = pathComponent
     }
+
     /**
      * # Summary
      * Adding a dictionary of query parameters to the endpoint.
@@ -41,5 +42,38 @@ public struct Endpoint<ResponseType: Decodable> {
      */
     public func addQueryParameter(key: String, value: String?) -> Endpoint<ResponseType> {
         return addQueryParameters([key: value])
+    }
+
+    /**
+     * # Summary
+     * Adding a dictionary of path components to the endpoint.
+     *
+     * - Parameter pathComponents:
+     *  A dictionary containting the path components in form [Value].
+     *
+     * - Returns:
+     * A new endpoint instance with the appended path components.
+     */
+    public func addPathComponents(_ pathComponents: [String]) -> Endpoint<ResponseType> {
+        var endpoint = self
+
+        pathComponents.forEach { pathComponent in
+            endpoint.pathComponent.append("/\(pathComponent)")
+        }
+
+        return endpoint
+    }
+
+    /**
+     * # Summary
+     * Adding a path component to the endpoint.
+     *
+     * - parameter pathComponent: The path component to add.
+     *
+     * - Returns:
+     * A new endpoint instance with the added path component.
+     */
+    public func addPathComponent(_ pathComponent: String) -> Endpoint<ResponseType> {
+        return addPathComponents([pathComponent])
     }
 }
