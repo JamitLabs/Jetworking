@@ -4,10 +4,26 @@ public struct Endpoint<ResponseType: Decodable> {
     var pathComponents: [String]
     var queryParameters: [String: String?] = [:]
 
+    /**
+     * Initialises an endpoint with the given path component.
+     *
+     * - Parameter pathComponent:
+     *  The path component to add to the base url.
+     *  
+     *  NOTE: If you pass in several path components like `endpont/additionalPathComponent`
+     *  it will be splitted by `/` as the url is constructed within the `URLFactory` which uses a `URLComponent`
+     *  that adds all path components by using `URL.appendPathComponent`.
+     */
     public init(pathComponent: String) {
         self.pathComponents = pathComponent.split(separator: "/").map(String.init)
     }
 
+    /**
+     * Initialises an endpoint with the given path components.
+     *
+     * - Parameter pathComponents:
+     *  The path components to add to the base url.
+     */
     public init(pathComponents: [String]) {
         self.pathComponents = pathComponents
     }
