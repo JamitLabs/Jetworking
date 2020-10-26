@@ -1,7 +1,7 @@
 import Foundation
 
 /// The protocol request interceptors need to conform to to be able to be used to intercept the request.
-public protocol RequestInterceptor {
+public protocol RequestInterceptor: Interceptor {
     /**
      * # Summary
      * Intercepting the request.

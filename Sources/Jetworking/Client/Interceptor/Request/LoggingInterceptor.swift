@@ -1,7 +1,7 @@
 import Foundation
 
 /// Implementation of a request interceptor which logs the request information.
-public final class LoggingRequestInterceptor: RequestInterceptor {
+public final class LoggingInterceptor: RequestInterceptor, ResponseInterceptor {
     private var logger: Logger
 
     /**
@@ -46,5 +46,44 @@ public final class LoggingRequestInterceptor: RequestInterceptor {
         logger.log(message)
 
         return request
+    }
+
+    /**
+     * # Summary
+     * Intercepting the response by taking its information and creating a message to be logged.
+     *
+     * - Parameter data:
+     *  The data returned by the data task.
+     * - Parameter response:
+     *  The response returned by the data task
+     * - Parameter error:
+     *  The error returned by the data task.
+     *
+     * - Returns:
+     * The intercepted response.
+     */
+    public func intercept(data: Data?, response: URLResponse?, error: Error?) -> URLResponse? {
+        var message: String = "\(String(describing: self)):\n"
+
+        if let url = response?.url {
+            message.append("Request URL: \(url)\n")
+        }
+
+        if let httpResponse = response as? HTTPURLResponse {
+            message.append("Status code: \(httpResponse.statusCode)\n")
+            message.append("All HTTP header fields: \(httpResponse.allHeaderFields)\n")
+        }
+
+        if let body = data, let bodyString = String(data: body, encoding: .utf8) {
+            message.append("HTTP Response Body: \(bodyString)")
+        }
+
+        if let error = error {
+            message.append(error.localizedDescription)
+        }
+
+        logger.log(message)
+
+        return response
     }
 }

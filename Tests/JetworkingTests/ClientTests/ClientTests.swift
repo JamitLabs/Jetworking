@@ -161,15 +161,12 @@ final class ClientTests: XCTestCase {
     func testSequentialRequestsCorrectOrder() {
         let client = Client(configuration: .init(
             baseURL: URL(string: "https://postman-echo.com")!,
-            requestInterceptors: [
+            interceptors: [
                 AuthenticationRequestInterceptor(
                     authenticationMethod: .basicAuthentication(username: "username", password: "password")
                 ),
                 HeaderFieldsRequestInterceptor(headerFields: self.additionalHeaderFields()),
-                LoggingRequestInterceptor()
-            ],
-            responseInterceptors: [
-                LoggingResponseInterceptor()
+                LoggingInterceptor()
             ],
             encoder: JSONEncoder(),
             decoder: JSONDecoder(),
@@ -280,6 +277,7 @@ final class ClientTests: XCTestCase {
         
         waitForExpectations(timeout: 140.0, handler: nil)
     }
+
     func testUploadFile() {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for upload")
@@ -348,15 +346,12 @@ extension ClientTests {
     func makeDefaultClientConfiguration() -> Configuration {
         return .init(
             baseURL: URL(string: "https://postman-echo.com")!,
-            requestInterceptors: [
+            interceptors: [
                 AuthenticationRequestInterceptor(
                     authenticationMethod: .basicAuthentication(username: "username", password: "password")
                 ),
                 HeaderFieldsRequestInterceptor(headerFields: self.additionalHeaderFields()),
-                LoggingRequestInterceptor()
-            ],
-            responseInterceptors: [
-                LoggingResponseInterceptor()
+                LoggingInterceptor()
             ],
             encoder: JSONEncoder(),
             decoder: JSONDecoder(),
