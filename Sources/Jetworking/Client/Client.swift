@@ -80,7 +80,7 @@ public final class Client {
      * - Parameter configuration: The client configuration.
      * - Parameter sessionConfiguration: A function to configure the URLSession as inout parameter.
      */
-    init(
+    public init(
         configuration: Configuration,
         sessionConfiguration: ((inout URLSession) -> Void)? = nil
     ) {
@@ -94,10 +94,16 @@ public final class Client {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .GET, and: endpoint)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+                self?.handleResponse(
+                    data: data,
+                    urlResponse: urlResponse,
+                    error: error,
+                    endpoint: endpoint,
+                    completion: completion
+                )
             }
         } catch {
-            completion(nil, .failure(error))
+            enqueue(completion(nil, .failure(error)))
         }
 
         return nil
@@ -109,10 +115,16 @@ public final class Client {
             let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint, and: bodyData)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+                self?.handleResponse(
+                    data: data,
+                    urlResponse: urlResponse,
+                    error: error,
+                    endpoint: endpoint,
+                    completion: completion
+                )
             }
         } catch {
-            completion(nil, .failure(error))
+            enqueue(completion(nil, .failure(error)))
         }
 
         return nil
@@ -124,10 +136,16 @@ public final class Client {
             let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint, and: bodyData)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+                self?.handleResponse(
+                    data: data,
+                    urlResponse: urlResponse,
+                    error: error,
+                    endpoint: endpoint,
+                    completion: completion
+                )
             }
         } catch {
-            completion(nil, .failure(error))
+            enqueue(completion(nil, .failure(error)))
         }
 
         return nil
@@ -143,10 +161,16 @@ public final class Client {
             let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint, and: bodyData)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+                self?.handleResponse(
+                    data: data,
+                    urlResponse: urlResponse,
+                    error: error,
+                    endpoint: endpoint,
+                    completion: completion
+                )
             }
         } catch {
-            completion(nil, .failure(error))
+            enqueue(completion(nil, .failure(error)))
         }
 
         return nil
@@ -157,10 +181,16 @@ public final class Client {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .DELETE, and: endpoint)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completion: completion)
+                self?.handleResponse(
+                    data: data,
+                    urlResponse: urlResponse,
+                    error: error,
+                    endpoint: endpoint,
+                    completion: completion
+                )
             }
         } catch {
-            completion(nil, .failure(error))
+            enqueue(completion(nil, .failure(error)))
         }
 
         return nil
@@ -177,7 +207,12 @@ public final class Client {
 
         let request: URLRequest = .init(url: url)
         let task = downloadExecutor.download(request: request)
-        task.flatMap { executingDownloads[$0.identifier] = DownloadHandler(progressHandler: progressHandler, completionHandler: completion) }
+        task.flatMap {
+            executingDownloads[$0.identifier] = DownloadHandler(
+                progressHandler: progressHandler,
+                completionHandler: completion
+            )
+        }
         return task
     }
     
@@ -189,7 +224,12 @@ public final class Client {
     ) -> CancellableRequest? {
         let request: URLRequest = .init(url: url, httpMethod: .POST)
         let task = uploadExecutor.upload(request: request, fromFile: fileURL)
-        task.flatMap { executingUploads[$0.identifier] = UploadHandler(progressHandler: progressHandler, completionHandler: completion) }
+        task.flatMap {
+            executingUploads[$0.identifier] = UploadHandler(
+                progressHandler: progressHandler,
+                completionHandler: completion
+            )
+        }
         return task
     }
 
@@ -204,14 +244,26 @@ public final class Client {
     ) -> CancellableRequest? {
         let boundary = UUID().uuidString
 
-        guard let multipartData = Data(boundary: boundary, formData: formData, fileURL: fileURL, multipartFileContentType: multipartFileContentType) else { return nil }
+        guard let multipartData = Data(
+                boundary: boundary,
+                formData: formData,
+                fileURL: fileURL,
+                multipartFileContentType: multipartFileContentType
+        ) else {
+            return nil
+        }
 
         var request: URLRequest = .init(url: url, httpMethod: .POST)
         // TODO: Extract into constants
         request.setValue("\(multipartType.rawValue); boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
         let task = uploadExecutor.upload(request: request, from: multipartData)
-        task.flatMap { executingUploads[$0.identifier] = UploadHandler(progressHandler: progressHandler, completionHandler: completion) }
+        task.flatMap {
+            executingUploads[$0.identifier] = UploadHandler(
+                progressHandler: progressHandler,
+                completionHandler: completion
+            )
+        }
         return task
     }
     
@@ -249,10 +301,10 @@ public final class Client {
         }
 
         guard let currentURLResponse = interceptedResponse as? HTTPURLResponse else {
-            return completion(nil, .failure(error ?? APIError.responseMissing))
+            return enqueue(completion(nil, .failure(error ?? APIError.responseMissing)))
         }
 
-        if let error = error { return completion(currentURLResponse, .failure(error)) }
+        if let error = error { return enqueue(completion(currentURLResponse, .failure(error))) }
 
         switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
         case .successful:
@@ -260,19 +312,25 @@ public final class Client {
                 let data = data,
                 let decodedData = try? configuration.decoder.decode(ResponseType.self, from: data)
             else {
-                return completion(currentURLResponse, .failure(APIError.decodingError))
+                return enqueue(completion(currentURLResponse, .failure(APIError.decodingError)))
             }
             // Evaluate Header fields --> urlResponse.allHeaderFields
 
-            completion(currentURLResponse, .success(decodedData))
+            enqueue(completion(currentURLResponse, .success(decodedData)))
             
         case .clientError, .serverError:
             guard let error = error else { return completion(currentURLResponse, .failure(APIError.unexpectedError)) }
 
-            completion(currentURLResponse, .failure(error))
+            enqueue(completion(currentURLResponse, .failure(error)))
 
         default:
             return
+        }
+    }
+
+    private func enqueue(_ completion: @escaping @autoclosure () -> Void) {
+        configuration.responseQueue.async {
+            completion()
         }
     }
 }
@@ -284,32 +342,43 @@ extension Client: DownloadExecutorDelegate {
         totalBytesWritten: Int64,
         totalBytesExpectedToWrite: Int64
     ) {
-        executingDownloads[downloadTask.identifier]?.progressHandler?(totalBytesWritten, totalBytesExpectedToWrite)
+        guard let progressHandler = executingDownloads[downloadTask.identifier]?.progressHandler else { return }
+        enqueue(progressHandler(totalBytesWritten, totalBytesExpectedToWrite))
     }
 
     public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         // TODO handle response before calling the completion
-        executingDownloads[downloadTask.identifier]?.completionHandler(location, downloadTask.response, downloadTask.error)
+        guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
+        enqueue(completionHandler(location, downloadTask.response, downloadTask.error))
     }
 
     public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?) {
         // TODO handle response before calling the completion
-        executingDownloads[downloadTask.identifier]?.completionHandler(nil, downloadTask.response, error)
+        guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
+        enqueue(completionHandler(nil, downloadTask.response, error))
     }
 }
 
 extension Client: UploadExecutorDelegate {
-    public func uploadExecutor(_ uploadTask: URLSessionUploadTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
-        executingUploads[uploadTask.identifier]?.progressHandler?(totalBytesSent, totalBytesExpectedToSend)
+    public func uploadExecutor(
+        _ uploadTask: URLSessionUploadTask,
+        didSendBodyData bytesSent: Int64,
+        totalBytesSent: Int64,
+        totalBytesExpectedToSend: Int64
+    ) {
+        guard let progressHandler = executingUploads[uploadTask.identifier]?.progressHandler else { return }
+        enqueue(progressHandler(totalBytesSent, totalBytesExpectedToSend))
     }
     
     public func uploadExecutor(didFinishWith uploadTask: URLSessionUploadTask) {
         // TODO handle response before calling the completion
-        executingUploads[uploadTask.identifier]?.completionHandler(uploadTask.response, uploadTask.error)
+        guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
+        enqueue(completionHandler(uploadTask.response, uploadTask.error))
     }
     
     public func uploadExecutor(_ uploadTask: URLSessionUploadTask, didCompleteWithError error: Error?) {
         // TODO handle response before calling the completion
-        executingUploads[uploadTask.identifier]?.completionHandler(uploadTask.response, error)
+        guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
+        enqueue(completionHandler(uploadTask.response, error))
     }
 }

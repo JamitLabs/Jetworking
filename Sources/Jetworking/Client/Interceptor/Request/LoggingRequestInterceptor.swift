@@ -11,7 +11,7 @@ public final class LoggingRequestInterceptor: RequestInterceptor {
      * - Parameter logger:
      *  The logger to be used to pass the request information to. Default value for the logger is the `DefaultLogger`.
      */
-    init(logger: Logger = DefaultLogger()) {
+    public init(logger: Logger = DefaultLogger()) {
         self.logger = logger
     }
 

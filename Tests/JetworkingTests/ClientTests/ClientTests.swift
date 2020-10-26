@@ -17,6 +17,9 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for get")
 
         client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { response, result in
+
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+
             switch result {
             case .failure:
                 break
@@ -39,6 +42,7 @@ final class ClientTests: XCTestCase {
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
         client.post(endpoint: Endpoints.post, body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
                 break
@@ -61,6 +65,7 @@ final class ClientTests: XCTestCase {
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
         client.put(endpoint: Endpoints.put, body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
                 break
@@ -83,6 +88,7 @@ final class ClientTests: XCTestCase {
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
         client.patch(endpoint: Endpoints.patch, body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
                 break
@@ -105,6 +111,7 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         client.delete(endpoint: Endpoints.delete) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
                 break
@@ -128,6 +135,7 @@ final class ClientTests: XCTestCase {
         let cancellableRequest = client.get(
             endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")
         ) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             XCTAssertNil(response)
 
             switch result {
@@ -172,10 +180,22 @@ final class ClientTests: XCTestCase {
         let thirdExpectation = expectation(description: "Wait for third get")
         let fourthExpectation = expectation(description: "Wait for fourth get")
 
-        client.get(endpoint: Endpoints.get) { _, _ in firstExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _, _ in secondExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _, _ in thirdExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _, _ in fourthExpectation.fulfill() }
+        client.get(endpoint: Endpoints.get) { _, _ in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            firstExpectation.fulfill()
+        }
+        client.get(endpoint: Endpoints.get) { _, _ in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            secondExpectation.fulfill()
+        }
+        client.get(endpoint: Endpoints.get) { _, _ in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            thirdExpectation.fulfill()
+        }
+        client.get(endpoint: Endpoints.get) { _, _ in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            fourthExpectation.fulfill()
+        }
 
         let result = XCTWaiter().wait(
             for: [firstExpectation, secondExpectation, thirdExpectation, fourthExpectation],
@@ -236,6 +256,7 @@ final class ClientTests: XCTestCase {
                 XCTAssertTrue(progress <= 1.0)
             }
         ) { localURL, response, error in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             guard let localURL = localURL else { return }
 
             do {
@@ -270,6 +291,7 @@ final class ClientTests: XCTestCase {
             url: url,
             fileURL: fileURL,
             progressHandler: { (bytesSent, bytesExpectedToSend) in
+                dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
                 XCTAssertTrue(bytesSent <= bytesExpectedToSend)
 
                 let progress = Float(bytesSent) / Float(bytesExpectedToSend)
@@ -278,6 +300,7 @@ final class ClientTests: XCTestCase {
                 XCTAssertTrue(progress <= 1.0)
             }
         ) { _, error in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             guard error == nil else { return XCTFail("Error while uploading file") }
 
             expectation.fulfill()
@@ -304,10 +327,12 @@ final class ClientTests: XCTestCase {
                 "userhash": "caa3dce4fcb36cfdf9258ad9c"
             ],
             progressHandler: { (bytesSent, bytesExpectedToSend) in
+                dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
                 let progress = Float(bytesSent) / Float(bytesExpectedToSend)
                 print("Progress \(progress)")
             }
         ) { _, error in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             guard error == nil else { return XCTFail("Error while uploading multipart data") }
 
             expectation.fulfill()
