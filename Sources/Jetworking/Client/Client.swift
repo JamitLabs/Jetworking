@@ -215,7 +215,8 @@ public final class Client {
         }
         return task
     }
-    
+
+    @discardableResult
     public func upload(
         url: URL,
         fileURL: URL,
