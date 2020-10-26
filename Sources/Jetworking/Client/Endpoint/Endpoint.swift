@@ -1,11 +1,15 @@
 import Foundation
 
 public struct Endpoint<ResponseType: Decodable> {
-    var pathComponent: String
+    var pathComponents: [String]
     var queryParameters: [String: String?] = [:]
 
     public init(pathComponent: String) {
-        self.pathComponent = pathComponent
+        self.pathComponents = pathComponent.split(separator: "/").map(String.init)
+    }
+
+    public init(pathComponents: [String]) {
+        self.pathComponents = pathComponents
     }
 
     /**
@@ -56,11 +60,7 @@ public struct Endpoint<ResponseType: Decodable> {
      */
     public func addPathComponents(_ pathComponents: [String]) -> Endpoint<ResponseType> {
         var endpoint = self
-
-        pathComponents.forEach { pathComponent in
-            endpoint.pathComponent.append("/\(pathComponent)")
-        }
-
+        endpoint.pathComponents.append(contentsOf: pathComponents)
         return endpoint
     }
 

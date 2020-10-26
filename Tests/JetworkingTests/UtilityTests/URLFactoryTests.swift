@@ -75,4 +75,70 @@ final class URLFactoryTests: XCTestCase {
             XCTFail("Unexpected error occured!")
         }
     }
+
+    func testSingleAdditionalPathComponent() {
+        let expectation: String = "https://www.jamitlabs.com/endpoint/additionalPathComponent"
+        let endpoint: Endpoint<SampleResponse> = .init(pathComponent: "endpoint")
+        do {
+            let url = try URLFactory.makeURL(from: endpoint.addPathComponent("additionalPathComponent"), withBaseURL: baseURl)
+            XCTAssertEqual(expectation, url.absoluteString)
+        } catch {
+            XCTFail()
+        }
+    }
+
+    func testMultipleAdditionalPathComponents() {
+        let expectation: String = "https://www.jamitlabs.com/endpoint/additionalPathComponent/anotherPathComponent"
+        let endpoint: Endpoint<SampleResponse> = .init(pathComponent: "endpoint")
+        do {
+            let url = try URLFactory.makeURL(from: endpoint.addPathComponents(["additionalPathComponent", "anotherPathComponent"]), withBaseURL: baseURl)
+            XCTAssertEqual(expectation, url.absoluteString)
+        } catch {
+            XCTFail()
+        }
+    }
+
+    func testSingleAdditionalSlashInPathComponent() {
+        let expectation: String = "https://www.jamitlabs.com/endpoint/additionalPathComponent"
+        let endpoint: Endpoint<SampleResponse> = .init(pathComponent: "endpoint")
+        do {
+            let url = try URLFactory.makeURL(from: endpoint.addPathComponent("/additionalPathComponent"), withBaseURL: baseURl)
+            XCTAssertEqual(expectation, url.absoluteString)
+        } catch {
+            XCTFail()
+        }
+    }
+
+    func testMultipleAdditionalSlashInPathComponent() {
+        let expectation: String = "https://www.jamitlabs.com/endpoint/additionalPathComponent/anotherPathComponent"
+        let endpoint: Endpoint<SampleResponse> = .init(pathComponent: "endpoint")
+        do {
+            let url = try URLFactory.makeURL(from: endpoint.addPathComponents(["/additionalPathComponent", "/anotherPathComponent"]), withBaseURL: baseURl)
+            XCTAssertEqual(expectation, url.absoluteString)
+        } catch {
+            XCTFail()
+        }
+    }
+
+    func testEndpointPathComponentInitialiser() {
+        let expectation: String = "https://www.jamitlabs.com/endpoint/additionalPathComponent"
+        let endpoint: Endpoint<SampleResponse> = .init(pathComponent: "endpoint/additionalPathComponent")
+        do {
+            let url = try URLFactory.makeURL(from: endpoint, withBaseURL: baseURl)
+            XCTAssertEqual(expectation, url.absoluteString)
+        } catch {
+            XCTFail()
+        }
+    }
+
+    func testEndpointPathComponentsInitialiser() {
+        let expectation: String = "https://www.jamitlabs.com/endpoint/additionalPathComponent"
+        let endpoint: Endpoint<SampleResponse> = .init(pathComponents: ["endpoint", "additionalPathComponent"])
+        do {
+            let url = try URLFactory.makeURL(from: endpoint, withBaseURL: baseURl)
+            XCTAssertEqual(expectation, url.absoluteString)
+        } catch {
+            XCTFail()
+        }
+    }
 }
