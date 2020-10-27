@@ -140,7 +140,7 @@ public final class Client {
     }
 
     @discardableResult
-    public func post<ResponseType>(endpoint: Endpoint<ResponseType>, body: ExpressibleByNilLiteral? = nil, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
+    public func post<ResponseType>(endpoint: Endpoint<ResponseType>, body: ExpressibleByNilLiteral? = nil, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? where ResponseType: Decodable {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint)
             return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
