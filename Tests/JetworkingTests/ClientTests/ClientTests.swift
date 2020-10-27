@@ -13,13 +13,12 @@ final class ClientTests: XCTestCase {
         client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { response, result in
 
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-
             switch result {
             case .failure:
                 break
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertEqual(MockBody(foo1: "SomeFoo", foo2: "AnotherFoo"), resultData)
             }
 
             XCTAssertNotNil(response)
