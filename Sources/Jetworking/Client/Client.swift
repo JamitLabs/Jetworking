@@ -285,7 +285,23 @@ public final class Client {
             httpMethod: httpMethod,
             httpBody: body
         )
-        return configuration.requestInterceptors.reduce(request) { request, interceptor in
+
+        var requestInterceptors: [RequestInterceptor] = configuration.requestInterceptors
+
+        // Extra case: POST-request with empty content
+        //
+        // Adds custom interceptor after last interceptor for header fields
+        // to avoid conflict with other custom interceptor if any.
+        if body == nil && httpMethod == .POST {
+            let targetIndex = requestInterceptors.lastIndex { $0 is HeaderFieldsRequestInterceptor }
+            let indexToInsert = targetIndex.flatMap { requestInterceptors.index(after: $0) }
+            requestInterceptors.insert(
+                EmptyContentHeaderFieldsRequestInterceptor(),
+                at: indexToInsert ?? requestInterceptors.endIndex
+            )
+        }
+
+        return requestInterceptors.reduce(request) { request, interceptor in
             return interceptor.intercept(request)
         }
     }
