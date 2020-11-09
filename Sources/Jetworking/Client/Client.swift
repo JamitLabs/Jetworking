@@ -131,6 +131,26 @@ public final class Client {
     }
 
     @discardableResult
+    public func post<ResponseType>(endpoint: Endpoint<ResponseType>, body: ExpressibleByNilLiteral? = nil, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
+        do {
+            let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint)
+            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+                self?.handleResponse(
+                    data: data,
+                    urlResponse: urlResponse,
+                    error: error,
+                    endpoint: endpoint,
+                    completion: completion
+                )
+            }
+        } catch {
+            enqueue(completion(nil, .failure(error)))
+        }
+
+        return nil
+    }
+
+    @discardableResult
     public func put<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
             let bodyData: Data = try configuration.encoder.encode(body)
