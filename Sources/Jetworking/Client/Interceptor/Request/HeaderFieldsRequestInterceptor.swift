@@ -1,8 +1,8 @@
 import Foundation
 
 /// Implementation of a request interceptor which adds header fields to the request.
-public final class HeaderFieldsRequestInterceptor: RequestInterceptor {
-    private var headerFields: () -> [String: String]
+public class HeaderFieldsRequestInterceptor: RequestInterceptor {
+    internal var headerFields: () -> [String: String]
 
     /**
      * # Summary
