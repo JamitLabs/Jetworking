@@ -9,6 +9,14 @@ enum APIError: Error {
 
 public final class Client {
     public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
+
+    internal enum Task {
+        case dataTask(request: URLRequest, completion: ((Data?, URLResponse?, Error?) -> Void))
+        case downloadTask(request: URLRequest)
+        case uploadDataTask(request: URLRequest, data: Data)
+        case uploadFileTask(request: URLRequest, fileURL: URL)
+    }
+
     // MARK: - Properties
     private let configuration: Configuration
 
