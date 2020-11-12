@@ -20,14 +20,14 @@ final class NetworkReachabilityManagerTests: XCTestCase {
         let manager: NetworkReachabilityManager? = try? .init(host: "localhost")
 
         XCTAssertEqual(manager?.isReachable, true)
-        XCTAssertEqual(manager?.status, .reachable(.localWiFi))
+        XCTAssertEqual(manager?.state, .reachable(.localWiFi))
     }
 
     func testAddressManagerStartWithReachableStatus() {
         let manager: NetworkReachabilityManager? = try? .init()
 
         XCTAssertEqual(manager?.isReachable, true)
-        XCTAssertEqual(manager?.status, .reachable(.localWiFi))
+        XCTAssertEqual(manager?.state, .reachable(.localWiFi))
     }
 
     func testHostManagerRestart() {
@@ -47,7 +47,7 @@ final class NetworkReachabilityManagerTests: XCTestCase {
         }
         wait(for: [secondCallbackExpectation], timeout: timeout)
 
-        XCTAssertEqual(manager?.status, .reachable(.localWiFi))
+        XCTAssertEqual(manager?.state, .reachable(.localWiFi))
     }
 
     func testAddressManagerRestart() {
@@ -67,7 +67,7 @@ final class NetworkReachabilityManagerTests: XCTestCase {
         }
         wait(for: [secondCallbackExpectation], timeout: timeout)
 
-        XCTAssertEqual(manager?.status, .reachable(.localWiFi))
+        XCTAssertEqual(manager?.state, .reachable(.localWiFi))
     }
 
     func testHostManagerDeinitialized() {
@@ -75,7 +75,7 @@ final class NetworkReachabilityManagerTests: XCTestCase {
         var manager: NetworkReachabilityManager? = try? .init(host: "localhost")
         weak var weakManager = manager
 
-        try? manager?.startListening(withCallbackOnStatusUpdate: { _ in })
+        try? manager?.startListening(withCallbackOnStateChange: { _ in })
         manager?.stopListening()
         manager?.reachabilityQueue.async { expect.fulfill() }
         manager = nil
@@ -91,7 +91,7 @@ final class NetworkReachabilityManagerTests: XCTestCase {
         var manager: NetworkReachabilityManager? = try? .init()
         weak var weakManager = manager
 
-        try? manager?.startListening(withCallbackOnStatusUpdate: { _ in })
+        try? manager?.startListening(withCallbackOnStateChange: { _ in })
         manager?.stopListening()
         manager?.reachabilityQueue.async { expect.fulfill() }
         manager = nil

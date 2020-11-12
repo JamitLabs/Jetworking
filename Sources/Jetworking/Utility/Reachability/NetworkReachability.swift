@@ -2,7 +2,7 @@ import Foundation
 import SystemConfiguration
 
 /// Typealias for the state of network reachability.
-public typealias NetworkStatus = NetworkReachability.State
+public typealias NetworkReachabilityState = NetworkReachability.State
 
 /// A container for all enumerations related to network state.
 public enum NetworkReachability {

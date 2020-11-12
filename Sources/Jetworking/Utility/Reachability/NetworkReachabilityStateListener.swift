@@ -1,22 +1,22 @@
 import Foundation
 
 /// Mutable storage for network status and callback.
-struct NetworkStatusListener {
-    /// A closure executed when the network reachability status changes.
-    var callback: NetworkStatusCallback?
+struct NetworkReachabilityStateListener {
+    /// A closure executed when the network reachability state changes.
+    var callback: NetworkReachabilityStateCallback?
 
     /// A working queue on which listeners will be called.
     var callbackQueue: DispatchQueue?
 
     /// Network status in previous time.
-    var previousStatus: NetworkStatus?
+    var previousStatus: NetworkReachabilityState?
 
     private let lock: UnfairLock = .init()
 
     init(
-        callback: NetworkStatusCallback? = nil,
+        callback: NetworkReachabilityStateCallback? = nil,
         callbackQueue: DispatchQueue? = nil,
-        previousStatus: NetworkStatus? = nil
+        previousStatus: NetworkReachabilityState? = nil
     ) {
         self.callback = callback
         self.callbackQueue = callbackQueue

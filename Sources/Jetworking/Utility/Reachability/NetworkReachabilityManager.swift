@@ -3,7 +3,7 @@ import SystemConfiguration
 
 /// A closure executed when the network reachability status changes. The closure takes a single argument: the
 /// network reachability status.
-public typealias NetworkStatusCallback = (NetworkStatus) -> Void
+public typealias NetworkReachabilityStateCallback = (NetworkReachabilityState) -> Void
 
 /// A implementation listens for reachability changes of hosts and addresses
 /// for available network interfaces.
@@ -13,15 +13,17 @@ public typealias NetworkStatusCallback = (NetworkStatus) -> Void
 /// only that an interface is available that might allow a connection,
 /// and whether that interface is the WWAN.
 open class NetworkReachabilityManager {
+    public static let `default`: NetworkReachabilityManager? = try? NetworkReachabilityManager()
+
     // MARK: - Properties
     /// Determines whether the network is currently reachable.
     open var isReachable: Bool {
-        status == .reachable(.cellular) || status == .reachable(.localWiFi)
+        state == .reachable(.cellular) || state == .reachable(.localWiFi)
     }
 
-    /// Returns the current network reachability status.
-    open var status: NetworkStatus {
-        flags.map(NetworkStatus.init) ?? .notDetermined
+    /// Returns the current network reachability state.
+    open var state: NetworkReachabilityState {
+        flags.map(NetworkReachabilityState.init) ?? .notDetermined
     }
 
     /// `DispatchQueue` on which reachability will update.
@@ -36,8 +38,8 @@ open class NetworkReachabilityManager {
     /// `SCNetworkReachability` instance providing notifications.
     private let reachability: SCNetworkReachability
 
-    /// A runtime instance for status listener
-    private var statusListener: NetworkStatusListener = .init()
+    /// A runtime instance for state listener
+    private var stateListener: NetworkReachabilityStateListener = .init()
 
     // MARK: - Initialization
     /// Creates an instance with the specified host.
@@ -79,7 +81,7 @@ open class NetworkReachabilityManager {
         self.init(reachability: reachability)
     }
 
-    private init(reachability: SCNetworkReachability) {
+    init(reachability: SCNetworkReachability) {
         self.reachability = reachability
     }
 
@@ -88,7 +90,7 @@ open class NetworkReachabilityManager {
     }
 
     // MARK: - Listening
-    /// Starts listening for changes in network reachability status.
+    /// Starts listening for changes in network reachability state.
     ///
     /// - Note: Stops and removes any existing listener.
     ///
@@ -97,11 +99,11 @@ open class NetworkReachabilityManager {
     ///   - callback: A closure called when reachability changes.
     open func startListening(
         on queue: DispatchQueue = .main,
-        withCallbackOnStatusUpdate callback: @escaping NetworkStatusCallback
+        withCallbackOnStateChange callback: @escaping NetworkReachabilityStateCallback
     ) throws {
         stopListening()
 
-        statusListener.update { state in
+        stateListener.update { state in
             state.callbackQueue = queue
             state.callback = callback
         }
@@ -138,29 +140,29 @@ open class NetworkReachabilityManager {
             )
         }
 
-        // Initial status check
+        // Initial state check
         flags.flatMap { currentFlags in
             reachabilityQueue.async { self.notifyListener(currentFlags) }
         }
     }
 
-    /// Stops listening for changes in network reachability status.
+    /// Stops listening for changes in network reachability state.
     open func stopListening() {
         SCNetworkReachabilitySetCallback(reachability, nil, nil)
         SCNetworkReachabilitySetDispatchQueue(reachability, nil)
-        statusListener.reset()
+        stateListener.reset()
     }
 
     // MARK: - Internal - Listener Notification
-    /// Calls the callback closure in the callback queue if the computed status has been changed.
+    /// Calls the callback closure in the callback queue if the computed state has been changed.
     ///
     /// - Note: Should only be called from the `reachabilityQueue`.
     ///
-    /// - Parameter flags: `SCNetworkReachabilityFlags` to use to calculate the status.
+    /// - Parameter flags: `SCNetworkReachabilityFlags` to use to calculate the state.
     func notifyListener(_ flags: SCNetworkReachabilityFlags) {
-        let newStatus = NetworkStatus(flags)
+        let newStatus = NetworkReachabilityState(flags)
 
-        statusListener.update { listener in
+        stateListener.update { listener in
             guard listener.previousStatus != newStatus else { return }
 
             listener.previousStatus = newStatus

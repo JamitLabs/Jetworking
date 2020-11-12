@@ -5,43 +5,43 @@ import XCTest
 final class NetworkReachabilityStateTests: XCTestCase {
     func testNetworkStatusForNonReachableConnectionThatMustBeEstablishOnDemand() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.connectionOnDemand]
-        XCTAssertEqual(NetworkStatus(reachabilityFlags), .unreachable)
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .unreachable)
     }
 
     func testNetworkStatusForReachableConnectionThatRequiresToBeEstablish() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable, .connectionRequired]
-        XCTAssertEqual(NetworkStatus(reachabilityFlags), .unreachable)
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .unreachable)
     }
 
     func testNetworkStatusForReachableConnectionThatRequiresToBeEstablishedWithUserIntervention() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable, .connectionRequired, .interventionRequired]
-        XCTAssertEqual(NetworkStatus(reachabilityFlags), .unreachable)
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .unreachable)
     }
 
     func testNetworkStatusForReachableConnection() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable]
-        XCTAssertEqual(NetworkStatus(reachabilityFlags), .reachable(.localWiFi))
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.localWiFi))
     }
 
     func testNetworkStatusForReachableConnectionThatRequiresToBeEstablishedOnDemand() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable, .connectionRequired, .connectionOnDemand]
-        XCTAssertEqual(NetworkStatus(reachabilityFlags), .reachable(.localWiFi))
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.localWiFi))
     }
 
     func testNetworkStatusForReachableConnectionThatRequiresToBeEstablishedOnTraffic() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable, .connectionRequired, .connectionOnTraffic]
-        XCTAssertEqual(NetworkStatus(reachabilityFlags), .reachable(.localWiFi))
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.localWiFi))
     }
 
     #if os(iOS)
     func testNetworkStatusForReachableConnectionViaCellular() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable, .isWWAN]
-        XCTAssertEqual(NetworkStatus(reachabilityFlags), .reachable(.cellular))
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.cellular))
     }
 
     func testNetworkStatusForReachableConnectionViaCellularThatRequiresToBeEstablished() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable, .isWWAN, .connectionRequired]
-        XCTAssertEqual(NetworkStatus(reachabilityFlags), .unreachable)
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .unreachable)
     }
     #endif
 }
