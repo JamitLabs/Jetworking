@@ -8,13 +8,14 @@ enum ClientTaskError: Error {
 final class ClientTaskExecutor: NSObject {
     internal static let `default` = ClientTaskExecutor()
 
-    private var reachabilityManager: NetworkReachabilityManager? = try? .init()
+    private var reachabilityManager: NetworkReachabilityMonitor?
 
-    override init() {
+    init(reachabilityMonitor: NetworkReachabilityMonitor? = NetworkReachabilityManager.default) {
+        self.reachabilityManager = reachabilityMonitor
         super.init()
 
         do {
-            try reachabilityManager?.startListening { _ in }
+            try self.reachabilityManager?.startListening(on: .main) { _ in }
         } catch {
             NSLog("[WARNING] Faild to start network monitor. Error: \(error)")
         }

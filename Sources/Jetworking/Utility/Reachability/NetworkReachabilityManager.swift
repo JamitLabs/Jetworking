@@ -1,10 +1,6 @@
 import Foundation
 import SystemConfiguration
 
-/// A closure executed when the network reachability status changes. The closure takes a single argument: the
-/// network reachability status.
-public typealias NetworkReachabilityStateCallback = (NetworkReachabilityState) -> Void
-
 /// A implementation listens for reachability changes of hosts and addresses
 /// for available network interfaces.
 ///
@@ -12,7 +8,7 @@ public typealias NetworkReachabilityStateCallback = (NetworkReachabilityState) -
 /// if you can connect to a particular host,
 /// only that an interface is available that might allow a connection,
 /// and whether that interface is the WWAN.
-open class NetworkReachabilityManager {
+open class NetworkReachabilityManager: NetworkReachabilityMonitor {
     public static let `default`: NetworkReachabilityManager? = try? NetworkReachabilityManager()
 
     // MARK: - Properties
