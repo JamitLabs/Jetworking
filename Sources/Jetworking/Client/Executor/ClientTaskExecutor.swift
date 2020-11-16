@@ -2,7 +2,12 @@ import Foundation
 
 enum ClientTaskError: Error {
     case unexpectedTaskExecution
-    case connectionUnavailable
+
+    static let connectionUnavailable = NSError(
+        domain: URLError.errorDomain,
+        code: URLError.Code.notConnectedToInternet.rawValue,
+        userInfo: nil
+    )
 }
 
 final class ClientTaskExecutor: NSObject {
