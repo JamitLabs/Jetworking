@@ -8,8 +8,8 @@ public typealias NetworkReachabilityState = NetworkReachability.State
 public enum NetworkReachability {
     /// Defines the various connection types detected by reachability flags.
     public enum ConnectionInterface: Equatable {
-        /// LAN or WiFi.
-        case localWiFi
+        /// Wired ethernet or WiFi.
+        case wiredOrWirelessLAN
 
         /// Cellular connection.
         case cellular
@@ -32,7 +32,7 @@ public enum NetworkReachability {
                 return
             }
 
-            var networkStatus: Self = .reachable(.localWiFi)
+            var networkStatus: Self = .reachable(.wiredOrWirelessLAN)
             if flags.isReachableViaCellular {
                 networkStatus = .reachable(.cellular)
             }

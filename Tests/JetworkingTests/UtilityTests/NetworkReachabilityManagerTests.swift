@@ -20,14 +20,14 @@ final class NetworkReachabilityManagerTests: XCTestCase {
         let manager: NetworkReachabilityManager? = try? .init(host: "localhost")
 
         XCTAssertEqual(manager?.isReachable, true)
-        XCTAssertEqual(manager?.state, .reachable(.localWiFi))
+        XCTAssertEqual(manager?.state, .reachable(.wiredOrWirelessLAN))
     }
 
     func testAddressManagerStartWithReachableStatus() {
         let manager: NetworkReachabilityManager? = try? .init()
 
         XCTAssertEqual(manager?.isReachable, true)
-        XCTAssertEqual(manager?.state, .reachable(.localWiFi))
+        XCTAssertEqual(manager?.state, .reachable(.wiredOrWirelessLAN))
     }
 
     func testHostManagerRestart() {
@@ -47,7 +47,7 @@ final class NetworkReachabilityManagerTests: XCTestCase {
         }
         wait(for: [secondCallbackExpectation], timeout: timeout)
 
-        XCTAssertEqual(manager?.state, .reachable(.localWiFi))
+        XCTAssertEqual(manager?.state, .reachable(.wiredOrWirelessLAN))
     }
 
     func testAddressManagerRestart() {
@@ -67,7 +67,7 @@ final class NetworkReachabilityManagerTests: XCTestCase {
         }
         wait(for: [secondCallbackExpectation], timeout: timeout)
 
-        XCTAssertEqual(manager?.state, .reachable(.localWiFi))
+        XCTAssertEqual(manager?.state, .reachable(.wiredOrWirelessLAN))
     }
 
     func testHostManagerDeinitialized() {

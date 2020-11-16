@@ -22,7 +22,7 @@ final class ClientTaskExecutorTests: XCTestCase {
     }
 
     func testClientTaskExecutorInReachableNetwork() {
-        let taskExecutor = makeSampleClientTaskExecutor(state: .reachable(.localWiFi))
+        let taskExecutor = makeSampleClientTaskExecutor(state: .reachable(.wiredOrWirelessLAN))
         let requestExecutor = AsyncRequestExecutor(session: URLSession(configuration: .default))
         XCTAssertNoThrow(try taskExecutor.perform(makeSampleClientDataTask(), on: requestExecutor))
     }
@@ -34,13 +34,13 @@ final class ClientTaskExecutorTests: XCTestCase {
         let requestExecutor = AsyncRequestExecutor(session: URLSession(configuration: .default))
         XCTAssertThrowsError(try taskExecutor.perform(makeSampleClientDataTask(), on: requestExecutor))
 
-        (reachabilityMonitor as? MockNetworkReachabilityMonitor)?.reachabilityState = .reachable(.localWiFi)
+        (reachabilityMonitor as? MockNetworkReachabilityMonitor)?.reachabilityState = .reachable(.wiredOrWirelessLAN)
 
         XCTAssertNoThrow(try taskExecutor.perform(makeSampleClientDataTask(), on: requestExecutor))
     }
 
     func testClientTaskExecutorInReachableNetworkThenUnreachableNetwork() {
-        let reachabilityMonitor = makeSampleReachabilityMonitor(state: .reachable(.localWiFi))
+        let reachabilityMonitor = makeSampleReachabilityMonitor(state: .reachable(.wiredOrWirelessLAN))
         let taskExecutor = ClientTaskExecutor(reachabilityMonitor: reachabilityMonitor)
 
         let requestExecutor = AsyncRequestExecutor(session: URLSession(configuration: .default))
@@ -147,7 +147,7 @@ extension ClientTaskExecutorTests {
         MockNetworkReachabilityMonitor(state: state)
     }
 
-    func makeSampleClientTaskExecutor(state: NetworkReachabilityState = .reachable(.localWiFi)) -> ClientTaskExecutor {
+    func makeSampleClientTaskExecutor(state: NetworkReachabilityState = .reachable(.wiredOrWirelessLAN)) -> ClientTaskExecutor {
         let reachabilityMonitor = makeSampleReachabilityMonitor(state: state)
         return ClientTaskExecutor(reachabilityMonitor: reachabilityMonitor)
     }

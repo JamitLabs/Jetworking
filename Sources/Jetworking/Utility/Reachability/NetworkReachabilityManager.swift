@@ -14,7 +14,7 @@ open class NetworkReachabilityManager: NetworkReachabilityMonitor {
     // MARK: - Properties
     /// Determines whether the network is currently reachable.
     open var isReachable: Bool {
-        state == .reachable(.cellular) || state == .reachable(.localWiFi)
+        state == .reachable(.cellular) || state == .reachable(.wiredOrWirelessLAN)
     }
 
     /// Returns the current network reachability state.

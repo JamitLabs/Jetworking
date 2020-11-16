@@ -20,17 +20,17 @@ final class NetworkReachabilityStateTests: XCTestCase {
 
     func testNetworkStatusForReachableConnection() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable]
-        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.localWiFi))
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.wiredOrWirelessLAN))
     }
 
     func testNetworkStatusForReachableConnectionThatRequiresToBeEstablishedOnDemand() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable, .connectionRequired, .connectionOnDemand]
-        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.localWiFi))
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.wiredOrWirelessLAN))
     }
 
     func testNetworkStatusForReachableConnectionThatRequiresToBeEstablishedOnTraffic() {
         let reachabilityFlags: SCNetworkReachabilityFlags = [.reachable, .connectionRequired, .connectionOnTraffic]
-        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.localWiFi))
+        XCTAssertEqual(NetworkReachabilityState(reachabilityFlags), .reachable(.wiredOrWirelessLAN))
     }
 
     #if os(iOS)
