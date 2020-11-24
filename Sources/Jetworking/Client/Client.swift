@@ -197,6 +197,18 @@ public final class Client {
     }
 
     @discardableResult
+    public func send<ResponseType>(request: URLRequest, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
+        return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            self?.handleResponse(
+                data: data,
+                urlResponse: urlResponse,
+                error: error,
+                completion: completion
+            )
+        }
+    }
+
+    @discardableResult
     public func download(
         url: URL,
         progressHandler: DownloadHandler.ProgressHandler,
@@ -295,7 +307,7 @@ public final class Client {
         data: Data?,
         urlResponse: URLResponse?,
         error: Error?,
-        endpoint: Endpoint<ResponseType>,
+        endpoint: Endpoint<ResponseType>? = nil,
         completion: @escaping RequestCompletion<ResponseType>
     ) {
         let interceptedResponse = configuration.responseInterceptors.reduce(urlResponse) { response, component in
@@ -310,16 +322,13 @@ public final class Client {
 
         switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
         case .successful:
-            guard
-                let data = data,
-                let decodedData = try? configuration.decoder.decode(ResponseType.self, from: data)
-            else {
+            guard let decodedData = try? decodeResponse(ResponseType.self, from: data) else {
                 return enqueue(completion(currentURLResponse, .failure(APIError.decodingError)))
             }
             // Evaluate Header fields --> urlResponse.allHeaderFields
 
             enqueue(completion(currentURLResponse, .success(decodedData)))
-            
+
         case .clientError, .serverError:
             guard let error = error else { return completion(currentURLResponse, .failure(APIError.unexpectedError)) }
 
@@ -334,6 +343,23 @@ public final class Client {
         configuration.responseQueue.async {
             completion()
         }
+    }
+
+    /// Decodes an instance of the given type.
+    private func decodeResponse<ResponseType: Decodable>(_ dataType: ResponseType.Type, from data: Data?) throws -> ResponseType {
+        guard let data = data else { throw APIError.decodingError }
+
+        return try configuration.decoder.decode(dataType, from: data)
+    }
+
+    /// Decodes an instance of the `Void` type. If a non-decodable type is given, throws an error instead.
+    ///
+    /// - IMPORTANT:
+    /// We let the method "overloaded" to allow `Void` type on return of a network response.
+    private func decodeResponse<ResponseType>(_ dataType: ResponseType.Type, from data: Data?) throws -> ResponseType {
+        guard ResponseType.self is Void.Type else { throw APIError.decodingError }
+
+        return () as! ResponseType
     }
 }
 
