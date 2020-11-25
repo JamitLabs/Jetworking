@@ -10,6 +10,7 @@ public struct Configuration {
     let downloadExecutorType: DownloadExecutorType
     let uploadExecutorType: UploadExecutorType
     let responseQueue: DispatchQueue
+    let cache: URLCache
 
     /// RequestInteceptors stored in `interceptors` property
     public var requestInterceptors: [RequestInterceptor] {
@@ -31,6 +32,7 @@ public struct Configuration {
      * - Parameter requestExecutorType: The request executor type to use to execute the requests.
      * - Parameter downloadExecutorType: The download executor type to use to execute downloads.
      * - Parameter uploadExecutorType: The upload executor type to use to execute uploads
+     * - Parameter cache: A cache object that realizes caching mechanism. IMPORTANT: At least one instance of `SessionCacheInterceptor` is required.
      */
     public init(
         baseURL: URL,
@@ -40,7 +42,8 @@ public struct Configuration {
         requestExecutorType: RequestExecutorType = .async,
         downloadExecutorType: DownloadExecutorType = .default,
         uploadExecutorType: UploadExecutorType = .default,
-        responseQueue: DispatchQueue = .main
+        responseQueue: DispatchQueue = .main,
+        cache: URLCache = .shared
     ) {
         self.baseURL = baseURL
         self.interceptors = interceptors
@@ -50,5 +53,6 @@ public struct Configuration {
         self.downloadExecutorType = downloadExecutorType
         self.uploadExecutorType = uploadExecutorType
         self.responseQueue = responseQueue
+        self.cache = cache
     }
 }

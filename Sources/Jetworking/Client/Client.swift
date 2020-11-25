@@ -13,6 +13,7 @@ public final class Client {
     private let configuration: Configuration
 
     private lazy var session: URLSession = .init(configuration: .default)
+    private lazy var sessionCache: SessionCache = .init(configuration: configuration)
 
     private lazy var requestExecutor: RequestExecutor = {
         switch configuration.requestExecutorType {
@@ -238,14 +239,22 @@ public final class Client {
         guard checkForValidDownloadURL(url) else { return nil }
 
         let request: URLRequest = .init(url: url)
-        let task = downloadExecutor.download(request: request)
-        task.flatMap {
-            executingDownloads[$0.identifier] = DownloadHandler(
-                progressHandler: progressHandler,
-                completionHandler: completion
-            )
+
+        // Performs completion handler immediately with cached URL if available,
+        // otherwise executes the download request
+        if let url = sessionCache.query(URL.self, for: request) {
+            completion(url, nil, nil)
+            return nil
+        } else {
+            let task = downloadExecutor.download(request: request)
+            task.flatMap {
+                executingDownloads[$0.identifier] = DownloadHandler(
+                    progressHandler: progressHandler,
+                    completionHandler: completion
+                )
+            }
+            return task
         }
-        return task
     }
 
     @discardableResult
@@ -413,6 +422,7 @@ extension Client: DownloadExecutorDelegate {
     public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
+        sessionCache.store(location, from: downloadTask)
         enqueue(completionHandler(location, downloadTask.response, downloadTask.error))
     }
 
