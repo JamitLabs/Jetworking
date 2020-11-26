@@ -333,6 +333,46 @@ final class ClientTests: XCTestCase {
         waitForExpectations(timeout: 140.0, handler: nil)
     }
 
+    func testDownloadFileFromSessionCache() {
+        let cache = URLCache(memoryCapacity: 10 * 1_024 * 1_024, diskCapacity: .zero, diskPath: nil)
+        let configuration = extendClientConfiguration(makeDefaultClientConfiguration(), with: cache)
+        let client = Client(configuration: configuration)
+
+        let firstExpectation = expectation(description: "Wait for remote download")
+        let secondExpectation = expectation(description: "Wait for cache download")
+
+        let url = URL(string: "https://catbox.moe/user/api.php")!
+
+        // Downloads file from remote source
+        client.download(url: url, progressHandler: nil) { fileURL, response, _ in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            guard let fileURL = fileURL else { return }
+
+            let responseDate = (response as? HTTPURLResponse)?.allHeaderFields["Date"] as? String
+            XCTAssertNotNil(responseDate)
+
+            // Downloads file from cache
+            client.download(url: url, progressHandler: nil) { anotherFileURL, anotherResponse, _ in
+                dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+
+                let anotherResponseDate = (anotherResponse as? HTTPURLResponse)?.allHeaderFields["Date"] as? String
+                XCTAssertNotNil(anotherResponseDate)
+
+                // Compares timestamp of each response
+                XCTAssertEqual(responseDate, anotherResponseDate)
+
+                // Compares file URL of each download result
+                XCTAssertEqual(fileURL, anotherFileURL)
+
+                secondExpectation.fulfill()
+            }
+
+            firstExpectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 20.0, handler: nil)
+    }
+
     func testUploadFile() {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for upload")
@@ -411,6 +451,17 @@ extension ClientTests {
             encoder: JSONEncoder(),
             decoder: JSONDecoder(),
             requestExecutorType: .async
+        )
+    }
+
+    func extendClientConfiguration(_ configuration: Configuration, with cache: URLCache) -> Configuration {
+        return .init(
+            baseURL: configuration.baseURL,
+            interceptors: configuration.interceptors + [DefaultSessionCacheIntercepter()],
+            encoder: configuration.encoder,
+            decoder: configuration.decoder,
+            requestExecutorType: configuration.requestExecutorType,
+            cache: cache
         )
     }
 }
