@@ -26,6 +26,19 @@ final class SessionCacheTests: XCTestCase {
         XCTAssertEqual(dataToCache.foo2, cachedData?.foo2)
     }
 
+    func testSessionCacheQueryForCachedResponse() {
+        let sessionCache: SessionCache = makeDefaultSessionCache()
+
+        // Caches something
+        let sampleResponse = makeSampleResponse()
+        sessionCache.store(makeMockBody(), from: sampleResponse, for: makeSampleRequest())
+
+        // Retrieves response
+        let cachedResponse = sessionCache.queryCachedResponse(for: makeSampleRequest())
+
+        XCTAssertEqual(cachedResponse?.response, sampleResponse)
+    }
+
     func testSessionCacheQueryForCachedDataWithOtherDataType() {
         let sessionCache: SessionCache = makeDefaultSessionCache()
 

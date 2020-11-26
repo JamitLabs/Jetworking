@@ -243,7 +243,8 @@ public final class Client {
         // Performs completion handler immediately with cached URL if available,
         // otherwise executes the download request
         if let url = sessionCache.query(URL.self, for: request) {
-            completion(url, nil, nil)
+            let response = sessionCache.queryCachedResponse(for: request)?.response
+            completion(url, response, nil)
             return nil
         } else {
             let task = downloadExecutor.download(request: request)

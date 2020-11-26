@@ -59,6 +59,15 @@ final class SessionCache {
         }
     }
 
+    /// Queries a `CachedURLResponse` object for the given request.
+    ///
+    /// - Parameter request: The URL request whose cached URL response is desired.
+    ///
+    /// Returns: (Optional) A cached URL response
+    public func queryCachedResponse(for request: URLRequest) -> CachedURLResponse? {
+        cache.cachedResponse(for: request)
+    }
+
     // MARK: - Store
     /// Stores an object for a specified request included in the given task.
     ///
