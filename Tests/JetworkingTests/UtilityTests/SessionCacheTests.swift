@@ -6,7 +6,7 @@ final class SessionCacheTests: XCTestCase {
         let sessionCache: SessionCache = makeDefaultSessionCache()
 
         // Retrieves cache
-        let cachedData = sessionCache.query(MockBody.self, for: makeSampleReuest())
+        let cachedData = sessionCache.query(MockBody.self, for: makeSampleRequest())
 
         XCTAssertNil(cachedData)
     }
@@ -16,10 +16,10 @@ final class SessionCacheTests: XCTestCase {
 
         // Caches something
         let dataToCache = makeMockBody()
-        sessionCache.store(dataToCache, from: makeSampleResponse(), for: makeSampleReuest())
+        sessionCache.store(dataToCache, from: makeSampleResponse(), for: makeSampleRequest())
 
         // Retrieves cache
-        let cachedData = sessionCache.query(MockBody.self, for: makeSampleReuest())
+        let cachedData = sessionCache.query(MockBody.self, for: makeSampleRequest())
 
         XCTAssertNotNil(cachedData)
         XCTAssertEqual(dataToCache.foo1, cachedData?.foo1)
@@ -30,14 +30,14 @@ final class SessionCacheTests: XCTestCase {
         let sessionCache: SessionCache = makeDefaultSessionCache()
 
         // Caches something
-        sessionCache.store(makeMockBody(), from: makeSampleResponse(), for: makeSampleReuest())
+        sessionCache.store(makeMockBody(), from: makeSampleResponse(), for: makeSampleRequest())
 
         // Retrieves cached object with expected data type
-        let cachedData = sessionCache.query(MockBody.self, for: makeSampleReuest())
+        let cachedData = sessionCache.query(MockBody.self, for: makeSampleRequest())
         XCTAssertNotNil(cachedData)
 
         // Retrieves cached object with wrong data type
-        let nilCachedData = sessionCache.query(String.self, for: makeSampleReuest())
+        let nilCachedData = sessionCache.query(String.self, for: makeSampleRequest())
         XCTAssertNil(nilCachedData)
     }
 
@@ -45,17 +45,17 @@ final class SessionCacheTests: XCTestCase {
         let sessionCache: SessionCache = makeDefaultSessionCache()
 
         // Caches something
-        sessionCache.store(makeMockBody(), from: makeSampleResponse(), for: makeSampleReuest())
+        sessionCache.store(makeMockBody(), from: makeSampleResponse(), for: makeSampleRequest())
 
         // Ensures cached object's existance
-        var cachedData = sessionCache.query(MockBody.self, for: makeSampleReuest())
+        var cachedData = sessionCache.query(MockBody.self, for: makeSampleRequest())
         XCTAssertNotNil(cachedData)
 
         // Removes cached object
-        sessionCache.removeObject(for: makeSampleReuest())
+        sessionCache.removeObject(for: makeSampleRequest())
 
         // Ensures object removal
-        cachedData = sessionCache.query(MockBody.self, for: makeSampleReuest())
+        cachedData = sessionCache.query(MockBody.self, for: makeSampleRequest())
         XCTAssertNil(cachedData)
     }
 
@@ -64,7 +64,7 @@ final class SessionCacheTests: XCTestCase {
         let memoryUsage = sessionCache.currentMemoryUsage
 
         // Removes cached object
-        sessionCache.removeObject(for: makeSampleReuest())
+        sessionCache.removeObject(for: makeSampleRequest())
 
         XCTAssertEqual(memoryUsage, sessionCache.currentMemoryUsage)
     }
@@ -74,14 +74,14 @@ final class SessionCacheTests: XCTestCase {
         XCTAssertTrue(sessionCache.currentMemoryUsage < 1)
 
         // Caches something
-        sessionCache.store(makeMockBody(), from: makeSampleResponse(), for: makeSampleReuest())
+        sessionCache.store(makeMockBody(), from: makeSampleResponse(), for: makeSampleRequest())
         XCTAssertTrue(sessionCache.currentMemoryUsage > 1)
 
         // Removes cached data
         sessionCache.reset()
         XCTAssertTrue(sessionCache.currentMemoryUsage < 1)
 
-        let cachedData = sessionCache.query(MockBody.self, for: makeSampleReuest())
+        let cachedData = sessionCache.query(MockBody.self, for: makeSampleRequest())
         XCTAssertNil(cachedData)
     }
 
@@ -93,7 +93,7 @@ extension SessionCacheTests {
         .init(foo1: "1", foo2: "2")
     }
 
-    private func makeSampleReuest() -> URLRequest {
+    private func makeSampleRequest() -> URLRequest {
         .init(url: URL(string: "https://postman-echo.com")!, httpMethod: .GET)
     }
 
