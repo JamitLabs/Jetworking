@@ -1,7 +1,7 @@
 import Foundation
 
 @dynamicMemberLookup
-final class SessionCache {
+public final class SessionCache {
     private let cache: URLCache
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder

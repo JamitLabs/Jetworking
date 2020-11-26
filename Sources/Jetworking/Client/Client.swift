@@ -10,10 +10,11 @@ enum APIError: Error {
 public final class Client {
     public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
     // MARK: - Properties
+    public private(set) lazy var sessionCache: SessionCache = .init(configuration: configuration)
+
     private let configuration: Configuration
 
     private lazy var session: URLSession = .init(configuration: .default)
-    private lazy var sessionCache: SessionCache = .init(configuration: configuration)
 
     private lazy var requestExecutor: RequestExecutor = {
         switch configuration.requestExecutorType {
@@ -244,7 +245,7 @@ public final class Client {
         // otherwise executes the download request
         if let url = sessionCache.query(URL.self, for: request) {
             let response = sessionCache.queryCachedResponse(for: request)?.response
-            completion(url, response, nil)
+            enqueue(completion(url, response, nil))
             return nil
         } else {
             let task = downloadExecutor.download(request: request)
