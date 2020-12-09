@@ -1,6 +1,6 @@
 import Foundation
 
-public struct Endpoint<ResponseType: Decodable> {
+public struct Endpoint<ResponseType> {
     var pathComponents: [String]
     var queryParameters: [String: String?] = [:]
 

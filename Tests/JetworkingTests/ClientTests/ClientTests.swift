@@ -151,6 +151,39 @@ final class ClientTests: XCTestCase {
         waitForExpectations(timeout: 5.0, handler: nil)
     }
 
+    func testExternalRequest() {
+        let defaultConfiguration = makeDefaultClientConfiguration()
+        let client = Client(configuration: defaultConfiguration)
+
+        let expectation = self.expectation(description: "Wait for an external request")
+
+        let url = try? URLFactory.makeURL(from: Endpoints.delete, withBaseURL: defaultConfiguration.baseURL)
+        guard let targetURL = url else {
+            XCTFail("URL not available")
+            return
+        }
+
+        var request = URLRequest(url: targetURL, httpMethod: .DELETE)
+        request = defaultConfiguration.requestInterceptors.reduce(request) { $1.intercept($0) }
+
+        client.send(request: request) { (response: HTTPURLResponse?, result: Result<Void, Error>) -> Void in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+                case .failure:
+                    break
+
+                case let .success(resultData):
+                    print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
     func testRequestCancellation() throws {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for get")
