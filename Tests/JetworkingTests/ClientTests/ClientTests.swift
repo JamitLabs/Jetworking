@@ -60,6 +60,28 @@ final class ClientTests: XCTestCase {
         waitForExpectations(timeout: 5.0, handler: nil)
     }
 
+    func testPostRequestWithEmptyContent() {
+        let client = Client(configuration: makeDefaultClientConfiguration())
+        let expectation = self.expectation(description: "Wait for post with empty content")
+
+        client.post(endpoint: Endpoints.post, body: nil) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+                case .failure:
+                    break
+
+                case let .success(resultData):
+                    print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
     func testPutRequest() {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for post")

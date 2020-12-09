@@ -131,6 +131,26 @@ public final class Client {
     }
 
     @discardableResult
+    public func post<ResponseType>(endpoint: Endpoint<ResponseType>, body: ExpressibleByNilLiteral? = nil, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
+        do {
+            let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint)
+            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+                self?.handleResponse(
+                    data: data,
+                    urlResponse: urlResponse,
+                    error: error,
+                    endpoint: endpoint,
+                    completion: completion
+                )
+            }
+        } catch {
+            enqueue(completion(nil, .failure(error)))
+        }
+
+        return nil
+    }
+
+    @discardableResult
     public func put<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
             let bodyData: Data = try configuration.encoder.encode(body)
@@ -285,7 +305,23 @@ public final class Client {
             httpMethod: httpMethod,
             httpBody: body
         )
-        return configuration.requestInterceptors.reduce(request) { request, interceptor in
+
+        var requestInterceptors: [RequestInterceptor] = configuration.requestInterceptors
+
+        // Extra case: POST-request with empty content
+        //
+        // Adds custom interceptor after last interceptor for header fields
+        // to avoid conflict with other custom interceptor if any.
+        if body == nil && httpMethod == .POST {
+            let targetIndex = requestInterceptors.lastIndex { $0 is HeaderFieldsRequestInterceptor }
+            let indexToInsert = targetIndex.flatMap { requestInterceptors.index(after: $0) }
+            requestInterceptors.insert(
+                EmptyContentHeaderFieldsRequestInterceptor(),
+                at: indexToInsert ?? requestInterceptors.endIndex
+            )
+        }
+
+        return requestInterceptors.reduce(request) { request, interceptor in
             return interceptor.intercept(request)
         }
     }
