@@ -17,24 +17,30 @@ final class ClientTests: XCTestCase {
 
         let expectation = self.expectation(description: "Wait for get")
 
-        client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { response, result in
+        let queryParameter: (key: String, value: String) = (key: "SomeKey", value: "SomeValue")
+        let endpoint: Endpoint<MockResponseForArguments<[String: String]>> = Endpoints.getWithBody()
+        client.get(endpoint: endpoint.addQueryParameter(key: queryParameter.key, value: queryParameter.value)) { response, result in
 
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
 
+            var resultData: [String: String]?
             switch result {
             case .failure:
                 break
 
-            case let .success(resultData):
-                print(resultData)
+            case let .success(data):
+                resultData = data.args
             }
 
             XCTAssertNotNil(response)
             XCTAssertEqual(response?.statusCode, 200)
+            XCTAssertNotNil(resultData)
+            XCTAssertEqual(resultData?.first?.key, queryParameter.key)
+            XCTAssertEqual(resultData?.first?.value, queryParameter.value)
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: 5.0, handler: nil) 
+        waitForExpectations(timeout: 5.0, handler: nil)
     }
 
     func testPostRequest() {
@@ -42,18 +48,23 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
-        client.post(endpoint: Endpoints.post, body: body) { response, result in
+        let endpoint: Endpoint<MockResponseForRequestBody<MockBody>> = Endpoints.postWithBody()
+        client.post(endpoint: endpoint, body: body) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            var resultData: MockBody?
             switch result {
             case .failure:
                 break
 
-            case let .success(resultData):
-                print(resultData)
+            case let .success(data):
+                resultData = data.json
             }
 
             XCTAssertNotNil(response)
             XCTAssertEqual(response?.statusCode, 200)
+            XCTAssertNotNil(resultData)
+            XCTAssertEqual(resultData?.foo1, body.foo1)
+            XCTAssertEqual(resultData?.foo2, body.foo2)
             expectation.fulfill()
         }
 
@@ -87,18 +98,23 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
-        client.put(endpoint: Endpoints.put, body: body) { response, result in
+        let endpoint: Endpoint<MockResponseForRequestBody<MockBody>> = Endpoints.putWithBody()
+        client.put(endpoint: endpoint, body: body) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            var resultData: MockBody?
             switch result {
             case .failure:
                 break
 
-            case let .success(resultData):
-                print(resultData)
+            case let .success(data):
+                resultData = data.json
             }
 
             XCTAssertNotNil(response)
             XCTAssertEqual(response?.statusCode, 200)
+            XCTAssertNotNil(resultData)
+            XCTAssertEqual(resultData?.foo1, body.foo1)
+            XCTAssertEqual(resultData?.foo2, body.foo2)
             expectation.fulfill()
         }
 
@@ -110,24 +126,29 @@ final class ClientTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for post")
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
-        client.patch(endpoint: Endpoints.patch, body: body) { response, result in
+        let endpoint: Endpoint<MockResponseForRequestBody<MockBody>> = Endpoints.patchWithBody()
+        client.patch(endpoint: endpoint, body: body) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            var resultData: MockBody?
             switch result {
             case .failure:
                 break
 
-            case let .success(resultData):
-                print(resultData)
+            case let .success(data):
+                resultData = data.json
             }
 
             XCTAssertNotNil(response)
             XCTAssertEqual(response?.statusCode, 200)
+            XCTAssertNotNil(resultData)
+            XCTAssertEqual(resultData?.foo1, body.foo1)
+            XCTAssertEqual(resultData?.foo2, body.foo2)
             expectation.fulfill()
         }
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-    
+
     func testDeleteRequest() {
         let client = Client(configuration: makeDefaultClientConfiguration())
 
@@ -258,7 +279,7 @@ final class ClientTests: XCTestCase {
 
         XCTAssertTrue(result == .completed)
     }
-    
+
     func testIncorrectOrderDueToAsyncRequestExecutor() {
         let client = Client(configuration: makeDefaultClientConfiguration())
 
@@ -280,10 +301,10 @@ final class ClientTests: XCTestCase {
 
         XCTAssertTrue(result == .incorrectOrder)
 	}
-    
+
     func testDownloadWithInvalidURL() {
         let client = Client(configuration: makeDefaultClientConfiguration())
-        
+
         let url = URL(string: "smtp://www.mail.com")!
         let task = client.download(
             url: url,
@@ -329,14 +350,14 @@ final class ClientTests: XCTestCase {
 
             expectation.fulfill()
         }
-        
+
         waitForExpectations(timeout: 140.0, handler: nil)
     }
 
     func testUploadFile() {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for upload")
-        
+
         let url = URL(string: "https://catbox.moe/user/api.php")!
         let path = Bundle.module.path(forResource: "avatar", ofType: "png")!
         client.upload(
@@ -360,11 +381,11 @@ final class ClientTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-    
+
     func testUploadMultipartData() {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for upload")
-        
+
         let url = URL(string: "https://catbox.moe/user/api.php")!
 
         let filePath = Bundle.module.path(forResource: "avatar", ofType: ".png")!
