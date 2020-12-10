@@ -9,10 +9,20 @@ enum APIError: Error {
 
 public final class Client {
     public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
+
+    internal enum Task {
+        case dataTask(request: URLRequest, completion: ((Data?, URLResponse?, Error?) -> Void))
+        case downloadTask(request: URLRequest)
+        case uploadDataTask(request: URLRequest, data: Data)
+        case uploadFileTask(request: URLRequest, fileURL: URL)
+    }
+
     // MARK: - Properties
     private let configuration: Configuration
 
     private lazy var session: URLSession = .init(configuration: .default)
+
+    private let taskExecutor: ClientTaskExecutor = .default
 
     private lazy var requestExecutor: RequestExecutor = {
         switch configuration.requestExecutorType {
@@ -93,7 +103,7 @@ public final class Client {
     public func get<ResponseType>(endpoint: Endpoint<ResponseType>, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .GET, and: endpoint)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            let task: Task = .dataTask(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(
                     data: data,
                     urlResponse: urlResponse,
@@ -102,6 +112,7 @@ public final class Client {
                     completion: completion
                 )
             }
+            return try taskExecutor.perform(task, on: requestExecutor)
         } catch {
             enqueue(completion(nil, .failure(error)))
         }
@@ -114,7 +125,7 @@ public final class Client {
         do {
             let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint, and: bodyData)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            let task: Task = .dataTask(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(
                     data: data,
                     urlResponse: urlResponse,
@@ -123,6 +134,7 @@ public final class Client {
                     completion: completion
                 )
             }
+            return try taskExecutor.perform(task, on: requestExecutor)
         } catch {
             enqueue(completion(nil, .failure(error)))
         }
@@ -155,7 +167,7 @@ public final class Client {
         do {
             let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint, and: bodyData)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            let task: Task = .dataTask(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(
                     data: data,
                     urlResponse: urlResponse,
@@ -164,6 +176,7 @@ public final class Client {
                     completion: completion
                 )
             }
+            return try taskExecutor.perform(task, on: requestExecutor)
         } catch {
             enqueue(completion(nil, .failure(error)))
         }
@@ -180,7 +193,7 @@ public final class Client {
         do {
             let bodyData: Data = try configuration.encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint, and: bodyData)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            let task: Task = .dataTask(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(
                     data: data,
                     urlResponse: urlResponse,
@@ -189,6 +202,7 @@ public final class Client {
                     completion: completion
                 )
             }
+            return try taskExecutor.perform(task, on: requestExecutor)
         } catch {
             enqueue(completion(nil, .failure(error)))
         }
@@ -200,7 +214,7 @@ public final class Client {
     public func delete<ResponseType>(endpoint: Endpoint<ResponseType>, parameter: [String: Any] = [:], _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .DELETE, and: endpoint)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            let task: Task = .dataTask(request: request) { [weak self] data, urlResponse, error in
                 self?.handleResponse(
                     data: data,
                     urlResponse: urlResponse,
@@ -209,6 +223,7 @@ public final class Client {
                     completion: completion
                 )
             }
+            return try taskExecutor.perform(task, on: requestExecutor)
         } catch {
             enqueue(completion(nil, .failure(error)))
         }
@@ -238,7 +253,7 @@ public final class Client {
         guard checkForValidDownloadURL(url) else { return nil }
 
         let request: URLRequest = .init(url: url)
-        let task = downloadExecutor.download(request: request)
+        let task = try? taskExecutor.perform(.downloadTask(request: request), on: downloadExecutor)
         task.flatMap {
             executingDownloads[$0.identifier] = DownloadHandler(
                 progressHandler: progressHandler,
@@ -256,7 +271,10 @@ public final class Client {
         _ completion: @escaping UploadHandler.CompletionHandler
     ) -> CancellableRequest? {
         let request: URLRequest = .init(url: url, httpMethod: .POST)
-        let task = uploadExecutor.upload(request: request, fromFile: fileURL)
+        let task = try? taskExecutor.perform(
+            .uploadFileTask(request: request, fileURL: fileURL),
+            on: uploadExecutor
+        )
         task.flatMap {
             executingUploads[$0.identifier] = UploadHandler(
                 progressHandler: progressHandler,
@@ -291,7 +309,10 @@ public final class Client {
         // TODO: Extract into constants
         request.setValue("\(multipartType.rawValue); boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
-        let task = uploadExecutor.upload(request: request, from: multipartData)
+        let task = try? taskExecutor.perform(
+            .uploadDataTask(request: request, data: multipartData),
+            on: uploadExecutor
+        )
         task.flatMap {
             executingUploads[$0.identifier] = UploadHandler(
                 progressHandler: progressHandler,
