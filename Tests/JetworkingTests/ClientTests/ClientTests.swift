@@ -34,7 +34,7 @@ final class ClientTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: 5.0, handler: nil) 
+        waitForExpectations(timeout: 5.0, handler: nil)
     }
 
     func testPostRequest() {
@@ -127,7 +127,7 @@ final class ClientTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-    
+
     func testDeleteRequest() {
         let client = Client(configuration: makeDefaultClientConfiguration())
 
@@ -166,18 +166,12 @@ final class ClientTests: XCTestCase {
         var request = URLRequest(url: targetURL, httpMethod: .DELETE)
         request = defaultConfiguration.requestInterceptors.reduce(request) { $1.intercept($0) }
 
-        client.send(request: request) { (response: HTTPURLResponse?, result: Result<Void, Error>) -> Void in
-            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-            switch result {
-                case .failure:
-                    break
-
-                case let .success(resultData):
-                    print(resultData)
+        client.send(request: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
+            XCTAssertNotNil(response)
+            if let httpUrlResponse = response as? HTTPURLResponse {
+                XCTAssertEqual(httpUrlResponse.statusCode, 200)
             }
 
-            XCTAssertNotNil(response)
-            XCTAssertEqual(response?.statusCode, 200)
             expectation.fulfill()
         }
 
@@ -223,8 +217,6 @@ final class ClientTests: XCTestCase {
                 HeaderFieldsRequestInterceptor(headerFields: self.additionalHeaderFields()),
                 LoggingInterceptor()
             ],
-            encoder: JSONEncoder(),
-            decoder: JSONDecoder(),
             requestExecutorType: .sync
         ))
 
@@ -258,7 +250,7 @@ final class ClientTests: XCTestCase {
 
         XCTAssertTrue(result == .completed)
     }
-    
+
     func testIncorrectOrderDueToAsyncRequestExecutor() {
         let client = Client(configuration: makeDefaultClientConfiguration())
 
@@ -280,10 +272,10 @@ final class ClientTests: XCTestCase {
 
         XCTAssertTrue(result == .incorrectOrder)
 	}
-    
+
     func testDownloadWithInvalidURL() {
         let client = Client(configuration: makeDefaultClientConfiguration())
-        
+
         let url = URL(string: "smtp://www.mail.com")!
         let task = client.download(
             url: url,
@@ -329,7 +321,7 @@ final class ClientTests: XCTestCase {
 
             expectation.fulfill()
         }
-        
+
         waitForExpectations(timeout: 140.0, handler: nil)
     }
 
@@ -413,7 +405,7 @@ final class ClientTests: XCTestCase {
     func testUploadFile() {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for upload")
-        
+
         let url = URL(string: "https://catbox.moe/user/api.php")!
         let path = Bundle.module.path(forResource: "avatar", ofType: "png")!
         client.upload(
@@ -437,11 +429,11 @@ final class ClientTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-    
+
     func testUploadMultipartData() {
         let client = Client(configuration: makeDefaultClientConfiguration())
         let expectation = self.expectation(description: "Wait for upload")
-        
+
         let url = URL(string: "https://catbox.moe/user/api.php")!
 
         let filePath = Bundle.module.path(forResource: "avatar", ofType: ".png")!
@@ -472,10 +464,212 @@ final class ClientTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
+
+    func testCustomEncoder() {
+        let testableEncoder = TestableEncoder()
+        let client = Client(configuration: makeDefaultClientConfiguration())
+
+        let postEncodingCalledExpectation = expectation(description: "Encoder method called for post")
+        let putEncodingCalledExpectation = expectation(description: "Encoder method called for put")
+        let patchEncodingCalledExpectation = expectation(description: "Encoder method called for patch")
+
+        let waitForPostExpectation = expectation(description: "Wait for post")
+        let waitForPutExpectation = expectation(description: "Wait for put")
+        let waitForPatchExpectation = expectation(description: "Wait for patch")
+
+        testableEncoder.encodeCalled = {
+            postEncodingCalledExpectation.fulfill()
+        }
+
+        let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
+        client.post(endpoint: Endpoints.post.overrideStandardEncoderWith(testableEncoder), body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForPostExpectation.fulfill()
+        }
+
+        testableEncoder.encodeCalled = {
+            putEncodingCalledExpectation.fulfill()
+        }
+
+        client.put(endpoint: Endpoints.put.overrideStandardEncoderWith(testableEncoder), body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForPutExpectation.fulfill()
+        }
+
+        testableEncoder.encodeCalled = {
+            patchEncodingCalledExpectation.fulfill()
+        }
+
+        client.patch(endpoint: Endpoints.patch.overrideStandardEncoderWith(testableEncoder), body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForPatchExpectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testCustomDecoderForGet() {
+        let testableDecoder = TestableDecoder()
+        let client = Client(configuration: makeDefaultClientConfiguration(.sync)) { session in
+            session.configuration.timeoutIntervalForRequest = 30
+        }
+
+        let getDecoderCalledExpectation = expectation(description: "Decoder method called for get")
+        let waitForGetExpectation = expectation(description: "Wait for get")
+
+        testableDecoder.decodeCalled = {
+            getDecoderCalledExpectation.fulfill()
+        }
+
+        client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue").overrideStandardDecoderWith(testableDecoder)) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForGetExpectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testCustomDecoderForPost() {
+        let testableDecoder = TestableDecoder()
+        let client = Client(configuration: makeDefaultClientConfiguration(.sync)) { session in
+            session.configuration.timeoutIntervalForRequest = 30
+        }
+
+        let postDecodingCalledExpectation = expectation(description: "Decoder method called for post")
+        let waitForPostExpectation = expectation(description: "Wait for post")
+
+        let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
+
+        testableDecoder.decodeCalled = {
+            postDecodingCalledExpectation.fulfill()
+        }
+
+        client.post(endpoint: Endpoints.post.overrideStandardDecoderWith(testableDecoder), body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForPostExpectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testCustomDecoderForPut() {
+        let testableDecoder = TestableDecoder()
+        let client = Client(configuration: makeDefaultClientConfiguration(.sync)) { session in
+            session.configuration.timeoutIntervalForRequest = 30
+        }
+
+        let putDecodingCalledExpectation = expectation(description: "Decoder method called for put")
+        let waitForPutExpectation = expectation(description: "Wait for put")
+
+        let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
+        testableDecoder.decodeCalled = {
+            putDecodingCalledExpectation.fulfill()
+        }
+
+        client.put(endpoint: Endpoints.put.overrideStandardDecoderWith(testableDecoder), body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForPutExpectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testCustomDecoderForPatch() {
+        let testableDecoder = TestableDecoder()
+        let client = Client(configuration: makeDefaultClientConfiguration(.sync)) { session in
+            session.configuration.timeoutIntervalForRequest = 30
+        }
+
+        let patchDecodingCalledExpectation = expectation(description: "Decoder method called for patch")
+        let waitForPatchExpectation = expectation(description: "Wait for patch")
+
+        let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
+        testableDecoder.decodeCalled = {
+            patchDecodingCalledExpectation.fulfill()
+        }
+
+        client.patch(endpoint: Endpoints.patch.overrideStandardDecoderWith(testableDecoder), body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForPatchExpectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
 }
 
 extension ClientTests {
-    func makeDefaultClientConfiguration() -> Configuration {
+    func makeDefaultClientConfiguration(_ requestExecutorType: RequestExecutorType = .async) -> Configuration {
         return .init(
             baseURL: URL(string: "https://postman-echo.com")!,
             interceptors: [
@@ -485,9 +679,7 @@ extension ClientTests {
                 HeaderFieldsRequestInterceptor(headerFields: self.additionalHeaderFields()),
                 LoggingInterceptor()
             ],
-            encoder: JSONEncoder(),
-            decoder: JSONDecoder(),
-            requestExecutorType: .async
+            requestExecutorType: requestExecutorType
         )
     }
 

@@ -3,6 +3,8 @@ import Foundation
 public struct Endpoint<ResponseType> {
     var pathComponents: [String]
     var queryParameters: [String: String?] = [:]
+    var encoder: Encoder?
+    var decoder: Decoder?
 
     /**
      * Initialises an endpoint with the given path component.
@@ -91,5 +93,33 @@ public struct Endpoint<ResponseType> {
      */
     public func addPathComponent(_ pathComponent: String) -> Endpoint<ResponseType> {
         return addPathComponents([pathComponent])
+    }
+
+    /**
+     * Changes the standard encoder this endpoint. The `Client` will use this encoder instead ot the encoder in the `Configuration`
+     *
+     * - parameter encoder: The encoder to use by the client for this endpoint.
+     *
+     * - Returns:
+     * A new endpoint instance with the changed encoder.
+     */
+    public func overrideStandardEncoderWith(_ encoder: Encoder) -> Endpoint {
+        var endpoint = self
+        endpoint.encoder = encoder
+        return endpoint
+    }
+
+    /**
+     * Changes the standard decoder for this endpoint. The `Client` will use this decoder instead ot the decoder in the `Configuration`
+     *
+     * - parameter decoder: The decoder to use by the client for this endpoint.
+     *
+     * - Returns:
+     * A new endpoint instance with the changed decoder.
+     */
+    public func overrideStandardDecoderWith(_ decoder: Decoder) -> Endpoint {
+        var endpoint = self
+        endpoint.decoder = decoder
+        return endpoint
     }
 }
