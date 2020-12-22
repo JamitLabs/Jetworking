@@ -9,7 +9,7 @@ enum APIError: Error {
 
 public final class Client {
     public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
-    private typealias SuccessHandler<ResponseType> = (HTTPURLResponse, Endpoint<ResponseType>?, Data?, @escaping RequestCompletion<ResponseType>) -> Void
+    
     // MARK: - Properties
     private lazy var sessionCache: SessionCache = .init(configuration: configuration)
 
@@ -98,12 +98,14 @@ public final class Client {
             let request: URLRequest = try createRequest(forHttpMethod: .GET, and: endpoint)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
-                self.handleResponse(
+
+                ResponseHandler.evaluate(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    successHandler: self.handleSuccessDecodable,
+                    configuration: self.configuration,
+                    completionWrapper: ResponseHandler.CompletionWrapper.decodable,
                     completion: completion
                 )
             }
@@ -123,12 +125,13 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                self.handleResponse(
+                ResponseHandler.evaluate(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    successHandler: self.handleSuccessDecodable,
+                    configuration: self.configuration,
+                    completionWrapper: ResponseHandler.CompletionWrapper.decodable,
                     completion: completion
                 )
             }
@@ -146,12 +149,13 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                self.handleResponse(
+                ResponseHandler.evaluate(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    successHandler: self.handleSuccessVoid,
+                    configuration: self.configuration,
+                    completionWrapper: ResponseHandler.CompletionWrapper.void,
                     completion: completion
                 )
             }
@@ -171,12 +175,13 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                self.handleResponse(
+                ResponseHandler.evaluate(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    successHandler: self.handleSuccessDecodable,
+                    configuration: self.configuration,
+                    completionWrapper: ResponseHandler.CompletionWrapper.decodable,
                     completion: completion
                 )
             }
@@ -200,12 +205,13 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                self.handleResponse(
+                ResponseHandler.evaluate(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    successHandler: self.handleSuccessDecodable,
+                    configuration: self.configuration,
+                    completionWrapper: ResponseHandler.CompletionWrapper.decodable,
                     completion: completion
                 )
             }
@@ -223,12 +229,13 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                self.handleResponse(
+                ResponseHandler.evaluate(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    successHandler: self.handleSuccessDecodable,
+                    configuration: self.configuration,
+                    completionWrapper: ResponseHandler.CompletionWrapper.decodable,
                     completion: completion
                 )
             }
@@ -366,69 +373,10 @@ public final class Client {
         }
     }
 
-    // TODO: Improve this function (Error handling, evaluation of header fields, status code evalutation, ...)
-    private func handleResponse<ResponseType>(
-        data: Data?,
-        urlResponse: URLResponse?,
-        error: Error?,
-        endpoint: Endpoint<ResponseType>? = nil,
-        successHandler: @escaping SuccessHandler<ResponseType>,
-        completion: @escaping RequestCompletion<ResponseType>
-    ) {
-        let interceptedResponse = configuration.responseInterceptors.reduce(urlResponse) { response, component in
-            return component.intercept(data: data, response: response, error: error)
-        }
-
-        guard let currentURLResponse = interceptedResponse as? HTTPURLResponse else {
-            return enqueue(completion(nil, .failure(error ?? APIError.responseMissing)))
-        }
-
-        if let error = error { return enqueue(completion(currentURLResponse, .failure(error))) }
-
-        switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
-        case .successful:
-            successHandler(currentURLResponse, endpoint, data, completion)
-
-        case .clientError, .serverError:
-            guard let error = error else { return completion(currentURLResponse, .failure(APIError.unexpectedError)) }
-
-            enqueue(completion(currentURLResponse, .failure(error)))
-
-        default:
-            return
-        }
-    }
-
-    private func handleSuccessVoid<ResponseType>(currentURLResponse: HTTPURLResponse, endpoint: Endpoint<ResponseType>?, data: Data?, completion: @escaping RequestCompletion<ResponseType>) {
-        if ResponseType.self is Void.Type {
-            return enqueue(completion(currentURLResponse, .success(() as! ResponseType)))
-        }
-
-        enqueue(completion(currentURLResponse, .failure(APIError.unexpectedError)))
-    }
-
-    func handleSuccessDecodable<ResponseType: Decodable>(currentURLResponse: HTTPURLResponse, endpoint: Endpoint<ResponseType>?, data: Data?, completion: @escaping RequestCompletion<ResponseType>) {
-        let decoder: Decoder = endpoint?.decoder ?? configuration.decoder
-
-        guard let decodedData = try? decodeResponse(ResponseType.self, with: decoder, from: data) else {
-            return enqueue(completion(currentURLResponse, .failure(APIError.decodingError)))
-        }
-        // Evaluate Header fields --> urlResponse.allHeaderFields
-
-        enqueue(completion(currentURLResponse, .success(decodedData)))
-    }
-
     private func enqueue(_ completion: @escaping @autoclosure () -> Void) {
         configuration.responseQueue.async {
             completion()
         }
-    }
-
-    /// Decodes an instance of the given type.
-    private func decodeResponse<ResponseType>(_ dataType: ResponseType.Type, with decoder: Decoder, from data: Data?) throws -> ResponseType where ResponseType: Decodable {
-        guard let data = data else { throw APIError.decodingError }
-
-        return try decoder.decode(dataType, from: data)
     }
 }
 
