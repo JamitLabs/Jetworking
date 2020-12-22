@@ -551,7 +551,7 @@ final class ClientTests: XCTestCase {
             getDecoderCalledExpectation.fulfill()
         }
 
-        client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue").overrideStandardDecoderWith(testableDecoder)) { response, result in
+        client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue").withCustomDecoder(testableDecoder)) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
 
             switch result {
@@ -585,7 +585,7 @@ final class ClientTests: XCTestCase {
             postDecodingCalledExpectation.fulfill()
         }
 
-        client.post(endpoint: Endpoints.post.overrideStandardDecoderWith(testableDecoder), body: body) { response, result in
+        client.post(endpoint: Endpoints.post.withCustomDecoder(testableDecoder), body: body) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
@@ -617,7 +617,7 @@ final class ClientTests: XCTestCase {
             putDecodingCalledExpectation.fulfill()
         }
 
-        client.put(endpoint: Endpoints.put.overrideStandardDecoderWith(testableDecoder), body: body) { response, result in
+        client.put(endpoint: Endpoints.put.withCustomDecoder(testableDecoder), body: body) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
@@ -649,7 +649,7 @@ final class ClientTests: XCTestCase {
             patchDecodingCalledExpectation.fulfill()
         }
 
-        client.patch(endpoint: Endpoints.patch.overrideStandardDecoderWith(testableDecoder), body: body) { response, result in
+        client.patch(endpoint: Endpoints.patch.withCustomDecoder(testableDecoder), body: body) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:

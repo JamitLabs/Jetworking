@@ -117,7 +117,7 @@ public struct Endpoint<ResponseType> {
      * - Returns:
      * A new endpoint instance with the changed decoder.
      */
-    public func overrideStandardDecoderWith(_ decoder: Decoder) -> Endpoint {
+    public func withCustomDecoder(_ decoder: Decoder) -> Endpoint {
         var endpoint = self
         endpoint.decoder = decoder
         return endpoint
