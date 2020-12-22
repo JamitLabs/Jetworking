@@ -103,7 +103,7 @@ public struct Endpoint<ResponseType> {
      * - Returns:
      * A new endpoint instance with the changed encoder.
      */
-    public func overrideStandardEncoderWith(_ encoder: Encoder) -> Endpoint {
+    public func withCustomEncoder(_ encoder: Encoder) -> Endpoint {
         var endpoint = self
         endpoint.encoder = encoder
         return endpoint

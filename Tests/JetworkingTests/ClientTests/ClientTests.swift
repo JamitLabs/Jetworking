@@ -475,7 +475,7 @@ final class ClientTests: XCTestCase {
         }
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
-        client.post(endpoint: Endpoints.post.overrideStandardEncoderWith(testableEncoder), body: body) { response, result in
+        client.post(endpoint: Endpoints.post.withCustomEncoder(testableEncoder), body: body) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
@@ -494,7 +494,7 @@ final class ClientTests: XCTestCase {
             putEncodingCalledExpectation.fulfill()
         }
 
-        client.put(endpoint: Endpoints.put.overrideStandardEncoderWith(testableEncoder), body: body) { response, result in
+        client.put(endpoint: Endpoints.put.withCustomEncoder(testableEncoder), body: body) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
@@ -513,7 +513,7 @@ final class ClientTests: XCTestCase {
             patchEncodingCalledExpectation.fulfill()
         }
 
-        client.patch(endpoint: Endpoints.patch.overrideStandardEncoderWith(testableEncoder), body: body) { response, result in
+        client.patch(endpoint: Endpoints.patch.withCustomEncoder(testableEncoder), body: body) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
