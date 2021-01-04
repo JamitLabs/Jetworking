@@ -233,6 +233,7 @@ public final class Client {
     @discardableResult
     public func download(
         url: URL,
+        isForced: Bool = false,
         progressHandler: DownloadHandler.ProgressHandler,
         _ completion: @escaping DownloadHandler.CompletionHandler
     ) -> CancellableRequest? {
@@ -241,9 +242,10 @@ public final class Client {
 
         let request: URLRequest = .init(url: url)
 
-        // Performs completion handler immediately with cached URL if available,
+        // Looks up in cache (if no forced download) and
+        // performs completion handler immediately with cached URL if available,
         // otherwise executes the download request
-        if let url = sessionCache.query(URL.self, for: request) {
+        if !isForced, let url = sessionCache.query(URL.self, for: request) {
             let response = sessionCache.queryCachedResponse(for: request)?.response
             enqueue(completion(url, response, nil))
             return nil
