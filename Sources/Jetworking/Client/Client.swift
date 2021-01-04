@@ -10,7 +10,7 @@ enum APIError: Error {
 public final class Client {
     public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
     // MARK: - Properties
-    public private(set) lazy var sessionCache: SessionCache = .init(configuration: configuration)
+    private lazy var sessionCache: SessionCache = .init(configuration: configuration)
 
     private let configuration: Configuration
 
