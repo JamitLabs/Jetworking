@@ -59,6 +59,22 @@ public final class SessionCache {
         }
     }
 
+    /// Queries a `URL` of existing resource item loaded from the given request.
+    ///
+    /// - Parameter request: The URL request whose cached URL response is desired.
+    ///
+    /// Returns: (Optional) A URL of resource item.
+    public func queryResourceItemURL(for request: URLRequest) -> URL? {
+        guard let url = query(URL.self, for: request) else { return nil }
+
+        guard url.isFileURL, (try? url.checkResourceIsReachable()) != true else { return url }
+
+        // Remove cached object if resource item is invalid.
+        cache.removeCachedResponse(for: request)
+
+        return nil
+    }
+
     /// Queries a `CachedURLResponse` object for the given request.
     ///
     /// - Parameter request: The URL request whose cached URL response is desired.

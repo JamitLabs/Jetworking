@@ -245,7 +245,7 @@ public final class Client {
         // Looks up in cache (if no forced download) and
         // performs completion handler immediately with cached URL if available,
         // otherwise executes the download request
-        if !isForced, let url = sessionCache.query(URL.self, for: request) {
+        if !isForced, let url = sessionCache.queryResourceItemURL(for: request) {
             let response = sessionCache.queryCachedResponse(for: request)?.response
             enqueue(completion(url, response, nil))
             return nil
@@ -427,14 +427,49 @@ extension Client: DownloadExecutorDelegate {
     public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
-        sessionCache.store(location, from: downloadTask)
-        enqueue(completionHandler(location, downloadTask.response, downloadTask.error))
+
+        do {
+            // `location` is a URL containing a path with `tmp` directory.
+            // The files in this folder may occasionally get cleared after leaving the delegation.
+            // It is recommended to store downloaded file persistently after each download.
+            let request = downloadTask.originalRequest ?? downloadTask.currentRequest
+            let fileURL = try cacheDownloadFile(local: location, origin: request?.url)
+
+            sessionCache.store(fileURL, from: downloadTask)
+            enqueue(completionHandler(fileURL, downloadTask.response, downloadTask.error))
+        } catch {
+            enqueue(completionHandler(nil, downloadTask.response, error))
+        }
     }
 
     public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
         enqueue(completionHandler(nil, downloadTask.response, error))
+    }
+
+    private func cacheDownloadFile(local fileURL: URL, origin originfileURL: URL?) throws -> URL {
+        // Uses cache folder to store downloaded file.
+        let cacheURL = try FileManager.default.url(
+            for: .cachesDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: true
+        )
+
+        // Restores file name if possible.
+        let fileName = (originfileURL ?? fileURL).lastPathComponent
+        let destinationURL = cacheURL.appendingPathComponent(fileName)
+
+        // Removes old file if any.
+        if FileManager.default.fileExists(atPath: destinationURL.path) {
+            try FileManager.default.removeItem(at: destinationURL)
+        }
+
+        // Moves file to `Library/Caches` directory.
+        try FileManager.default.moveItem(at: fileURL, to: destinationURL)
+
+        return destinationURL
     }
 }
 

@@ -401,9 +401,6 @@ final class ClientTests: XCTestCase {
                 // Compares timestamp of each response
                 XCTAssertNotEqual(responseDate, anotherResponseDate)
 
-                // Compares file URL of each download result
-                XCTAssertNotEqual(fileURL, anotherFileURL)
-
                 secondExpectation.fulfill()
             }
 
