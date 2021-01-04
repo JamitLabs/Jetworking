@@ -255,6 +255,7 @@ public final class Client {
                     completionHandler: completion
                 )
             }
+
             return task
         }
     }
