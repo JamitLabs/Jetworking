@@ -4,11 +4,11 @@ enum ResponseHandler {
     typealias WrappedCompletion<ResponseType> = (HTTPURLResponse, Data?, Decoder, @escaping Client.RequestCompletion<ResponseType>) -> () -> Void
     enum CompletionWrapper {
         static func void<ResponseType>(
-            currentURLResponse: HTTPURLResponse,
+            currentURLResponse: HTTPURLResponse?,
             data: Data?,
             decoder: Decoder,
-            completion: @escaping Client.RequestCompletion<ResponseType>)
-        -> () -> Void
+            completion: @escaping Client.RequestCompletion<ResponseType>
+        ) -> () -> Void
         {
             guard ResponseType.self is Void.Type else {
                 return { completion(currentURLResponse, .failure(APIError.unexpectedError)) }
@@ -17,15 +17,17 @@ enum ResponseHandler {
             return { completion(currentURLResponse, .success(() as! ResponseType)) }
         }
 
-
         static func decodable<ResponseType: Decodable>(
-            currentURLResponse: HTTPURLResponse,
+            currentURLResponse: HTTPURLResponse?,
             data: Data?,
             decoder: Decoder,
-            completion: @escaping Client.RequestCompletion<ResponseType>)
-        -> () -> Void
+            completion: @escaping Client.RequestCompletion<ResponseType>
+        ) -> () -> Void
         {
-            guard let data = data, let decodedData = try? decoder.decode(ResponseType.self, from: data) else {
+            guard
+                let data = data,
+                let decodedData = try? decoder.decode(ResponseType.self, from: data)
+            else {
                 return { (completion(currentURLResponse, .failure(APIError.decodingError))) }
             }
             // Evaluate Header fields --> urlResponse.allHeaderFields
@@ -49,28 +51,28 @@ enum ResponseHandler {
         }
 
         guard let currentURLResponse = interceptedResponse as? HTTPURLResponse else {
-            return self.configuration(configuration, enqueue: completion(nil, .failure(error ?? APIError.responseMissing)))
+            return self.enqueue(completion(nil, .failure(error ?? APIError.responseMissing)), inDispatchQueue: configuration.responseQueue)
         }
 
-        if let error = error { return self.configuration(configuration, enqueue: completion(currentURLResponse, .failure(error))) }
+        if let error = error { return self.enqueue(completion(currentURLResponse, .failure(error)), inDispatchQueue: configuration.responseQueue) }
 
         switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
         case .successful:
             let decoder = endpoint?.decoder ?? configuration.decoder
-            self.configuration(configuration, enqueue: completionWrapper(currentURLResponse, data, decoder, completion)())
+            self.enqueue(completionWrapper(currentURLResponse, data, decoder, completion)(), inDispatchQueue: configuration.responseQueue)
 
         case .clientError, .serverError:
             guard let error = error else { return completion(currentURLResponse, .failure(APIError.unexpectedError)) }
 
-            self.configuration(configuration, enqueue: completion(currentURLResponse, .failure(error)))
+            self.enqueue(completion(currentURLResponse, .failure(error)), inDispatchQueue: configuration.responseQueue)
 
         default:
             return
         }
     }
 
-    private static func configuration(_ configuration: Configuration, enqueue completion: @escaping @autoclosure () -> Void) {
-        configuration.responseQueue.async {
+    private static func enqueue(_ completion: @escaping @autoclosure () -> Void, inDispatchQueue queue: DispatchQueue) {
+        queue.async {
             completion()
         }
     }
