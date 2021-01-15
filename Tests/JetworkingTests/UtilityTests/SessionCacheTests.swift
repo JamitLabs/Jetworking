@@ -126,8 +126,8 @@ extension SessionCacheTests {
                 diskCapacity: .zero,
                 diskPath: nil
             ),
-            encoder: .init(),
-            decoder: .init(),
+            encoder: JSONEncoder(),
+            decoder: JSONDecoder(),
             interceptors: [
                 DefaultSessionCacheIntercepter(storagePolicy: .allowedInMemoryOnly)
             ]

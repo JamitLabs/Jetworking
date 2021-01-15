@@ -320,7 +320,7 @@ final class ClientTests: XCTestCase {
 
     func testFileDownloadFromSessionCache() {
         let cache = URLCache(memoryCapacity: 10 * 1_024 * 1_024, diskCapacity: .zero, diskPath: nil)
-        let configuration = extendClientConfiguration(makeDefaultClientConfiguration(), with: cache)
+        let configuration = Configurations.extendClientConfiguration(Configurations.default(), with: cache)
         let client = Client(configuration: configuration)
 
         let firstExpectation = XCTestExpectation(description: "Wait for remote download")
@@ -360,7 +360,7 @@ final class ClientTests: XCTestCase {
 
     func testForcedFileDownload() {
         let cache = URLCache(memoryCapacity: 10 * 1_024 * 1_024, diskCapacity: .zero, diskPath: nil)
-        let configuration = extendClientConfiguration(makeDefaultClientConfiguration(), with: cache)
+        let configuration = Configurations.extendClientConfiguration(Configurations.default(), with: cache)
         let client = Client(configuration: configuration)
 
         let firstExpectation = XCTestExpectation(description: "Wait for remote download")

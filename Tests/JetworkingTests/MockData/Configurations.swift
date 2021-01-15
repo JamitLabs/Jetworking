@@ -15,4 +15,15 @@ enum Configurations {
             requestExecutorType: requestExecutorType
         )
     }
+
+    static func extendClientConfiguration(_ configuration: Configuration, with cache: URLCache) -> Configuration {
+        return .init(
+            baseURL: configuration.baseURL,
+            interceptors: configuration.interceptors + [DefaultSessionCacheIntercepter()],
+            encoder: configuration.encoder,
+            decoder: configuration.decoder,
+            requestExecutorType: configuration.requestExecutorType,
+            cache: cache
+        )
+    }
 }
