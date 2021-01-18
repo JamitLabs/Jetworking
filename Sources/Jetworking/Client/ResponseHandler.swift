@@ -1,43 +1,66 @@
 import Foundation
 
 enum ResponseHandler {
-    typealias WrappedCompletion<ResponseType> = (HTTPURLResponse, Data?, Decoder, @escaping Client.RequestCompletion<ResponseType>) -> () -> Void
-    enum CompletionWrapper {
-        static func void<ResponseType>(
-            currentURLResponse: HTTPURLResponse?,
-            data: Data?,
-            decoder: Decoder,
-            completion: @escaping Client.RequestCompletion<ResponseType>
-        ) -> () -> Void
-        {
-            guard ResponseType.self is Void.Type else {
-                return { completion(currentURLResponse, .failure(APIError.unexpectedError)) }
-            }
+    private typealias WrappedCompletion<ResponseType> = (HTTPURLResponse, Data?, Error?, Decoder, @escaping Client.RequestCompletion<ResponseType>) -> () -> Void
 
-            return { completion(currentURLResponse, .success(() as! ResponseType)) }
+    static func handleVoidResponse<ResponseType>(
+        data: Data?,
+        urlResponse: URLResponse?,
+        error: Error?,
+        endpoint: Endpoint<ResponseType>? = nil,
+        configuration: Configuration,
+        completion: @escaping Client.RequestCompletion<ResponseType>
+    ) {
+        evaluate(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, configuration: configuration, completionWrapper: Self.makeVoidCompletionWrapper, completion: completion)
+    }
+
+    static func handleDecodableResponse<ResponseType: Decodable>(
+    data: Data?,
+    urlResponse: URLResponse?,
+    error: Error?,
+    endpoint: Endpoint<ResponseType>? = nil,
+    configuration: Configuration,
+    completion: @escaping Client.RequestCompletion<ResponseType>
+    ) {
+        evaluate(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, configuration: configuration, completionWrapper: Self.makeDecodableCompletionWrapper, completion: completion)
+    }
+
+    private static func makeVoidCompletionWrapper<ResponseType>(
+        currentURLResponse: HTTPURLResponse?,
+        data: Data?,
+        error: Error?,
+        decoder: Decoder,
+        completion: @escaping Client.RequestCompletion<ResponseType>
+    ) -> () -> Void
+    {
+        guard ResponseType.self is Void.Type else {
+            return { completion(currentURLResponse, .failure(APIError.unexpectedError)) }
         }
 
-        static func decodable<ResponseType: Decodable>(
-            currentURLResponse: HTTPURLResponse?,
-            data: Data?,
-            decoder: Decoder,
-            completion: @escaping Client.RequestCompletion<ResponseType>
-        ) -> () -> Void
-        {
-            guard
-                let data = data,
-                let decodedData = try? decoder.decode(ResponseType.self, from: data)
-            else {
-                return { (completion(currentURLResponse, .failure(APIError.decodingError))) }
-            }
-            // Evaluate Header fields --> urlResponse.allHeaderFields
+        return { completion(currentURLResponse, .success(() as! ResponseType)) }
+    }
 
-            return { (completion(currentURLResponse, .success(decodedData))) }
+    private static func makeDecodableCompletionWrapper<ResponseType: Decodable>(
+        currentURLResponse: HTTPURLResponse?,
+        data: Data?,
+        error: Error?,
+        decoder: Decoder,
+        completion: @escaping Client.RequestCompletion<ResponseType>
+    ) -> () -> Void
+    {
+        guard
+            let data = data,
+            let decodedData = try? decoder.decode(ResponseType.self, from: data)
+        else {
+            return { (completion(currentURLResponse, .failure(APIError.decodingError))) }
         }
+        // Evaluate Header fields --> urlResponse.allHeaderFields
+
+        return { (completion(currentURLResponse, .success(decodedData))) }
     }
 
     // TODO: Improve this function (Error handling, evaluation of header fields, status code evalutation, ...)
-    static func evaluate<ResponseType>(
+    private static func evaluate<ResponseType>(
         data: Data?,
         urlResponse: URLResponse?,
         error: Error?,
@@ -59,7 +82,7 @@ enum ResponseHandler {
         switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
         case .successful:
             let decoder = endpoint?.decoder ?? configuration.decoder
-            self.enqueue(completionWrapper(currentURLResponse, data, decoder, completion)(), inDispatchQueue: configuration.responseQueue)
+            self.enqueue(completionWrapper(currentURLResponse, data, nil, decoder, completion)(), inDispatchQueue: configuration.responseQueue)
 
         case .clientError, .serverError:
             guard let error = error else { return completion(currentURLResponse, .failure(APIError.unexpectedError)) }

@@ -355,7 +355,7 @@ final class ClientTests: XCTestCase {
             firstExpectation.fulfill()
         }
 
-        wait(for: [firstExpectation, secondExpectation], timeout: 20.0)
+        wait(for: [firstExpectation, secondExpectation], timeout: 60.0)
     }
 
     func testForcedFileDownload() {
@@ -392,7 +392,7 @@ final class ClientTests: XCTestCase {
             firstExpectation.fulfill()
         }
 
-        wait(for: [firstExpectation, secondExpectation], timeout: 20.0)
+        wait(for: [firstExpectation, secondExpectation], timeout: 60.0)
     }
 
     func testUploadFile() {
