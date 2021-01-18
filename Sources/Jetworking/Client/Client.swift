@@ -16,6 +16,7 @@ public final class Client {
     private let configuration: Configuration
 
     private lazy var session: URLSession = .init(configuration: .default)
+    private lazy var responseHandler: ResponseHandler = .init(configuration: configuration)
 
     private lazy var requestExecutor: RequestExecutor = {
         switch configuration.requestExecutorType {
@@ -99,12 +100,11 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                ResponseHandler.handleDecodableResponse(
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    configuration: self.configuration,
                     completion: completion
                 )
             }
@@ -124,12 +124,11 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                ResponseHandler.handleDecodableResponse(
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    configuration: self.configuration,
                     completion: completion
                 )
             }
@@ -147,12 +146,11 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                ResponseHandler.handleVoidResponse(
+                self.responseHandler.handleVoidResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    configuration: self.configuration,
                     completion: completion
                 )
             }
@@ -172,12 +170,11 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                ResponseHandler.handleDecodableResponse(
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    configuration: self.configuration,
                     completion: completion
                 )
             }
@@ -201,12 +198,11 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                ResponseHandler.handleDecodableResponse(
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    configuration: self.configuration,
                     completion: completion
                 )
             }
@@ -224,12 +220,11 @@ public final class Client {
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
-                ResponseHandler.handleDecodableResponse(
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
                     endpoint: endpoint,
-                    configuration: self.configuration,
                     completion: completion
                 )
             }

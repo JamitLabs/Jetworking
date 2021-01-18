@@ -1,31 +1,35 @@
 import Foundation
 
-enum ResponseHandler {
+final class ResponseHandler {
     private typealias WrappedCompletion<ResponseType> = (HTTPURLResponse, Data?, Error?, Decoder, @escaping Client.RequestCompletion<ResponseType>) -> () -> Void
 
-    static func handleVoidResponse<ResponseType>(
+    private let configuration: Configuration
+
+    init(configuration: Configuration) {
+        self.configuration = configuration
+    }
+
+    func handleVoidResponse<ResponseType>(
         data: Data?,
         urlResponse: URLResponse?,
         error: Error?,
         endpoint: Endpoint<ResponseType>? = nil,
-        configuration: Configuration,
         completion: @escaping Client.RequestCompletion<ResponseType>
     ) {
-        evaluate(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, configuration: configuration, completionWrapper: Self.makeVoidCompletionWrapper, completion: completion)
+        evaluate(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completionWrapper: makeVoidCompletionWrapper, completion: completion)
     }
 
-    static func handleDecodableResponse<ResponseType: Decodable>(
-    data: Data?,
-    urlResponse: URLResponse?,
-    error: Error?,
-    endpoint: Endpoint<ResponseType>? = nil,
-    configuration: Configuration,
-    completion: @escaping Client.RequestCompletion<ResponseType>
+    func handleDecodableResponse<ResponseType: Decodable>(
+        data: Data?,
+        urlResponse: URLResponse?,
+        error: Error?,
+        endpoint: Endpoint<ResponseType>? = nil,
+        completion: @escaping Client.RequestCompletion<ResponseType>
     ) {
-        evaluate(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, configuration: configuration, completionWrapper: Self.makeDecodableCompletionWrapper, completion: completion)
+        evaluate(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completionWrapper: makeDecodableCompletionWrapper, completion: completion)
     }
 
-    private static func makeVoidCompletionWrapper<ResponseType>(
+    private func makeVoidCompletionWrapper<ResponseType>(
         currentURLResponse: HTTPURLResponse?,
         data: Data?,
         error: Error?,
@@ -40,7 +44,7 @@ enum ResponseHandler {
         return { completion(currentURLResponse, .success(() as! ResponseType)) }
     }
 
-    private static func makeDecodableCompletionWrapper<ResponseType: Decodable>(
+    private func makeDecodableCompletionWrapper<ResponseType: Decodable>(
         currentURLResponse: HTTPURLResponse?,
         data: Data?,
         error: Error?,
@@ -60,12 +64,11 @@ enum ResponseHandler {
     }
 
     // TODO: Improve this function (Error handling, evaluation of header fields, status code evalutation, ...)
-    private static func evaluate<ResponseType>(
+    private func evaluate<ResponseType>(
         data: Data?,
         urlResponse: URLResponse?,
         error: Error?,
         endpoint: Endpoint<ResponseType>? = nil,
-        configuration: Configuration,
         completionWrapper: @escaping WrappedCompletion<ResponseType>,
         completion: @escaping Client.RequestCompletion<ResponseType>
     ) {
@@ -74,27 +77,27 @@ enum ResponseHandler {
         }
 
         guard let currentURLResponse = interceptedResponse as? HTTPURLResponse else {
-            return self.enqueue(completion(nil, .failure(error ?? APIError.responseMissing)), inDispatchQueue: configuration.responseQueue)
+            return enqueue(completion(nil, .failure(error ?? APIError.responseMissing)), inDispatchQueue: configuration.responseQueue)
         }
 
-        if let error = error { return self.enqueue(completion(currentURLResponse, .failure(error)), inDispatchQueue: configuration.responseQueue) }
+        if let error = error { return enqueue(completion(currentURLResponse, .failure(error)), inDispatchQueue: configuration.responseQueue) }
 
         switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
         case .successful:
             let decoder = endpoint?.decoder ?? configuration.decoder
-            self.enqueue(completionWrapper(currentURLResponse, data, nil, decoder, completion)(), inDispatchQueue: configuration.responseQueue)
+            enqueue(completionWrapper(currentURLResponse, data, nil, decoder, completion)(), inDispatchQueue: configuration.responseQueue)
 
         case .clientError, .serverError:
             guard let error = error else { return completion(currentURLResponse, .failure(APIError.unexpectedError)) }
 
-            self.enqueue(completion(currentURLResponse, .failure(error)), inDispatchQueue: configuration.responseQueue)
+            enqueue(completion(currentURLResponse, .failure(error)), inDispatchQueue: configuration.responseQueue)
 
         default:
             return
         }
     }
 
-    private static func enqueue(_ completion: @escaping @autoclosure () -> Void, inDispatchQueue queue: DispatchQueue) {
+    private func enqueue(_ completion: @escaping @autoclosure () -> Void, inDispatchQueue queue: DispatchQueue) {
         queue.async {
             completion()
         }
