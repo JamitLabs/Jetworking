@@ -9,12 +9,14 @@ enum APIError: Error {
 
 public final class Client {
     public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
+    
     // MARK: - Properties
     private lazy var sessionCache: SessionCache = .init(configuration: configuration)
 
     private let configuration: Configuration
 
     private lazy var session: URLSession = .init(configuration: .default)
+    private lazy var responseHandler: ResponseHandler = .init(configuration: configuration)
 
     private lazy var requestExecutor: RequestExecutor = {
         switch configuration.requestExecutorType {
@@ -92,11 +94,13 @@ public final class Client {
 
     // MARK: - Methods
     @discardableResult
-    public func get<ResponseType>(endpoint: Endpoint<ResponseType>, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
+    public func get<ResponseType: Decodable>(endpoint: Endpoint<ResponseType>, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .GET, and: endpoint)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(
+                guard let self = self else { return }
+
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
@@ -112,12 +116,15 @@ public final class Client {
     }
 
     @discardableResult
-    public func post<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
+    public func post<BodyType: Encodable, ResponseType: Decodable>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
-            let bodyData: Data = try configuration.encoder.encode(body)
+            let encoder: Encoder = endpoint.encoder ?? configuration.encoder
+            let bodyData: Data = try encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint, and: bodyData)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(
+                guard let self = self else { return }
+
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
@@ -137,7 +144,9 @@ public final class Client {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(
+                guard let self = self else { return }
+
+                self.responseHandler.handleVoidResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
@@ -153,12 +162,15 @@ public final class Client {
     }
 
     @discardableResult
-    public func put<BodyType: Encodable, ResponseType>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
+    public func put<BodyType: Encodable, ResponseType: Decodable>(endpoint: Endpoint<ResponseType>, body: BodyType, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
-            let bodyData: Data = try configuration.encoder.encode(body)
+            let encoder: Encoder = endpoint.encoder ?? configuration.encoder
+            let bodyData: Data = try encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint, and: bodyData)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(
+                guard let self = self else { return }
+
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
@@ -174,16 +186,19 @@ public final class Client {
     }
 
     @discardableResult
-    public func patch<BodyType: Encodable, ResponseType>(
+    public func patch<BodyType: Encodable, ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
         body: BodyType,
         _ completion: @escaping RequestCompletion<ResponseType>
     ) -> CancellableRequest? {
         do {
-            let bodyData: Data = try configuration.encoder.encode(body)
+            let encoder: Encoder = endpoint.encoder ?? configuration.encoder
+            let bodyData: Data = try encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint, and: bodyData)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(
+                guard let self = self else { return }
+
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
@@ -199,11 +214,13 @@ public final class Client {
     }
 
     @discardableResult
-    public func delete<ResponseType>(endpoint: Endpoint<ResponseType>, parameter: [String: Any] = [:], _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
+    public func delete<ResponseType: Decodable>(endpoint: Endpoint<ResponseType>, parameter: [String: Any] = [:], _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .DELETE, and: endpoint)
             return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-                self?.handleResponse(
+                guard let self = self else { return }
+
+                self.responseHandler.handleDecodableResponse(
                     data: data,
                     urlResponse: urlResponse,
                     error: error,
@@ -219,15 +236,8 @@ public final class Client {
     }
 
     @discardableResult
-    public func send<ResponseType>(request: URLRequest, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
-        return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
-            self?.handleResponse(
-                data: data,
-                urlResponse: urlResponse,
-                error: error,
-                completion: completion
-            )
-        }
+    public func send(request: URLRequest, _ completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> CancellableRequest? {
+        return requestExecutor.send(request: request, completion)
     }
 
     @discardableResult
@@ -352,64 +362,10 @@ public final class Client {
         }
     }
 
-    // TODO: Improve this function (Error handling, evaluation of header fields, status code evalutation, ...)
-    private func handleResponse<ResponseType>(
-        data: Data?,
-        urlResponse: URLResponse?,
-        error: Error?,
-        endpoint: Endpoint<ResponseType>? = nil,
-        completion: @escaping RequestCompletion<ResponseType>
-    ) {
-        let interceptedResponse = configuration.responseInterceptors.reduce(urlResponse) { response, component in
-            return component.intercept(data: data, response: response, error: error)
-        }
-
-        guard let currentURLResponse = interceptedResponse as? HTTPURLResponse else {
-            return enqueue(completion(nil, .failure(error ?? APIError.responseMissing)))
-        }
-
-        if let error = error { return enqueue(completion(currentURLResponse, .failure(error))) }
-
-        switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
-        case .successful:
-            guard let decodedData = try? decodeResponse(ResponseType.self, from: data) else {
-                return enqueue(completion(currentURLResponse, .failure(APIError.decodingError)))
-            }
-            // Evaluate Header fields --> urlResponse.allHeaderFields
-
-            enqueue(completion(currentURLResponse, .success(decodedData)))
-
-        case .clientError, .serverError:
-            guard let error = error else { return completion(currentURLResponse, .failure(APIError.unexpectedError)) }
-
-            enqueue(completion(currentURLResponse, .failure(error)))
-
-        default:
-            return
-        }
-    }
-
     private func enqueue(_ completion: @escaping @autoclosure () -> Void) {
         configuration.responseQueue.async {
             completion()
         }
-    }
-
-    /// Decodes an instance of the given type.
-    private func decodeResponse<ResponseType: Decodable>(_ dataType: ResponseType.Type, from data: Data?) throws -> ResponseType {
-        guard let data = data else { throw APIError.decodingError }
-
-        return try configuration.decoder.decode(dataType, from: data)
-    }
-
-    /// Decodes an instance of the `Void` type. If a non-decodable type is given, throws an error instead.
-    ///
-    /// - IMPORTANT:
-    /// We let the method "overloaded" to allow `Void` type on return of a network response.
-    private func decodeResponse<ResponseType>(_ dataType: ResponseType.Type, from data: Data?) throws -> ResponseType {
-        guard ResponseType.self is Void.Type else { throw APIError.decodingError }
-
-        return () as! ResponseType
     }
 }
 

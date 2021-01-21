@@ -3,8 +3,8 @@ import Foundation
 @dynamicMemberLookup
 public final class SessionCache {
     private let cache: URLCache
-    private let encoder: JSONEncoder
-    private let decoder: JSONDecoder
+    private let encoder: Encoder
+    private let decoder: Decoder
     private let interceptors: [SessionCacheInterceptor]
 
     // MARK: - Initializers
@@ -30,7 +30,7 @@ public final class SessionCache {
     ///   - encoder: An encoder for `json` format.
     ///   - decoder: A decoder for `json` format.
     ///   - interceptors: A collection of `SessionCacheInterceptor` instances.
-    init(cache: URLCache, encoder: JSONEncoder, decoder: JSONDecoder, interceptors: [SessionCacheInterceptor]) {
+    init(cache: URLCache, encoder: Encoder, decoder: Decoder, interceptors: [SessionCacheInterceptor]) {
         self.cache = cache
         self.encoder = encoder
         self.decoder = decoder

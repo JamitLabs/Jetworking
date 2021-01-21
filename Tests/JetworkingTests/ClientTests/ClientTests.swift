@@ -3,15 +3,8 @@ import Foundation
 @testable import Jetworking
 
 final class ClientTests: XCTestCase {
-    func additionalHeaderFields() -> [String: String] {
-        return [
-            "Accept": "application/json",
-            "Content-Type": "application/json"
-        ]
-    }
-
     func testGetRequest() {
-        let client = Client(configuration: makeDefaultClientConfiguration()) { session in
+        let client = Client(configuration: Configurations.default()) { session in
             session.configuration.timeoutIntervalForRequest = 30
         }
 
@@ -34,11 +27,11 @@ final class ClientTests: XCTestCase {
             expectation.fulfill()
         }
 
-        waitForExpectations(timeout: 5.0, handler: nil) 
+        waitForExpectations(timeout: 5.0, handler: nil)
     }
 
     func testPostRequest() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for post")
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
@@ -61,7 +54,7 @@ final class ClientTests: XCTestCase {
     }
 
     func testPostRequestWithEmptyContent() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for post with empty content")
 
         client.post(endpoint: Endpoints.post, body: nil) { response, result in
@@ -83,7 +76,7 @@ final class ClientTests: XCTestCase {
     }
 
     func testPutRequest() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for post")
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
@@ -106,7 +99,7 @@ final class ClientTests: XCTestCase {
     }
 
     func testPatchRequest() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for post")
 
         let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
@@ -127,9 +120,9 @@ final class ClientTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-    
+
     func testDeleteRequest() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
 
         let expectation = self.expectation(description: "Wait for post")
 
@@ -152,7 +145,7 @@ final class ClientTests: XCTestCase {
     }
 
     func testExternalRequest() {
-        let defaultConfiguration = makeDefaultClientConfiguration()
+        let defaultConfiguration = Configurations.default()
         let client = Client(configuration: defaultConfiguration)
 
         let expectation = self.expectation(description: "Wait for an external request")
@@ -166,18 +159,12 @@ final class ClientTests: XCTestCase {
         var request = URLRequest(url: targetURL, httpMethod: .DELETE)
         request = defaultConfiguration.requestInterceptors.reduce(request) { $1.intercept($0) }
 
-        client.send(request: request) { (response: HTTPURLResponse?, result: Result<Void, Error>) -> Void in
-            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-            switch result {
-                case .failure:
-                    break
-
-                case let .success(resultData):
-                    print(resultData)
+        client.send(request: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
+            XCTAssertNotNil(response)
+            if let httpUrlResponse = response as? HTTPURLResponse {
+                XCTAssertEqual(httpUrlResponse.statusCode, 200)
             }
 
-            XCTAssertNotNil(response)
-            XCTAssertEqual(response?.statusCode, 200)
             expectation.fulfill()
         }
 
@@ -185,7 +172,7 @@ final class ClientTests: XCTestCase {
     }
 
     func testRequestCancellation() throws {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for get")
 
         let cancellableRequest = client.get(
@@ -220,11 +207,9 @@ final class ClientTests: XCTestCase {
                 AuthenticationRequestInterceptor(
                     authenticationMethod: .basicAuthentication(username: "username", password: "password")
                 ),
-                HeaderFieldsRequestInterceptor(headerFields: self.additionalHeaderFields()),
+                HeaderFieldsRequestInterceptor(headerFields: HeaderFields.additional),
                 LoggingInterceptor()
             ],
-            encoder: JSONEncoder(),
-            decoder: JSONDecoder(),
             requestExecutorType: .sync
         ))
 
@@ -258,9 +243,9 @@ final class ClientTests: XCTestCase {
 
         XCTAssertTrue(result == .completed)
     }
-    
+
     func testIncorrectOrderDueToAsyncRequestExecutor() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
 
         let firstExpectation = expectation(description: "Wait for first get")
         let secondExpectation = expectation(description: "Wait for second get")
@@ -280,10 +265,10 @@ final class ClientTests: XCTestCase {
 
         XCTAssertTrue(result == .incorrectOrder)
 	}
-    
+
     func testDownloadWithInvalidURL() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
-        
+        let client = Client(configuration: Configurations.default())
+
         let url = URL(string: "smtp://www.mail.com")!
         let task = client.download(
             url: url,
@@ -294,7 +279,7 @@ final class ClientTests: XCTestCase {
     }
 
     func testFileDownload() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for download")
 
         let url = URL(string: "https://speed.hetzner.de/100MB.bin")!
@@ -329,13 +314,13 @@ final class ClientTests: XCTestCase {
 
             expectation.fulfill()
         }
-        
+
         waitForExpectations(timeout: 140.0, handler: nil)
     }
 
     func testFileDownloadFromSessionCache() {
         let cache = URLCache(memoryCapacity: 10 * 1_024 * 1_024, diskCapacity: .zero, diskPath: nil)
-        let configuration = extendClientConfiguration(makeDefaultClientConfiguration(), with: cache)
+        let configuration = Configurations.extendClientConfiguration(Configurations.default(), with: cache)
         let client = Client(configuration: configuration)
 
         let firstExpectation = XCTestExpectation(description: "Wait for remote download")
@@ -370,12 +355,12 @@ final class ClientTests: XCTestCase {
             firstExpectation.fulfill()
         }
 
-        wait(for: [firstExpectation, secondExpectation], timeout: 20.0)
+        wait(for: [firstExpectation, secondExpectation], timeout: 60.0)
     }
 
     func testForcedFileDownload() {
         let cache = URLCache(memoryCapacity: 10 * 1_024 * 1_024, diskCapacity: .zero, diskPath: nil)
-        let configuration = extendClientConfiguration(makeDefaultClientConfiguration(), with: cache)
+        let configuration = Configurations.extendClientConfiguration(Configurations.default(), with: cache)
         let client = Client(configuration: configuration)
 
         let firstExpectation = XCTestExpectation(description: "Wait for remote download")
@@ -407,13 +392,13 @@ final class ClientTests: XCTestCase {
             firstExpectation.fulfill()
         }
 
-        wait(for: [firstExpectation, secondExpectation], timeout: 20.0)
+        wait(for: [firstExpectation, secondExpectation], timeout: 60.0)
     }
 
     func testUploadFile() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for upload")
-        
+
         let url = URL(string: "https://catbox.moe/user/api.php")!
         let path = Bundle.module.path(forResource: "avatar", ofType: "png")!
         client.upload(
@@ -437,11 +422,11 @@ final class ClientTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-    
+
     func testUploadMultipartData() {
-        let client = Client(configuration: makeDefaultClientConfiguration())
+        let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for upload")
-        
+
         let url = URL(string: "https://catbox.moe/user/api.php")!
 
         let filePath = Bundle.module.path(forResource: "avatar", ofType: ".png")!
@@ -472,33 +457,77 @@ final class ClientTests: XCTestCase {
 
         waitForExpectations(timeout: 5.0, handler: nil)
     }
-}
 
-extension ClientTests {
-    func makeDefaultClientConfiguration() -> Configuration {
-        return .init(
-            baseURL: URL(string: "https://postman-echo.com")!,
-            interceptors: [
-                AuthenticationRequestInterceptor(
-                    authenticationMethod: .basicAuthentication(username: "username", password: "password")
-                ),
-                HeaderFieldsRequestInterceptor(headerFields: self.additionalHeaderFields()),
-                LoggingInterceptor()
-            ],
-            encoder: JSONEncoder(),
-            decoder: JSONDecoder(),
-            requestExecutorType: .async
-        )
-    }
+    func testCustomEncoder() {
+        let testableEncoder = TestableEncoder()
+        let client = Client(configuration: Configurations.default())
 
-    func extendClientConfiguration(_ configuration: Configuration, with cache: URLCache) -> Configuration {
-        return .init(
-            baseURL: configuration.baseURL,
-            interceptors: configuration.interceptors + [DefaultSessionCacheIntercepter()],
-            encoder: configuration.encoder,
-            decoder: configuration.decoder,
-            requestExecutorType: configuration.requestExecutorType,
-            cache: cache
-        )
+        let postEncodingCalledExpectation = expectation(description: "Encoder method called for post")
+        let putEncodingCalledExpectation = expectation(description: "Encoder method called for put")
+        let patchEncodingCalledExpectation = expectation(description: "Encoder method called for patch")
+
+        let waitForPostExpectation = expectation(description: "Wait for post")
+        let waitForPutExpectation = expectation(description: "Wait for put")
+        let waitForPatchExpectation = expectation(description: "Wait for patch")
+
+        testableEncoder.encodeCalled = {
+            postEncodingCalledExpectation.fulfill()
+        }
+
+        let body: MockBody = .init(foo1: "bar1", foo2: "bar2")
+        client.post(endpoint: Endpoints.post.withCustomEncoder(testableEncoder), body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForPostExpectation.fulfill()
+        }
+
+        testableEncoder.encodeCalled = {
+            putEncodingCalledExpectation.fulfill()
+        }
+
+        client.put(endpoint: Endpoints.put.withCustomEncoder(testableEncoder), body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForPutExpectation.fulfill()
+        }
+
+        testableEncoder.encodeCalled = {
+            patchEncodingCalledExpectation.fulfill()
+        }
+
+        client.patch(endpoint: Endpoints.patch.withCustomEncoder(testableEncoder), body: body) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+            switch result {
+            case .failure:
+                break
+
+            case let .success(resultData):
+                print(resultData)
+            }
+
+            XCTAssertNotNil(response)
+            XCTAssertEqual(response?.statusCode, 200)
+            waitForPatchExpectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
     }
 }

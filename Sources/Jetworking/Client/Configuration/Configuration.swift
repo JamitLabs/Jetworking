@@ -4,8 +4,8 @@ import Foundation
 public struct Configuration {
     let baseURL: URL
     let interceptors: [Interceptor]
-    let encoder: JSONEncoder
-    let decoder: JSONDecoder
+    let encoder: Encoder
+    let decoder: Decoder
     let requestExecutorType: RequestExecutorType
     let downloadExecutorType: DownloadExecutorType
     let uploadExecutorType: UploadExecutorType
@@ -27,8 +27,8 @@ public struct Configuration {
      *
      * - Parameter baseURL: The base URL used within the client.
      * - Parameter interceptors: A list of interceptors to intercept the request before sending (`RequestInterceptor`) it or intersect the response after receiving it (`ResponseInterceptor`).
-     * - Parameter encoder: The encoder to use to encode the request body data before sending it.
-     * - Parameter decoder: The decoder to use to decode the response body data before returning it.
+     * - Parameter encoder: The standard encoder to use to encode the request body data before sending it.
+     * - Parameter decoder: The standard decoder to use to decode the response body data before returning it.
      * - Parameter requestExecutorType: The request executor type to use to execute the requests.
      * - Parameter downloadExecutorType: The download executor type to use to execute downloads.
      * - Parameter uploadExecutorType: The upload executor type to use to execute uploads
@@ -37,8 +37,8 @@ public struct Configuration {
     public init(
         baseURL: URL,
         interceptors: [Interceptor],
-        encoder: JSONEncoder,
-        decoder: JSONDecoder,
+        encoder: Encoder = JSONEncoder(),
+        decoder: Decoder = JSONDecoder(),
         requestExecutorType: RequestExecutorType = .async,
         downloadExecutorType: DownloadExecutorType = .default,
         uploadExecutorType: UploadExecutorType = .default,
