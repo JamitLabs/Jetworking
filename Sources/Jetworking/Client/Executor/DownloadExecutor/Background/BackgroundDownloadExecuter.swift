@@ -5,14 +5,14 @@ import Foundation
  *  A background download may be useful when having a lot of data to download and not wanting the user to have to wait for a long time.
  *  It may also be useful to download files in the background when the app does not directly need to use it.
  *  For example when having a music playlist the user wants to download to be able to use it on the go without wasting mobile data.
- *  As this download might take some time and one does not want the user to always have the app in foreground, the background download executor might be a good choice.
+ *  As this download might take some time and one does not want the user to always have the app in foreground, the background download executer might be a good choice.
  *  Furthermore for video downloads, when wanting to be able to watch them on the go when internet might not be availeble, it might be suitable.
  *
- * Nevertheless this background download executor is still a work in progress approach and needs some optimisations as well as some adjustments to the programmers app itself
+ * Nevertheless this background download executer is still a work in progress approach and needs some optimisations as well as some adjustments to the programmers app itself
  * which need to be investigated further.
  */
-final class BackgroundDownloadExecutor: NSObject, DownloadExecutor {
-    var delegate: DownloadExecutorDelegate?
+final class BackgroundDownloadExecuter: NSObject, DownloadExecuter {
+    var delegate: DownloadExecuterDelegate?
     var sessionConfiguration: URLSessionConfiguration
 
     private var backgroundIdentifier: String
@@ -27,9 +27,9 @@ final class BackgroundDownloadExecutor: NSObject, DownloadExecutor {
         return session
     }()
 
-    init(sessionConfiguration: URLSessionConfiguration, downloadExecutorDelegate: DownloadExecutorDelegate) {
+    init(sessionConfiguration: URLSessionConfiguration, downloadExecuterDelegate: DownloadExecuterDelegate) {
         self.sessionConfiguration = sessionConfiguration
-        self.delegate = downloadExecutorDelegate
+        self.delegate = downloadExecuterDelegate
         self.backgroundIdentifier = "com.jamitlabs.jetworking.background"
         self.isDiscretionary = false
 
@@ -38,11 +38,11 @@ final class BackgroundDownloadExecutor: NSObject, DownloadExecutor {
 
     /**
      * # Summary
-     *  Initialises a download executor to download.
+     *  Initialises a download executer to download.
      *
      * - Parameter sessionConfiguration:
-     *  The session configuration to use within the download executor.
-     * - Parameter downloadExecutorDelegate:
+     *  The session configuration to use within the download executer.
+     * - Parameter downloadExecuterDelegate:
      *  The delegate to send the download updates to.
      * - Parameter backgroundIdentifier:
      *  When having an app extension which also handles download functionality make sure to set different background Identifiers as otherwise problems might occur
@@ -54,12 +54,12 @@ final class BackgroundDownloadExecutor: NSObject, DownloadExecutor {
      */
     init(
         sessionConfiguration: URLSessionConfiguration,
-        downloadExecutorDelegate: DownloadExecutorDelegate,
+        downloadExecuterDelegate: DownloadExecuterDelegate,
         backgroundIdentifier: String = "com.jamitlabs.jetworking.background",
         isDiscretionary: Bool = false
     ) {
         self.sessionConfiguration = sessionConfiguration
-        self.delegate = downloadExecutorDelegate
+        self.delegate = downloadExecuterDelegate
         self.backgroundIdentifier = backgroundIdentifier
         self.isDiscretionary = isDiscretionary
 
@@ -83,18 +83,18 @@ final class BackgroundDownloadExecutor: NSObject, DownloadExecutor {
     }
 }
 
-extension BackgroundDownloadExecutor: URLSessionDownloadDelegate {
+extension BackgroundDownloadExecuter: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        delegate?.downloadExecutor(downloadTask, didWriteData: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+        delegate?.downloadExecuter(downloadTask, didWriteData: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        delegate?.downloadExecutor(downloadTask, didFinishDownloadingTo: location)
+        delegate?.downloadExecuter(downloadTask, didFinishDownloadingTo: location)
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard let downloadTask = task as? URLSessionDownloadTask else { return }
 
-        delegate?.downloadExecutor(downloadTask, didCompleteWithError: error)
+        delegate?.downloadExecuter(downloadTask, didCompleteWithError: error)
     }
 }

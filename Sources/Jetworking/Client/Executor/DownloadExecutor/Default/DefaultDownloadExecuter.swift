@@ -1,14 +1,14 @@
 import Foundation
 
-final class DefaultDownloadExecutor: NSObject, DownloadExecutor {
-    var delegate: DownloadExecutorDelegate?
+final class DefaultDownloadExecuter: NSObject, DownloadExecuter {
+    var delegate: DownloadExecuterDelegate?
     var sessionConfiguration: URLSessionConfiguration
 
     private lazy var session: URLSession = .init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
 
-    init(sessionConfiguration: URLSessionConfiguration, downloadExecutorDelegate: DownloadExecutorDelegate) {
+    init(sessionConfiguration: URLSessionConfiguration, downloadExecuterDelegate: DownloadExecuterDelegate) {
         self.sessionConfiguration = sessionConfiguration
-        self.delegate = downloadExecutorDelegate
+        self.delegate = downloadExecuterDelegate
 
         super.init()
     }
@@ -30,18 +30,18 @@ final class DefaultDownloadExecutor: NSObject, DownloadExecutor {
     }
 }
 
-extension DefaultDownloadExecutor: URLSessionDownloadDelegate {
+extension DefaultDownloadExecuter: URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64) {
-        delegate?.downloadExecutor(downloadTask, didWriteData: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
+        delegate?.downloadExecuter(downloadTask, didWriteData: bytesWritten, totalBytesWritten: totalBytesWritten, totalBytesExpectedToWrite: totalBytesExpectedToWrite)
     }
 
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        delegate?.downloadExecutor(downloadTask, didFinishDownloadingTo: location)
+        delegate?.downloadExecuter(downloadTask, didFinishDownloadingTo: location)
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard let downloadTask = task as? URLSessionDownloadTask else { return }
 
-        delegate?.downloadExecutor(downloadTask, didCompleteWithError: error)
+        delegate?.downloadExecuter(downloadTask, didCompleteWithError: error)
     }
 }

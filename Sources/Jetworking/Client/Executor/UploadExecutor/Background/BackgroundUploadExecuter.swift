@@ -1,7 +1,7 @@
 import Foundation
 
-final class BackgroundUploadExecutor: NSObject, UploadExecutor {
-    var delegate: UploadExecutorDelegate?
+final class BackgroundUploadExecuter: NSObject, UploadExecuter {
+    var delegate: UploadExecuterDelegate?
     var sessionConfiguration: URLSessionConfiguration
 
     private var backgroundIdentifier: String
@@ -16,9 +16,9 @@ final class BackgroundUploadExecutor: NSObject, UploadExecutor {
         return session
     }()
 
-    init(sessionConfiguration: URLSessionConfiguration, uploadExecutorDelegate: UploadExecutorDelegate) {
+    init(sessionConfiguration: URLSessionConfiguration, uploadExecuterDelegate: UploadExecuterDelegate) {
         self.sessionConfiguration = sessionConfiguration
-        self.delegate = uploadExecutorDelegate
+        self.delegate = uploadExecuterDelegate
         self.backgroundIdentifier = "com.jamitlabs.jetworking.background"
         self.isDiscretionary = false
 
@@ -27,11 +27,11 @@ final class BackgroundUploadExecutor: NSObject, UploadExecutor {
 
     /**
      * # Summary
-     *  Initialises a download executor to download.
+     *  Initialises a download executer to download.
      *
      * - Parameter sessionConfiguration:
-     *  The session configuration to use within the download executor.
-     * - Parameter downloadExecutorDelegate:
+     *  The session configuration to use within the download executer.
+     * - Parameter downloadExecuterDelegate:
      *  The delegate to send the download updates to.
      * - Parameter backgroundIdentifier:
      *  When having an app extension which also handles download functionality make sure to set different background Identifiers as otherwise problems might occur
@@ -43,12 +43,12 @@ final class BackgroundUploadExecutor: NSObject, UploadExecutor {
      */
     init(
         sessionConfiguration: URLSessionConfiguration,
-        uploadExecutorDelegate: UploadExecutorDelegate,
+        uploadExecuterDelegate: UploadExecuterDelegate,
         backgroundIdentifier: String = "com.jamitlabs.jetworking.background",
         isDiscretionary: Bool = false
     ) {
         self.sessionConfiguration = sessionConfiguration
-        self.delegate = uploadExecutorDelegate
+        self.delegate = uploadExecuterDelegate
         self.backgroundIdentifier = backgroundIdentifier
         self.isDiscretionary = isDiscretionary
 
@@ -98,20 +98,20 @@ final class BackgroundUploadExecutor: NSObject, UploadExecutor {
     }
 }
 
-extension BackgroundUploadExecutor: URLSessionTaskDelegate {
+extension BackgroundUploadExecuter: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         guard let uploadTask = task as? URLSessionUploadTask else { return }
 
-        delegate?.uploadExecutor(uploadTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+        delegate?.uploadExecuter(uploadTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard let uploadTask = task as? URLSessionUploadTask else { return }
 
         if let error = error {
-            delegate?.uploadExecutor(uploadTask, didCompleteWithError: error)
+            delegate?.uploadExecuter(uploadTask, didCompleteWithError: error)
         } else {
-            delegate?.uploadExecutor(didFinishWith: uploadTask)
+            delegate?.uploadExecuter(didFinishWith: uploadTask)
         }
     }
 }

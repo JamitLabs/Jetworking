@@ -6,9 +6,9 @@ public struct Configuration {
     let interceptors: [Interceptor]
     let encoder: Encoder
     let decoder: Decoder
-    let requestExecutorType: RequestExecutorType
-    let downloadExecutorType: DownloadExecutorType
-    let uploadExecutorType: UploadExecutorType
+    let requestExecuterType: RequestExecuterType
+    let downloadExecuterType: DownloadExecuterType
+    let uploadExecuterType: UploadExecuterType
     let responseQueue: DispatchQueue
     let cache: URLCache
 
@@ -29,9 +29,9 @@ public struct Configuration {
      * - Parameter interceptors: A list of interceptors to intercept the request before sending (`RequestInterceptor`) it or intersect the response after receiving it (`ResponseInterceptor`).
      * - Parameter encoder: The standard encoder to use to encode the request body data before sending it.
      * - Parameter decoder: The standard decoder to use to decode the response body data before returning it.
-     * - Parameter requestExecutorType: The request executor type to use to execute the requests.
-     * - Parameter downloadExecutorType: The download executor type to use to execute downloads.
-     * - Parameter uploadExecutorType: The upload executor type to use to execute uploads
+     * - Parameter requestExecuterType: The request executer type to use to execute the requests.
+     * - Parameter downloadExecuterType: The download executer type to use to execute downloads.
+     * - Parameter uploadExecuterType: The upload executer type to use to execute uploads
      * - Parameter cache: A cache object that realizes caching mechanism. IMPORTANT: At least one instance of `SessionCacheInterceptor` is required.
      */
     public init(
@@ -39,9 +39,9 @@ public struct Configuration {
         interceptors: [Interceptor],
         encoder: Encoder = JSONEncoder(),
         decoder: Decoder = JSONDecoder(),
-        requestExecutorType: RequestExecutorType = .async,
-        downloadExecutorType: DownloadExecutorType = .default,
-        uploadExecutorType: UploadExecutorType = .default,
+        requestExecuterType: RequestExecuterType = .async,
+        downloadExecuterType: DownloadExecuterType = .default,
+        uploadExecuterType: UploadExecuterType = .default,
         responseQueue: DispatchQueue = .main,
         cache: URLCache = .shared
     ) {
@@ -49,9 +49,9 @@ public struct Configuration {
         self.interceptors = interceptors
         self.encoder = encoder
         self.decoder = decoder
-        self.requestExecutorType = requestExecutorType
-        self.downloadExecutorType = downloadExecutorType
-        self.uploadExecutorType = uploadExecutorType
+        self.requestExecuterType = requestExecuterType
+        self.downloadExecuterType = downloadExecuterType
+        self.uploadExecuterType = uploadExecuterType
         self.responseQueue = responseQueue
         self.cache = cache
     }

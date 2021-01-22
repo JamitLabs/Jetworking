@@ -18,61 +18,61 @@ public final class Client {
     private lazy var session: URLSession = .init(configuration: .default)
     private lazy var responseHandler: ResponseHandler = .init(configuration: configuration)
 
-    private lazy var requestExecutor: RequestExecutor = {
-        switch configuration.requestExecutorType {
+    private lazy var requestExecuter: RequestExecuter = {
+        switch configuration.requestExecuterType {
         case .sync:
-            return SyncRequestExecutor(session: session)
+            return SyncRequestExecuter(session: session)
 
         case .async:
-            return AsyncRequestExecutor(session: session)
+            return AsyncRequestExecuter(session: session)
 
-        case let .custom(executorType):
-            return executorType.init(session: session)
+        case let .custom(executerType):
+            return executerType.init(session: session)
         }
     }()
 
     private var executingDownloads: [Int: DownloadHandler] = [:]
-    private lazy var downloadExecutor: DownloadExecutor = {
-        switch configuration.downloadExecutorType {
+    private lazy var downloadExecuter: DownloadExecuter = {
+        switch configuration.downloadExecuterType {
         case .default:
-            return DefaultDownloadExecutor(
+            return DefaultDownloadExecuter(
                 sessionConfiguration: session.configuration,
-                downloadExecutorDelegate: self
+                downloadExecuterDelegate: self
             )
 
         case .background:
-            return BackgroundDownloadExecutor(
+            return BackgroundDownloadExecuter(
                 sessionConfiguration: session.configuration,
-                downloadExecutorDelegate: self
+                downloadExecuterDelegate: self
             )
 
-        case let .custom(executorType):
-            return executorType.init(
+        case let .custom(executerType):
+            return executerType.init(
                 sessionConfiguration: session.configuration,
-                downloadExecutorDelegate: self
+                downloadExecuterDelegate: self
             )
         }
     }()
 
     private var executingUploads: [Int: UploadHandler] = [:]
-    private lazy var uploadExecutor: UploadExecutor = {
-        switch configuration.uploadExecutorType {
+    private lazy var uploadExecuter: UploadExecuter = {
+        switch configuration.uploadExecuterType {
         case .default:
-            return DefaultUploadExecutor(
+            return DefaultUploadExecuter(
                 sessionConfiguration: session.configuration,
-                uploadExecutorDelegate: self
+                uploadExecuterDelegate: self
             )
 
         case .background:
-            return BackgroundUploadExecutor(
+            return BackgroundUploadExecuter(
                 sessionConfiguration: session.configuration,
-                uploadExecutorDelegate: self
+                uploadExecuterDelegate: self
             )
 
-        case let .custom(executorType):
-            return executorType.init(
+        case let .custom(executerType):
+            return executerType.init(
                 sessionConfiguration: session.configuration,
-                uploadExecutorDelegate: self
+                uploadExecuterDelegate: self
             )
         }
     }()
@@ -97,7 +97,7 @@ public final class Client {
     public func get<ResponseType: Decodable>(endpoint: Endpoint<ResponseType>, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .GET, and: endpoint)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
                 self.responseHandler.handleDecodableResponse(
@@ -121,7 +121,7 @@ public final class Client {
             let encoder: Encoder = endpoint.encoder ?? configuration.encoder
             let bodyData: Data = try encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint, and: bodyData)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
                 self.responseHandler.handleDecodableResponse(
@@ -143,7 +143,7 @@ public final class Client {
     public func post<ResponseType>(endpoint: Endpoint<ResponseType>, body: ExpressibleByNilLiteral? = nil, _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .POST, and: endpoint)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
                 self.responseHandler.handleVoidResponse(
@@ -167,7 +167,7 @@ public final class Client {
             let encoder: Encoder = endpoint.encoder ?? configuration.encoder
             let bodyData: Data = try encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PUT, and: endpoint, and: bodyData)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
                 self.responseHandler.handleDecodableResponse(
@@ -195,7 +195,7 @@ public final class Client {
             let encoder: Encoder = endpoint.encoder ?? configuration.encoder
             let bodyData: Data = try encoder.encode(body)
             let request: URLRequest = try createRequest(forHttpMethod: .PATCH, and: endpoint, and: bodyData)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
                 self.responseHandler.handleDecodableResponse(
@@ -217,7 +217,7 @@ public final class Client {
     public func delete<ResponseType: Decodable>(endpoint: Endpoint<ResponseType>, parameter: [String: Any] = [:], _ completion: @escaping RequestCompletion<ResponseType>) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(forHttpMethod: .DELETE, and: endpoint)
-            return requestExecutor.send(request: request) { [weak self] data, urlResponse, error in
+            return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
 
                 self.responseHandler.handleDecodableResponse(
@@ -237,7 +237,7 @@ public final class Client {
 
     @discardableResult
     public func send(request: URLRequest, _ completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> CancellableRequest? {
-        return requestExecutor.send(request: request, completion)
+        return requestExecuter.send(request: request, completion)
     }
 
     @discardableResult
@@ -260,7 +260,7 @@ public final class Client {
             enqueue(completion(url, response, nil))
             return nil
         } else {
-            let task = downloadExecutor.download(request: request)
+            let task = downloadExecuter.download(request: request)
             task.flatMap {
                 executingDownloads[$0.identifier] = DownloadHandler(
                     progressHandler: progressHandler,
@@ -280,7 +280,7 @@ public final class Client {
         _ completion: @escaping UploadHandler.CompletionHandler
     ) -> CancellableRequest? {
         let request: URLRequest = .init(url: url, httpMethod: .POST)
-        let task = uploadExecutor.upload(request: request, fromFile: fileURL)
+        let task = uploadExecuter.upload(request: request, fromFile: fileURL)
         task.flatMap {
             executingUploads[$0.identifier] = UploadHandler(
                 progressHandler: progressHandler,
@@ -315,7 +315,7 @@ public final class Client {
         // TODO: Extract into constants
         request.setValue("\(multipartType.rawValue); boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
 
-        let task = uploadExecutor.upload(request: request, from: multipartData)
+        let task = uploadExecuter.upload(request: request, from: multipartData)
         task.flatMap {
             executingUploads[$0.identifier] = UploadHandler(
                 progressHandler: progressHandler,
@@ -369,8 +369,8 @@ public final class Client {
     }
 }
 
-extension Client: DownloadExecutorDelegate {
-    public func downloadExecutor(
+extension Client: DownloadExecuterDelegate {
+    public func downloadExecuter(
         _ downloadTask: URLSessionDownloadTask,
         didWriteData bytesWritten: Int64,
         totalBytesWritten: Int64,
@@ -380,7 +380,7 @@ extension Client: DownloadExecutorDelegate {
         enqueue(progressHandler(totalBytesWritten, totalBytesExpectedToWrite))
     }
 
-    public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
+    public func downloadExecuter(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
 
@@ -398,7 +398,7 @@ extension Client: DownloadExecutorDelegate {
         }
     }
 
-    public func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?) {
+    public func downloadExecuter(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
         enqueue(completionHandler(nil, downloadTask.response, error))
@@ -429,8 +429,8 @@ extension Client: DownloadExecutorDelegate {
     }
 }
 
-extension Client: UploadExecutorDelegate {
-    public func uploadExecutor(
+extension Client: UploadExecuterDelegate {
+    public func uploadExecuter(
         _ uploadTask: URLSessionUploadTask,
         didSendBodyData bytesSent: Int64,
         totalBytesSent: Int64,
@@ -440,13 +440,13 @@ extension Client: UploadExecutorDelegate {
         enqueue(progressHandler(totalBytesSent, totalBytesExpectedToSend))
     }
     
-    public func uploadExecutor(didFinishWith uploadTask: URLSessionUploadTask) {
+    public func uploadExecuter(didFinishWith uploadTask: URLSessionUploadTask) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
         enqueue(completionHandler(uploadTask.response, uploadTask.error))
     }
     
-    public func uploadExecutor(_ uploadTask: URLSessionUploadTask, didCompleteWithError error: Error?) {
+    public func uploadExecuter(_ uploadTask: URLSessionUploadTask, didCompleteWithError error: Error?) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
         enqueue(completionHandler(uploadTask.response, error))

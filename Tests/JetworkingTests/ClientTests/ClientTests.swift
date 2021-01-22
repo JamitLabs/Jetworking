@@ -210,7 +210,7 @@ final class ClientTests: XCTestCase {
                 HeaderFieldsRequestInterceptor(headerFields: HeaderFields.additional),
                 LoggingInterceptor()
             ],
-            requestExecutorType: .sync
+            requestExecuterType: .sync
         ))
 
         let firstExpectation = expectation(description: "Wait for first get")
@@ -244,7 +244,7 @@ final class ClientTests: XCTestCase {
         XCTAssertTrue(result == .completed)
     }
 
-    func testIncorrectOrderDueToAsyncRequestExecutor() {
+    func testIncorrectOrderDueToAsyncRequestExecuter() {
         let client = Client(configuration: Configurations.default())
 
         let firstExpectation = expectation(description: "Wait for first get")

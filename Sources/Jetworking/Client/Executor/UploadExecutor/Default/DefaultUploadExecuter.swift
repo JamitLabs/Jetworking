@@ -1,14 +1,14 @@
 import Foundation
 
-final class DefaultUploadExecutor: NSObject, UploadExecutor {
-    var delegate: UploadExecutorDelegate?
+final class DefaultUploadExecuter: NSObject, UploadExecuter {
+    var delegate: UploadExecuterDelegate?
     var sessionConfiguration: URLSessionConfiguration
 
     private lazy var session: URLSession = .init(configuration: sessionConfiguration, delegate: self, delegateQueue: nil)
 
-    init(sessionConfiguration: URLSessionConfiguration, uploadExecutorDelegate: UploadExecutorDelegate) {
+    init(sessionConfiguration: URLSessionConfiguration, uploadExecuterDelegate: UploadExecuterDelegate) {
         self.sessionConfiguration = sessionConfiguration
-        self.delegate = uploadExecutorDelegate
+        self.delegate = uploadExecuterDelegate
 
         super.init()
     }
@@ -50,20 +50,20 @@ final class DefaultUploadExecutor: NSObject, UploadExecutor {
     }
 }
 
-extension DefaultUploadExecutor: URLSessionTaskDelegate {
+extension DefaultUploadExecuter: URLSessionTaskDelegate {
     func urlSession(_ session: URLSession, task: URLSessionTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64) {
         guard let uploadTask = task as? URLSessionUploadTask else { return }
 
-        delegate?.uploadExecutor(uploadTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
+        delegate?.uploadExecuter(uploadTask, didSendBodyData: bytesSent, totalBytesSent: totalBytesSent, totalBytesExpectedToSend: totalBytesExpectedToSend)
     }
 
     func urlSession(_ session: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
         guard let uploadTask = task as? URLSessionUploadTask else { return }
 
         if let error = error {
-            delegate?.uploadExecutor(uploadTask, didCompleteWithError: error)
+            delegate?.uploadExecuter(uploadTask, didCompleteWithError: error)
         } else {
-            delegate?.uploadExecutor(didFinishWith: uploadTask)
+            delegate?.uploadExecuter(didFinishWith: uploadTask)
         }
     }
 }
