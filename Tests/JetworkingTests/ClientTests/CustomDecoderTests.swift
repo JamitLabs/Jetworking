@@ -5,7 +5,7 @@ import Foundation
 final class CustomDecoderTests: XCTestCase {
     func testCustomDecoderForGet() {
         let testableDecoder = TestableDecoder()
-        let client = Client(configuration: Configurations.default(.sync)) { session in
+        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self))) { session in
             session.configuration.timeoutIntervalForRequest = 30
         }
 
@@ -37,7 +37,7 @@ final class CustomDecoderTests: XCTestCase {
 
     func testCustomDecoderForPost() {
         let testableDecoder = TestableDecoder()
-        let client = Client(configuration: Configurations.default(.sync)) { session in
+        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self))) { session in
             session.configuration.timeoutIntervalForRequest = 30
         }
 
@@ -70,7 +70,7 @@ final class CustomDecoderTests: XCTestCase {
 
     func testCustomDecoderForPut() {
         let testableDecoder = TestableDecoder()
-        let client = Client(configuration: Configurations.default(.sync)) { session in
+        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self))) { session in
             session.configuration.timeoutIntervalForRequest = 30
         }
 
@@ -102,7 +102,7 @@ final class CustomDecoderTests: XCTestCase {
 
     func testCustomDecoderForPatch() {
         let testableDecoder = TestableDecoder()
-        let client = Client(configuration: Configurations.default(.sync)) { session in
+        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self))) { session in
             session.configuration.timeoutIntervalForRequest = 30
         }
 

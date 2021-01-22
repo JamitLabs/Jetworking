@@ -17,10 +17,12 @@ struct MockCancellable: CancellableRequest {
 final class MockExecuter: RequestExecutor {
     let session: URLSession
     let encoder: JSONEncoder = JSONEncoder()
-    let completionDelay: TimeInterval = 0.5
+    let defaultCompletionDelay: TimeInterval = 0.5
     let responseCode: Int = 200
     let headerFields: [String: String]? = nil
     var isCancelled: Bool = false
+
+    static var completionDelayForRequest: ((URLRequest) -> TimeInterval)?
 
     init(session: URLSession) {
         self.session = session
@@ -30,6 +32,7 @@ final class MockExecuter: RequestExecutor {
         request: URLRequest,
         _ completion: @escaping ((Data?, URLResponse?, Error?) -> Void)
     ) -> CancellableRequest? {
+        let completionDelay = MockExecuter.completionDelayForRequest?(request) ?? defaultCompletionDelay
         DispatchQueue.main.asyncAfter(deadline: .now() + completionDelay) { [weak self] in
             guard self?.isCancelled == false  else { return completion(nil, nil, URLError(.cancelled)) }
 
