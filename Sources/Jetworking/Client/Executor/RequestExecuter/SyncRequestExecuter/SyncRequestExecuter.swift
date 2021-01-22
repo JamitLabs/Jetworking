@@ -1,6 +1,6 @@
 import Foundation
 
-final class SyncRequestExecutor: RequestExecutor {
+final class SyncRequestExecuter: RequestExecuter {
     internal let session: URLSession
 
     private lazy var operationQueue: OperationQueue = {

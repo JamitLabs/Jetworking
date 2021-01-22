@@ -1,13 +1,13 @@
 import Foundation
 
-/// The protocol request executors need to conform to to be able to be used to send requests.
-public protocol RequestExecutor {
+/// The protocol request executers need to conform to to be able to be used to send requests.
+public protocol RequestExecuter {
     /// The session the request will be send on
     var session: URLSession { get }
 
     /**
      * # Summary
-     *  The initialiser of the `RequestExecutor`.
+     *  The initialiser of the `RequestExecuter`.
      *
      * - Parameter session:
      *  The session the request will be send on.

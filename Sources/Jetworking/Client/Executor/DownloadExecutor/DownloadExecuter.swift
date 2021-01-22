@@ -1,22 +1,22 @@
 import Foundation
 
-/// The protocol a download executor has to conform to to be used to download.
-public protocol DownloadExecutor: AnyObject {
+/// The protocol a download executer has to conform to to be used to download.
+public protocol DownloadExecuter: AnyObject {
     /// The delegate to set to receive updates on downloads.
-    var delegate: DownloadExecutorDelegate? { get }
+    var delegate: DownloadExecuterDelegate? { get }
     /// The session configuration to use to download.
     var sessionConfiguration: URLSessionConfiguration { get }
 
     /**
      * # Summary
-     *  Initialises a download executor to download.
+     *  Initialises a download executer to download.
      *
      * - Parameter sessionConfiguration:
-     *  The session configuration to use within the download executor.
-     * - Parameter downloadExecutorDelegate:
+     *  The session configuration to use within the download executer.
+     * - Parameter downloadExecuterDelegate:
      *  The delegate to send the download updates to.
      */
-    init(sessionConfiguration: URLSessionConfiguration, downloadExecutorDelegate: DownloadExecutorDelegate)
+    init(sessionConfiguration: URLSessionConfiguration, downloadExecuterDelegate: DownloadExecuterDelegate)
 
     /**
      * # Summary

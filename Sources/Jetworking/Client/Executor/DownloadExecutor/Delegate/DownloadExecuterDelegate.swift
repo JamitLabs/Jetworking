@@ -1,7 +1,7 @@
 import Foundation
 
-// The delegate protocol for the `DownloadExecutor`.
-public protocol DownloadExecutorDelegate: AnyObject {
+// The delegate protocol for the `DownloadExecuter`.
+public protocol DownloadExecuterDelegate: AnyObject {
     /**
      * # Summary
      *  Delegate which gets called when a progress update happens.
@@ -15,7 +15,7 @@ public protocol DownloadExecutorDelegate: AnyObject {
      * - Parameter totalBytesExpectedToWrite:
      *  The total bytes expected to write.
      */
-    func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64)
+    func downloadExecuter(_ downloadTask: URLSessionDownloadTask, didWriteData bytesWritten: Int64, totalBytesWritten: Int64, totalBytesExpectedToWrite: Int64)
 
     /**
      * # Summary
@@ -26,7 +26,7 @@ public protocol DownloadExecutorDelegate: AnyObject {
      * - Parameter didFinishDownloadingTo:
      *  The location the file was downloaded to.
      */
-    func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL)
+    func downloadExecuter(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL)
 
     /**
      * # Summary
@@ -37,5 +37,5 @@ public protocol DownloadExecutorDelegate: AnyObject {
      * - Parameter didCompleteWithError:
      *  The error which was thrown while downloading.
      */
-    func downloadExecutor(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?)
+    func downloadExecuter(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?)
 }

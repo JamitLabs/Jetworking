@@ -2,7 +2,7 @@ import Foundation
 @testable import Jetworking
 
 enum Configurations {
-    static func `default`(_ requestExecutorType: RequestExecutorType = .async) -> Configuration {
+    static func `default`(_ requestExecuterType: RequestExecuterType = .async) -> Configuration {
         return .init(
             baseURL: URL(string: "https://postman-echo.com")!,
             interceptors: [
@@ -12,7 +12,7 @@ enum Configurations {
                 HeaderFieldsRequestInterceptor(headerFields: HeaderFields.additional),
                 LoggingInterceptor()
             ],
-            requestExecutorType: requestExecutorType
+            requestExecuterType: requestExecuterType
         )
     }
 
@@ -22,7 +22,7 @@ enum Configurations {
             interceptors: configuration.interceptors + [DefaultSessionCacheIntercepter()],
             encoder: configuration.encoder,
             decoder: configuration.decoder,
-            requestExecutorType: configuration.requestExecutorType,
+            requestExecuterType: configuration.requestExecuterType,
             cache: cache
         )
     }

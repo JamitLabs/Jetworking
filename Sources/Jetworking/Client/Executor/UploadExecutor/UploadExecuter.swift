@@ -1,22 +1,22 @@
 import Foundation
 
-/// The protocol an upload executor has to conform to to be used to upload.
-public protocol UploadExecutor: AnyObject {
+/// The protocol an upload executer has to conform to to be used to upload.
+public protocol UploadExecuter: AnyObject {
     /// The delegate to set to receive updates on uploads.
-    var delegate: UploadExecutorDelegate? { get }
+    var delegate: UploadExecuterDelegate? { get }
     /// The session configuration to use to upload.
     var sessionConfiguration: URLSessionConfiguration { get }
 
     /**
      * # Summary
-     *  Initialises an upload executor to upload.
+     *  Initialises an upload executer to upload.
      *
      * - Parameter sessionConfiguration:
-     *  The session configuration to use within the upload executor.
-     * - Parameter downloadExecutorDelegate:
+     *  The session configuration to use within the upload executer.
+     * - Parameter downloadExecuterDelegate:
      *  The delegate to send the upload updates to.
      */
-    init(sessionConfiguration: URLSessionConfiguration, uploadExecutorDelegate: UploadExecutorDelegate)
+    init(sessionConfiguration: URLSessionConfiguration, uploadExecuterDelegate: UploadExecuterDelegate)
 
     /**
      * # Summary

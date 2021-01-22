@@ -1,7 +1,7 @@
 import Foundation
 
-// The delegate protocol for the `UploadExecutor`.
-public protocol UploadExecutorDelegate: AnyObject {
+// The delegate protocol for the `UploadExecuter`.
+public protocol UploadExecuterDelegate: AnyObject {
     /**
      * # Summary
      *  Delegate which gets called when a progress update happens.
@@ -15,7 +15,7 @@ public protocol UploadExecutorDelegate: AnyObject {
      * - Parameter totalBytesExpectedToSend:
      *  The total bytes expected to send.
      */
-    func uploadExecutor(_ uploadTask: URLSessionUploadTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64)
+    func uploadExecuter(_ uploadTask: URLSessionUploadTask, didSendBodyData bytesSent: Int64, totalBytesSent: Int64, totalBytesExpectedToSend: Int64)
 
     /**
      * # Summary
@@ -24,7 +24,7 @@ public protocol UploadExecutorDelegate: AnyObject {
      * - Parameter downloadTask:
      *  The upload task the upload is executed on..
      */
-    func uploadExecutor(didFinishWith uploadTask: URLSessionUploadTask)
+    func uploadExecuter(didFinishWith uploadTask: URLSessionUploadTask)
 
     /**
      * # Summary
@@ -35,5 +35,5 @@ public protocol UploadExecutorDelegate: AnyObject {
      * - Parameter didCompleteWithError:
      *  The error which was thrown while uploading.
      */
-    func uploadExecutor(_ uploadTask: URLSessionUploadTask, didCompleteWithError error: Error?)
+    func uploadExecuter(_ uploadTask: URLSessionUploadTask, didCompleteWithError error: Error?)
 }
