@@ -15,7 +15,7 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
                 XCTAssertEqual(MockBody(foo1: "SomeFoo", foo2: "AnotherFoo"), resultData)
@@ -38,10 +38,10 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -56,14 +56,14 @@ final class ClientTests: XCTestCase {
         let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for post with empty content")
 
-        client.post(endpoint: Endpoints.post, body: nil) { response, result in
+        client.post(endpoint: Endpoints.voidPost) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
-                case .failure:
-                    break
+            case .failure:
+                XCTFail("Request should not result in failure!")
 
-                case let .success(resultData):
-                    print(resultData)
+            case let .success(resultData):
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -83,10 +83,10 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -106,10 +106,10 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -129,10 +129,10 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -304,8 +304,6 @@ final class ClientTests: XCTestCase {
         // Downloads file from remote source
         client.download(url: url, progressHandler: nil) { fileURL, response, _ in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-            guard let fileURL = fileURL else { return }
-
             let responseDate = (response as? HTTPURLResponse)?.allHeaderFields["Date"] as? String
             XCTAssertNotNil(responseDate)
 

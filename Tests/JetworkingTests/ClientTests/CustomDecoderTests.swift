@@ -21,10 +21,10 @@ final class CustomDecoderTests: XCTestCase {
 
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not be result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -54,10 +54,10 @@ final class CustomDecoderTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not be result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -86,10 +86,10 @@ final class CustomDecoderTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not be result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -118,10 +118,10 @@ final class CustomDecoderTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not be result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
