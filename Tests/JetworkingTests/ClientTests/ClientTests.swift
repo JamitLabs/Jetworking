@@ -176,7 +176,7 @@ final class ClientTests: XCTestCase {
         }
 
         var request = URLRequest(url: targetURL, httpMethod: .DELETE)
-        request = defaultConfiguration.requestInterceptors.reduce(request) { $1.intercept($0) }
+        request = defaultConfiguration.interceptors.reduce(request) { $1.intercept($0) }
 
         client.send(request: request) { (data: Data?, response: URLResponse?, error: Error?) -> Void in
             XCTAssertNotNil(response)

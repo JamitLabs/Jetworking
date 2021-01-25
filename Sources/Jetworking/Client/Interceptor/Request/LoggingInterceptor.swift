@@ -1,7 +1,7 @@
 import Foundation
 
 /// Implementation of a request interceptor which logs the request information.
-public final class LoggingInterceptor: RequestInterceptor, ResponseInterceptor {
+public final class LoggingInterceptor: Interceptor {
     private var logger: Logger
 
     /**

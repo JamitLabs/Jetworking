@@ -12,16 +12,6 @@ public struct Configuration {
     let responseQueue: DispatchQueue
     let cache: URLCache
 
-    /// RequestInteceptors stored in `interceptors` property
-    public var requestInterceptors: [RequestInterceptor] {
-        interceptors.compactMap { $0 as? RequestInterceptor }
-    }
-
-    /// ResponseInteceptors stored in `interceptors` property
-    public var responseInterceptors: [ResponseInterceptor] {
-        interceptors.compactMap { $0 as? ResponseInterceptor }
-    }
-
     /**
      * Initialises a new configuration instance to use within the client.
      *

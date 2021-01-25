@@ -399,7 +399,7 @@ public final class Client {
             httpBody: body
         )
 
-        var requestInterceptors: [RequestInterceptor] = configuration.requestInterceptors
+        var requestInterceptors: [Interceptor] = configuration.interceptors
 
         // Extra case: POST-request with empty content
         //
