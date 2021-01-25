@@ -35,8 +35,7 @@ final class ResponseHandler {
         error: Error?,
         decoder: Decoder,
         completion: @escaping Client.RequestCompletion<ResponseType>
-    ) -> () -> Void
-    {
+    ) -> () -> Void {
         guard ResponseType.self is Void.Type else {
             return { completion(currentURLResponse, .failure(APIError.unexpectedError)) }
         }
@@ -50,8 +49,7 @@ final class ResponseHandler {
         error: Error?,
         decoder: Decoder,
         completion: @escaping Client.RequestCompletion<ResponseType>
-    ) -> () -> Void
-    {
+    ) -> () -> Void {
         guard
             let data = data,
             let decodedData = try? decoder.decode(ResponseType.self, from: data)
@@ -77,7 +75,10 @@ final class ResponseHandler {
         }
 
         guard let currentURLResponse = interceptedResponse as? HTTPURLResponse else {
-            return enqueue(completion(nil, .failure(error ?? APIError.responseMissing)), inDispatchQueue: configuration.responseQueue)
+            return enqueue(
+                completion(nil, .failure(error ?? APIError.responseMissing)),
+                inDispatchQueue: configuration.responseQueue
+            )
         }
 
         if let error = error { return enqueue(completion(currentURLResponse, .failure(error)), inDispatchQueue: configuration.responseQueue) }
@@ -85,12 +86,23 @@ final class ResponseHandler {
         switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
         case .successful:
             let decoder = endpoint?.decoder ?? configuration.decoder
-            enqueue(completionWrapper(currentURLResponse, data, nil, decoder, completion)(), inDispatchQueue: configuration.responseQueue)
+            enqueue(
+                completionWrapper(currentURLResponse, data, nil, decoder, completion)(),
+                inDispatchQueue: configuration.responseQueue
+            )
 
         case .clientError, .serverError:
-            guard let error = error else { return completion(currentURLResponse, .failure(APIError.unexpectedError)) }
+            guard let error = error else {
+                return enqueue(
+                    completion(currentURLResponse, .failure(APIError.unexpectedError)),
+                    inDispatchQueue: configuration.responseQueue
+                )
+            }
 
-            enqueue(completion(currentURLResponse, .failure(error)), inDispatchQueue: configuration.responseQueue)
+            enqueue(
+                completion(currentURLResponse, .failure(error)),
+                inDispatchQueue: configuration.responseQueue
+            )
 
         default:
             return

@@ -2,9 +2,9 @@ import Foundation
 @testable import Jetworking
 
 enum Configurations {
-    static func `default`(_ requestExecuterType: RequestExecuterType = .async) -> Configuration {
+    static func `default`(_ requestExecuterType: RequestExecuterType = .custom(MockExecuter.self)) -> Configuration {
         return .init(
-            baseURL: URL(string: "https://postman-echo.com")!,
+            baseURL: URL(string: "https://www.jamitlabs.com/")!,
             interceptors: [
                 AuthenticationRequestInterceptor(
                     authenticationMethod: .basicAuthentication(username: "username", password: "password")

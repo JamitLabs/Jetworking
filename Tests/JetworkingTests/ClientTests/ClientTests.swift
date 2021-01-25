@@ -13,13 +13,12 @@ final class ClientTests: XCTestCase {
         client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { response, result in
 
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertEqual(MockBody(foo1: "SomeFoo", foo2: "AnotherFoo"), resultData)
             }
 
             XCTAssertNotNil(response)
@@ -39,10 +38,10 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -57,14 +56,14 @@ final class ClientTests: XCTestCase {
         let client = Client(configuration: Configurations.default())
         let expectation = self.expectation(description: "Wait for post with empty content")
 
-        client.post(endpoint: Endpoints.post, body: nil) { response, result in
+        client.post(endpoint: Endpoints.voidPost) { response, result in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
-                case .failure:
-                    break
+            case .failure:
+                XCTFail("Request should not result in failure!")
 
-                case let .success(resultData):
-                    print(resultData)
+            case let .success(resultData):
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -84,10 +83,10 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -107,10 +106,10 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -130,10 +129,10 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
             switch result {
             case .failure:
-                break
+                XCTFail("Request should not result in failure!")
 
             case let .success(resultData):
-                print(resultData)
+                XCTAssertNotNil(resultData)
             }
 
             XCTAssertNotNil(response)
@@ -200,72 +199,6 @@ final class ClientTests: XCTestCase {
         waitForExpectations(timeout: 5.0, handler: nil)
     }
 
-    func testSequentialRequestsCorrectOrder() {
-        let client = Client(configuration: .init(
-            baseURL: URL(string: "https://postman-echo.com")!,
-            interceptors: [
-                AuthenticationRequestInterceptor(
-                    authenticationMethod: .basicAuthentication(username: "username", password: "password")
-                ),
-                HeaderFieldsRequestInterceptor(headerFields: HeaderFields.additional),
-                LoggingInterceptor()
-            ],
-            requestExecuterType: .sync
-        ))
-
-        let firstExpectation = expectation(description: "Wait for first get")
-        let secondExpectation = expectation(description: "Wait for second get")
-        let thirdExpectation = expectation(description: "Wait for third get")
-        let fourthExpectation = expectation(description: "Wait for fourth get")
-
-        client.get(endpoint: Endpoints.get) { _, _ in
-            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-            firstExpectation.fulfill()
-        }
-        client.get(endpoint: Endpoints.get) { _, _ in
-            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-            secondExpectation.fulfill()
-        }
-        client.get(endpoint: Endpoints.get) { _, _ in
-            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-            thirdExpectation.fulfill()
-        }
-        client.get(endpoint: Endpoints.get) { _, _ in
-            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-            fourthExpectation.fulfill()
-        }
-
-        let result = XCTWaiter().wait(
-            for: [firstExpectation, secondExpectation, thirdExpectation, fourthExpectation],
-            timeout: 20,
-            enforceOrder: true
-        )
-
-        XCTAssertTrue(result == .completed)
-    }
-
-    func testIncorrectOrderDueToAsyncRequestExecuter() {
-        let client = Client(configuration: Configurations.default())
-
-        let firstExpectation = expectation(description: "Wait for first get")
-        let secondExpectation = expectation(description: "Wait for second get")
-        let thirdExpectation = expectation(description: "Wait for third get")
-        let fourthExpectation = expectation(description: "Wait for fourth get")
-
-        client.get(endpoint: Endpoints.get) { _, _ in firstExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _, _ in secondExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _, _ in thirdExpectation.fulfill() }
-        client.get(endpoint: Endpoints.get) { _, _ in fourthExpectation.fulfill() }
-
-        let result = XCTWaiter().wait(
-            for: [firstExpectation, secondExpectation, thirdExpectation, fourthExpectation],
-            timeout: 20,
-            enforceOrder: true
-        )
-
-        XCTAssertTrue(result == .incorrectOrder)
-	}
-
     func testDownloadWithInvalidURL() {
         let client = Client(configuration: Configurations.default())
 
@@ -320,7 +253,7 @@ final class ClientTests: XCTestCase {
 
     func testFileDownloadFromSessionCache() {
         let cache = URLCache(memoryCapacity: 10 * 1_024 * 1_024, diskCapacity: .zero, diskPath: nil)
-        let configuration = Configurations.extendClientConfiguration(Configurations.default(), with: cache)
+        let configuration = Configurations.extendClientConfiguration(Configurations.default(.async), with: cache)
         let client = Client(configuration: configuration)
 
         let firstExpectation = XCTestExpectation(description: "Wait for remote download")
@@ -360,7 +293,7 @@ final class ClientTests: XCTestCase {
 
     func testForcedFileDownload() {
         let cache = URLCache(memoryCapacity: 10 * 1_024 * 1_024, diskCapacity: .zero, diskPath: nil)
-        let configuration = Configurations.extendClientConfiguration(Configurations.default(), with: cache)
+        let configuration = Configurations.extendClientConfiguration(Configurations.default(.sync), with: cache)
         let client = Client(configuration: configuration)
 
         let firstExpectation = XCTestExpectation(description: "Wait for remote download")
@@ -371,8 +304,6 @@ final class ClientTests: XCTestCase {
         // Downloads file from remote source
         client.download(url: url, progressHandler: nil) { fileURL, response, _ in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-            guard let fileURL = fileURL else { return }
-
             let responseDate = (response as? HTTPURLResponse)?.allHeaderFields["Date"] as? String
             XCTAssertNotNil(responseDate)
 
@@ -392,7 +323,7 @@ final class ClientTests: XCTestCase {
             firstExpectation.fulfill()
         }
 
-        wait(for: [firstExpectation, secondExpectation], timeout: 60.0)
+        wait(for: [firstExpectation, secondExpectation], timeout: 120.0)
     }
 
     func testUploadFile() {
