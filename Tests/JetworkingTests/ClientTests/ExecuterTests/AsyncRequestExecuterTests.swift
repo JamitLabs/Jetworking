@@ -1,10 +1,3 @@
-//
-//  File.swift
-//  
-//
-//  Created by Jens on 28.10.20.
-//
-
 import Foundation
 @testable import Jetworking
 import XCTest
@@ -13,18 +6,22 @@ class AsyncRequestExecuterTests: XCTestCase {
     var session: URLSession {
         let configuration = URLSessionConfiguration.default
         configuration.protocolClasses = [MockURLProtocol.self]
-        return URLSession.init(configuration: configuration)
+        return URLSession(configuration: configuration)
     }
 
     func testOrderDueToAsyncRequestExecuter() {
         let requestExecuter: AsyncRequestExecutor = .init(session: session)
+        let firstTestPath: String = "https://www.jamitlabs.com/somePath0"
+        let secondTestPath: String = "https://www.jamitlabs.com/somePath1"
+        let thirdTestPath: String = "https://www.jamitlabs.com/somePath2"
+        let fourthTestPath: String = "https://www.jamitlabs.com/somePath3"
 
         MockURLProtocol.requestHandler = { request in
             let waitTime: [String: TimeInterval] = [
-                "https://www.jamitlabs.com/somePath0": 2,
-                "https://www.jamitlabs.com/somePath1": 0,
-                "https://www.jamitlabs.com/somePath2": 3,
-                "https://www.jamitlabs.com/somePath3": 1
+                firstTestPath: 2,
+                secondTestPath: 0,
+                thirdTestPath: 3,
+                fourthTestPath: 1
             ]
 
             guard
@@ -47,7 +44,7 @@ class AsyncRequestExecuterTests: XCTestCase {
         let firstExpectation = expectation(description: "Wait for first get")
         _ = requestExecuter.send(
             request: URLRequest(
-                url: URL(string: "https://www.jamitlabs.com/somePath0")!,
+                url: URL(string: firstTestPath)!,
                 httpMethod: HTTPMethod.GET
             )
         ) { data, response, error in
@@ -57,7 +54,7 @@ class AsyncRequestExecuterTests: XCTestCase {
         let secondExpectation = expectation(description: "Wait for second get")
         _ = requestExecuter.send(
             request: URLRequest(
-                url: URL(string: "https://www.jamitlabs.com/somePath1")!,
+                url: URL(string: secondTestPath)!,
                 httpMethod: HTTPMethod.GET
             )
         ) { data, response, error in
@@ -67,7 +64,7 @@ class AsyncRequestExecuterTests: XCTestCase {
         let thirdExpectation = expectation(description: "Wait for third get")
         _ = requestExecuter.send(
             request: URLRequest(
-                url: URL(string: "https://www.jamitlabs.com/somePath2")!,
+                url: URL(string: thirdTestPath)!,
                 httpMethod: HTTPMethod.GET
             )
         ) { data, response, error in
@@ -77,7 +74,7 @@ class AsyncRequestExecuterTests: XCTestCase {
         let fourthExpectation = expectation(description: "Wait for fourth get")
         _ = requestExecuter.send(
             request: URLRequest(
-                url: URL(string: "https://www.jamitlabs.com/somePath3")!,
+                url: URL(string: fourthTestPath)!,
                 httpMethod: HTTPMethod.GET
             )
         ) { data, response, error in

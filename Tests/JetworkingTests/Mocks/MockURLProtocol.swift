@@ -22,23 +22,23 @@ final class MockURLProtocol: URLProtocol {
         guard let handler = MockURLProtocol.requestHandler else { return }
 
         do {
-            // 2. Call handler with received request and capture the tuple of response and data.
+            // Call handler with received request and capture the tuple of response and data.
             let (response, data, delay) = try handler(request)
 
-            // 3. Send received response to the client.
+            // Send received response to the client.
             DispatchQueue.main.asyncAfter(deadline: .now() + delay) {
                 self.client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .notAllowed)
 
                 if let data = data {
-                    // 4. Send received data to the client.
+                    // Send received data to the client.
                     self.client?.urlProtocol(self, didLoad: data)
                 }
 
-                // 5. Notify request has been finished.
+                // Notify request has been finished.
                 self.client?.urlProtocolDidFinishLoading(self)
             }
         } catch {
-          // 6. Notify received error.
+          // Notify received error.
           client?.urlProtocol(self, didFailWithError: error)
         }
      }

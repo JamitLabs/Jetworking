@@ -34,9 +34,14 @@ final class MockExecuter: RequestExecutor {
     ) -> CancellableRequest? {
         let completionDelay = MockExecuter.completionDelayForRequest?(request) ?? defaultCompletionDelay
         DispatchQueue.main.asyncAfter(deadline: .now() + completionDelay) { [weak self] in
-            guard self?.isCancelled == false  else { return completion(nil, nil, URLError(.cancelled)) }
+            guard
+                let self = self,
+                !self.isCancelled
+            else {
+                return completion(nil, nil, URLError(.cancelled))
+            }
 
-            self?.execute(
+            self.execute(
                 request: request,
                 completion: completion
             )
@@ -51,41 +56,14 @@ final class MockExecuter: RequestExecutor {
         request: URLRequest,
         completion: @escaping ((Data?, URLResponse?, Error?) -> Void)
     ) {
-        guard
-            let url = request.url,
-            let method = request.httpMethod
-        else {
-            return
-        }
-
-        switch (url.absoluteString, HTTPMethod(rawValue: method.uppercased())) {
-        case ("https://www.jamitlabs.com/somePath", .GET),
-             ("https://www.jamitlabs.com/somePath", .DELETE),
-             ("https://www.jamitlabs.com/somePath", .PATCH),
-             ("https://www.jamitlabs.com/somePath", .PUT),
-             ("https://www.jamitlabs.com/somePath", .POST):
-            completion(
-                try? encoder.encode(MockBody(foo1: "SomeFoo", foo2: "AnotherFoo")),
-                request.toHTTPURLResponse(
-                    with: responseCode,
-                    andHeaderFields: headerFields
-                ),
-                nil
-            )
-
-        case ("https://www.jamitlabs.com/somePath?SomeKey=SomeValue", .GET):
-            completion(
-                try? encoder.encode(MockBody(foo1: "SomeFoo", foo2: "AnotherFoo")),
-                request.toHTTPURLResponse(
-                    with: responseCode,
-                    andHeaderFields: headerFields
-                ),
-                nil
-            )
-
-        default:
-            completion(nil, nil, URLError(.cancelled))
-        }
+        completion(
+            try? encoder.encode(MockBody(foo1: "SomeFoo", foo2: "AnotherFoo")),
+            request.toHTTPURLResponse(
+                with: responseCode,
+                andHeaderFields: headerFields
+            ),
+            nil
+        )
     }
 }
 
