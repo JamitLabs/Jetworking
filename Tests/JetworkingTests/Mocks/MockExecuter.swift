@@ -14,7 +14,7 @@ struct MockCancellable: CancellableRequest {
     }
 }
 
-final class MockExecuter: RequestExecutor {
+final class MockExecuter: RequestExecuter {
     let session: URLSession
     let encoder: JSONEncoder = JSONEncoder()
     let defaultCompletionDelay: TimeInterval = 0.5

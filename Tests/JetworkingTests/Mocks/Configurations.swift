@@ -2,7 +2,7 @@ import Foundation
 @testable import Jetworking
 
 enum Configurations {
-    static func `default`(_ requestExecutorType: RequestExecutorType = .custom(MockExecuter.self)) -> Configuration {
+    static func `default`(_ requestExecuterType: RequestExecuterType = .custom(MockExecuter.self)) -> Configuration {
         return .init(
             baseURL: URL(string: "https://www.jamitlabs.com/")!,
             interceptors: [

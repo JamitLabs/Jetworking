@@ -10,7 +10,7 @@ class SyncRequestExecuterTests: XCTestCase {
     }
 
     func testOrderDueToAsyncRequestExecuter() {
-        let requestExecuter: SyncRequestExecutor = .init(session: session)
+        let requestExecuter: SyncRequestExecuter = .init(session: session)
         let firstTestPath: String = "https://www.jamitlabs.com/somePath0"
         let secondTestPath: String = "https://www.jamitlabs.com/somePath1"
         let thirdTestPath: String = "https://www.jamitlabs.com/somePath2"
