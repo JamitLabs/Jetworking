@@ -35,8 +35,7 @@ final class ResponseHandler {
         error: Error?,
         decoder: Decoder,
         completion: @escaping Client.RequestCompletion<ResponseType>
-    ) -> () -> Void
-    {
+    ) -> () -> Void {
         guard ResponseType.self is Void.Type else {
             return { completion(currentURLResponse, .failure(APIError.unexpectedError)) }
         }
@@ -50,8 +49,7 @@ final class ResponseHandler {
         error: Error?,
         decoder: Decoder,
         completion: @escaping Client.RequestCompletion<ResponseType>
-    ) -> () -> Void
-    {
+    ) -> () -> Void {
         guard
             let data = data,
             let decodedData = try? decoder.decode(ResponseType.self, from: data)
