@@ -29,7 +29,7 @@ final class AdditionalHeaderTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for get")
         client.get(
             endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue"),
-            additionalHeaderFields: testHeader
+            andAdditionalHeaderFields: testHeader
         ) { response, result in
             switch result {
             case .failure:
@@ -70,7 +70,7 @@ final class AdditionalHeaderTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for get")
         client.get(
             endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue"),
-            additionalHeaderFields: testHeader
+            andAdditionalHeaderFields: testHeader
         ) { response, result in
             switch result {
             case .failure:
@@ -111,7 +111,7 @@ final class AdditionalHeaderTests: XCTestCase {
         let expectation = self.expectation(description: "Wait for get")
         client.get(
             endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue"),
-            additionalHeaderFields: testHeader
+            andAdditionalHeaderFields: testHeader
         ) { response, result in
             switch result {
             case .failure:

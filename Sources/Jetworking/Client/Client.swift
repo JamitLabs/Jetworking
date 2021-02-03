@@ -96,14 +96,14 @@ public final class Client {
     @discardableResult
     public func get<ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
-        additionalHeaderFields: [String: String] = [:],
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:],
         _ completion: @escaping RequestCompletion<ResponseType>
     ) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(
                 forHttpMethod: .GET,
                 and: endpoint,
-                additionalHeaderFields: additionalHeaderFields
+                andAdditionalHeaderFields: additionalHeaderFields
             )
             return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
@@ -127,7 +127,7 @@ public final class Client {
     public func post<BodyType: Encodable, ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
         body: BodyType,
-        additionalHeaderFields: [String: String] = [:],
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:],
         _ completion: @escaping RequestCompletion<ResponseType>
     ) -> CancellableRequest? {
         do {
@@ -137,7 +137,7 @@ public final class Client {
                 forHttpMethod: .POST,
                 and: endpoint,
                 and: bodyData,
-                additionalHeaderFields: additionalHeaderFields
+                andAdditionalHeaderFields: additionalHeaderFields
             )
             return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
@@ -161,14 +161,14 @@ public final class Client {
     public func post<ResponseType>(
         endpoint: Endpoint<ResponseType>,
         body: ExpressibleByNilLiteral? = nil,
-        additionalHeaderFields: [String: String] = [:],
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:],
         _ completion: @escaping RequestCompletion<ResponseType>
     ) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(
                 forHttpMethod: .POST,
                 and: endpoint,
-                additionalHeaderFields: additionalHeaderFields
+                andAdditionalHeaderFields: additionalHeaderFields
             )
             return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
@@ -192,7 +192,7 @@ public final class Client {
     public func put<BodyType: Encodable, ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
         body: BodyType,
-        additionalHeaderFields: [String: String] = [:],
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:],
         _ completion: @escaping RequestCompletion<ResponseType>
     ) -> CancellableRequest? {
         do {
@@ -202,7 +202,7 @@ public final class Client {
                 forHttpMethod: .PUT,
                 and: endpoint,
                 and: bodyData,
-                additionalHeaderFields: additionalHeaderFields
+                andAdditionalHeaderFields: additionalHeaderFields
             )
             return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
@@ -226,7 +226,7 @@ public final class Client {
     public func patch<BodyType: Encodable, ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
         body: BodyType,
-        additionalHeaderFields: [String: String] = [:],
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:],
         _ completion: @escaping RequestCompletion<ResponseType>
     ) -> CancellableRequest? {
         do {
@@ -236,7 +236,7 @@ public final class Client {
                 forHttpMethod: .PATCH,
                 and: endpoint,
                 and: bodyData,
-                additionalHeaderFields: additionalHeaderFields
+                andAdditionalHeaderFields: additionalHeaderFields
             )
             return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
@@ -260,14 +260,14 @@ public final class Client {
     public func delete<ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
         parameter: [String: Any] = [:],
-        additionalHeaderFields: [String: String] = [:],
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:],
         _ completion: @escaping RequestCompletion<ResponseType>
     ) -> CancellableRequest? {
         do {
             let request: URLRequest = try createRequest(
                 forHttpMethod: .DELETE,
                 and: endpoint,
-                additionalHeaderFields: additionalHeaderFields
+                andAdditionalHeaderFields: additionalHeaderFields
             )
             return requestExecuter.send(request: request) { [weak self] data, urlResponse, error in
                 guard let self = self else { return }
@@ -387,7 +387,7 @@ public final class Client {
         forHttpMethod httpMethod: HTTPMethod,
         and endpoint: Endpoint<ResponseType>,
         and body: Data? = nil,
-        additionalHeaderFields: [String: String]
+        andAdditionalHeaderFields additionalHeaderFields: [String: String]
     ) throws -> URLRequest {
         var request = URLRequest(
             url: try URLFactory.makeURL(from: endpoint, withBaseURL: configuration.baseURL),
