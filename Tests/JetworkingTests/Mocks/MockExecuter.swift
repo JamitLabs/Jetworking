@@ -23,6 +23,7 @@ final class MockExecuter: RequestExecuter {
     var isCancelled: Bool = false
 
     static var completionDelayForRequest: ((URLRequest) -> TimeInterval)?
+    static var validateHeaderFields: (([String: String]?) -> Void)?
 
     init(session: URLSession) {
         self.session = session
@@ -56,6 +57,7 @@ final class MockExecuter: RequestExecuter {
         request: URLRequest,
         completion: @escaping ((Data?, URLResponse?, Error?) -> Void)
     ) {
+        MockExecuter.validateHeaderFields?(request.allHTTPHeaderFields)
         completion(
             try? encoder.encode(MockBody(foo1: "SomeFoo", foo2: "AnotherFoo")),
             request.toHTTPURLResponse(

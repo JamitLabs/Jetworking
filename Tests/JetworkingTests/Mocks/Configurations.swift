@@ -2,14 +2,17 @@ import Foundation
 @testable import Jetworking
 
 enum Configurations {
-    static func `default`(_ requestExecuterType: RequestExecuterType = .custom(MockExecuter.self)) -> Configuration {
+    static func `default`(
+        _ requestExecuterType: RequestExecuterType = .custom(MockExecuter.self),
+        globalHeaderFields: [String: String] = HeaderFields.additional
+    ) -> Configuration {
         return .init(
             baseURL: URL(string: "https://www.jamitlabs.com/")!,
             interceptors: [
                 AuthenticationRequestInterceptor(
                     authenticationMethod: .basicAuthentication(username: "username", password: "password")
                 ),
-                HeaderFieldsRequestInterceptor(headerFields: HeaderFields.additional),
+                HeaderFieldsRequestInterceptor(headerFields: globalHeaderFields),
                 LoggingInterceptor()
             ],
             requestExecuterType: requestExecuterType
