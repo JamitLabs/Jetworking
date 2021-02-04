@@ -3,11 +3,15 @@ import Foundation
 @testable import Jetworking
 
 final class CustomDecoderTests: XCTestCase {
+    var defaultSession: URLSession = {
+        var session = URLSession(configuration: .default)
+        session.configuration.timeoutIntervalForRequest = 30
+        return session
+    }()
+
     func testCustomDecoderForGet() {
         let testableDecoder = TestableDecoder()
-        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self))) { session in
-            session.configuration.timeoutIntervalForRequest = 30
-        }
+        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self)), session: defaultSession)
 
         let getDecoderCalledExpectation = expectation(description: "Decoder method called for get")
         let waitForGetExpectation = expectation(description: "Wait for get")
@@ -37,9 +41,7 @@ final class CustomDecoderTests: XCTestCase {
 
     func testCustomDecoderForPost() {
         let testableDecoder = TestableDecoder()
-        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self))) { session in
-            session.configuration.timeoutIntervalForRequest = 30
-        }
+        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self)), session: defaultSession)
 
         let postDecodingCalledExpectation = expectation(description: "Decoder method called for post")
         let waitForPostExpectation = expectation(description: "Wait for post")
@@ -70,9 +72,7 @@ final class CustomDecoderTests: XCTestCase {
 
     func testCustomDecoderForPut() {
         let testableDecoder = TestableDecoder()
-        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self))) { session in
-            session.configuration.timeoutIntervalForRequest = 30
-        }
+        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self)), session: defaultSession)
 
         let putDecodingCalledExpectation = expectation(description: "Decoder method called for put")
         let waitForPutExpectation = expectation(description: "Wait for put")
@@ -102,9 +102,7 @@ final class CustomDecoderTests: XCTestCase {
 
     func testCustomDecoderForPatch() {
         let testableDecoder = TestableDecoder()
-        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self))) { session in
-            session.configuration.timeoutIntervalForRequest = 30
-        }
+        let client = Client(configuration: Configurations.default(.custom(MockExecuter.self)), session: defaultSession)
 
         let patchDecodingCalledExpectation = expectation(description: "Decoder method called for patch")
         let waitForPatchExpectation = expectation(description: "Wait for patch")
