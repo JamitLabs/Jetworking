@@ -3,11 +3,14 @@ import Foundation
 @testable import Jetworking
 
 final class ClientTests: XCTestCase {
-    func testGetRequest() {
-        let client = Client(configuration: Configurations.default()) { session in
-            session.configuration.timeoutIntervalForRequest = 30
-        }
+    var defaultSession: URLSession = {
+        var session = URLSession(configuration: .default)
+        session.configuration.timeoutIntervalForRequest = 30
+        return session
+    }()
 
+    func testGetRequest() {
+        let client = Client(configuration: Configurations.default(), session: defaultSession)
         let expectation = self.expectation(description: "Wait for get")
 
         client.get(endpoint: Endpoints.get.addQueryParameter(key: "SomeKey", value: "SomeValue")) { response, result in

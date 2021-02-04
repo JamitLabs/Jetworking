@@ -15,7 +15,7 @@ public final class Client {
 
     private let configuration: Configuration
 
-    private lazy var session: URLSession = .init(configuration: .default)
+    private let session: URLSession
     private lazy var responseHandler: ResponseHandler = .init(configuration: configuration)
 
     private lazy var requestExecuter: RequestExecuter = {
@@ -82,14 +82,14 @@ public final class Client {
      * Initialises a new client instance with a default url session.
      *
      * - Parameter configuration: The client configuration.
-     * - Parameter sessionConfiguration: A function to configure the URLSession as inout parameter.
+     * - Parameter session: The URLSession which is used for executing requests
      */
     public init(
         configuration: Configuration,
-        sessionConfiguration: ((inout URLSession) -> Void)? = nil
+        session: URLSession = .init(configuration: .default)
     ) {
         self.configuration = configuration
-        sessionConfiguration?(&session)
+        self.session = session
     }
 
     // MARK: - Methods

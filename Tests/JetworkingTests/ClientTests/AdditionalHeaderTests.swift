@@ -5,6 +5,11 @@ import Foundation
 
 final class AdditionalHeaderTests: XCTestCase {
     let testHeader: [String: String] = ["SomeHeaderKey": "SomeHeaderValue"]
+    var defaultSession: URLSession = {
+        var session = URLSession(configuration: .default)
+        session.configuration.timeoutIntervalForRequest = 30
+        return session
+    }()
 
     override class func tearDown() {
         super.tearDown()
@@ -13,10 +18,7 @@ final class AdditionalHeaderTests: XCTestCase {
     }
 
     func testAdditionalHeadersForGet() {
-        let client = Client(configuration: Configurations.default()) { session in
-            session.configuration.timeoutIntervalForRequest = 30
-        }
-
+        let client = Client(configuration: Configurations.default(), session: defaultSession)
         let validatedHeaders = self.expectation(description: "Headers are validated")
         MockExecuter.validateHeaderFields = { [unowned self] requestHeaders in
             self.testHeader.forEach { headerEntry in
@@ -48,9 +50,7 @@ final class AdditionalHeaderTests: XCTestCase {
     func testAdditionalHeadersShouldBeMergedWithGlobalOnes() {
         let globalHeaderFields: [String: String] = ["GlobalHeaderKey": "GlobalHeaderValue"]
         let configuration: Configuration = Configurations.default(globalHeaderFields: globalHeaderFields)
-        let client = Client(configuration: configuration) { session in
-            session.configuration.timeoutIntervalForRequest = 30
-        }
+        let client = Client(configuration: configuration, session: defaultSession)
 
         let validatedHeaders = self.expectation(description: "Headers are validated")
 
@@ -89,9 +89,7 @@ final class AdditionalHeaderTests: XCTestCase {
     func testAdditionalHeadersShouldBeMergedWithGlobalJoinedKeys() {
         let globalHeaderFields: [String: String] = ["SomeHeaderKey": "GlobalHeaderValue"]
         let configuration: Configuration = Configurations.default(globalHeaderFields: globalHeaderFields)
-        let client = Client(configuration: configuration) { session in
-            session.configuration.timeoutIntervalForRequest = 30
-        }
+        let client = Client(configuration: configuration, session: defaultSession)
 
         let validatedHeaders = self.expectation(description: "Headers are validated")
 
