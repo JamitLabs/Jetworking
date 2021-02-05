@@ -58,7 +58,7 @@ final class ResponseHandler {
             let decodedData = try decoder.decode(ResponseType.self, from: data)
             return { (completion(currentURLResponse, .success(decodedData))) }
         } catch {
-            return { (completion(currentURLResponse, .failure(error))) }
+            return { (completion(currentURLResponse, .failure(APIError.decodingError(error)))) }
         }
     }
 

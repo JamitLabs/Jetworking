@@ -3,7 +3,7 @@ import Foundation
 enum APIError: Error {
     case unexpectedError
     case responseMissing
-    case decodingError
+    case decodingError(Error)
     case missingResponseBody
     case invalidURLComponents
 }
