@@ -64,13 +64,12 @@ final class URLFactoryTests: XCTestCase {
         )
 
         do {
-            let url = try URLFactory.makeURL(
+            let _ = try URLFactory.makeURL(
                 from: endpoint,
                 withBaseURL: baseURl
             )
-            print(url.absoluteString)
-        } catch let error as APIError {
-            XCTAssertEqual(error, .invalidURLComponents)
+        } catch APIError.invalidURLComponents {
+            // Expected!
         } catch {
             XCTFail("Unexpected error occured!")
         }

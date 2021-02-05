@@ -50,15 +50,16 @@ final class ResponseHandler {
         decoder: Decoder,
         completion: @escaping Client.RequestCompletion<ResponseType>
     ) -> () -> Void {
-        guard
-            let data = data,
-            let decodedData = try? decoder.decode(ResponseType.self, from: data)
-        else {
-            return { (completion(currentURLResponse, .failure(APIError.decodingError))) }
+        guard let data = data else {
+            return { (completion(currentURLResponse, .failure(APIError.missingResponseBody))) }
         }
-        // Evaluate Header fields --> urlResponse.allHeaderFields
 
-        return { (completion(currentURLResponse, .success(decodedData))) }
+        do {
+            let decodedData = try decoder.decode(ResponseType.self, from: data)
+            return { (completion(currentURLResponse, .success(decodedData))) }
+        } catch {
+            return { (completion(currentURLResponse, .failure(APIError.decodingError(error)))) }
+        }
     }
 
     // TODO: Improve this function (Error handling, evaluation of header fields, status code evalutation, ...)
