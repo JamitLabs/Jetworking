@@ -4,6 +4,7 @@ enum APIError: Error {
     case unexpectedError
     case responseMissing
     case decodingError
+    case missingResponseBody
     case invalidURLComponents
 }
 
