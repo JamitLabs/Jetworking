@@ -1,6 +1,7 @@
 import Foundation
 
-enum APIError: Error {
+/// An error occuring  while sending a request
+public enum APIError: Error {
     case unexpectedError
     case responseMissing
     case decodingError(Error)
