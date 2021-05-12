@@ -92,16 +92,25 @@ final class ResponseHandler {
                 inDispatchQueue: configuration.responseQueue
             )
 
-        case .clientError, .serverError:
-            guard let error = error else {
-                return enqueue(
-                    completion(currentURLResponse, .failure(APIError.unexpectedError)),
-                    inDispatchQueue: configuration.responseQueue
-                )
-            }
+        case .serverError:
+            let apiError: APIError = APIError.serverError(
+                statusCode: currentURLResponse.statusCode,
+                error: error
+            )
+
+            return enqueue(
+                completion(currentURLResponse, .failure(apiError)),
+                inDispatchQueue: configuration.responseQueue
+            )
+
+        case .clientError:
+            let apiError: APIError = APIError.clientError(
+                statusCode: currentURLResponse.statusCode,
+                error: error
+            )
 
             enqueue(
-                completion(currentURLResponse, .failure(error)),
+                completion(currentURLResponse, .failure(apiError)),
                 inDispatchQueue: configuration.responseQueue
             )
 

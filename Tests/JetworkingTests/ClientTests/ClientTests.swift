@@ -9,6 +9,23 @@ final class ClientTests: XCTestCase {
         return session
     }()
 
+    override func setUp() {
+        super.setUp()
+
+        MockExecuter.responseCodeForRequest = { request in
+            switch request.url?.absoluteString {
+            case .some("https://www.jamitlabs.com/somePathClientError"):
+                return 403
+
+            case .some("https://www.jamitlabs.com/somePathServerError"):
+                return 500
+
+            default:
+                return 200
+            }
+        }
+    }
+
     func testGetRequest() {
         let client = Client(configuration: Configurations.default(), session: defaultSession)
         let expectation = self.expectation(description: "Wait for get")
@@ -168,6 +185,53 @@ final class ClientTests: XCTestCase {
             }
 
             expectation.fulfill()
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testPostRequestWithRequestWithServerError() {
+        let client = Client(configuration: Configurations.default())
+
+        let expectation = self.expectation(description: "Wait for post with empty content")
+        client.post(endpoint: Endpoints.voidPostServerError) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+
+            switch result {
+            case .failure(APIError.serverError(statusCode: 500, error: _)):
+                XCTAssertNotNil(response)
+                XCTAssertEqual(response?.statusCode, 500)
+                expectation.fulfill()
+
+            case .failure:
+                XCTFail("Request should not result in failure without status code 500!")
+
+            case .success:
+                XCTFail("Request should not result in success!")
+            }
+        }
+
+        waitForExpectations(timeout: 5.0, handler: nil)
+    }
+
+    func testPostRequestWithRequestWithClientError() {
+        let client = Client(configuration: Configurations.default())
+        let expectation = self.expectation(description: "Wait for post with empty content")
+        client.post(endpoint: Endpoints.voidPostClientError) { response, result in
+            dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
+
+            switch result {
+            case .failure(APIError.clientError(statusCode: 403, error: _)):
+                XCTAssertNotNil(response)
+                XCTAssertEqual(response?.statusCode, 403)
+                expectation.fulfill()
+
+            case .failure:
+                XCTFail("Request should not result in failure without 403 status code!")
+
+            case .success:
+                XCTFail("Request should not result in succes!")
+            }
         }
 
         waitForExpectations(timeout: 5.0, handler: nil)

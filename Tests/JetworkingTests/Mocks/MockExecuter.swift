@@ -24,6 +24,7 @@ final class MockExecuter: RequestExecuter {
 
     static var completionDelayForRequest: ((URLRequest) -> TimeInterval)?
     static var validateHeaderFields: (([String: String]?) -> Void)?
+    static var responseCodeForRequest: ((URLRequest) -> Int)?
 
     init(session: URLSession) {
         self.session = session
@@ -61,7 +62,7 @@ final class MockExecuter: RequestExecuter {
         completion(
             try? encoder.encode(MockBody(foo1: "SomeFoo", foo2: "AnotherFoo")),
             request.toHTTPURLResponse(
-                with: responseCode,
+                with: Self.responseCodeForRequest?(request) ?? responseCode,
                 andHeaderFields: headerFields
             ),
             nil
