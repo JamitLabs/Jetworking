@@ -25,6 +25,7 @@ final class ClientTests: XCTestCase {
             }
         }
     }
+
     func testGetRequest() {
         let client = Client(configuration: Configurations.default(), session: defaultSession)
         let expectation = self.expectation(description: "Wait for get")
@@ -203,10 +204,10 @@ final class ClientTests: XCTestCase {
                 expectation.fulfill()
 
             case .failure:
-                XCTFail("Request should not result in failure!")
+                XCTFail("Request should not result in failure without status code 500!")
 
             case .success:
-                XCTFail("Request should not result in failure!")
+                XCTFail("Request should not result in success!")
             }
         }
 
@@ -226,10 +227,10 @@ final class ClientTests: XCTestCase {
                 expectation.fulfill()
 
             case .failure:
-                XCTFail("Request should not result in failure!")
+                XCTFail("Request should not result in failure without 403 status code!")
 
             case .success:
-                XCTFail("Request should not result in failure!")
+                XCTFail("Request should not result in succes!")
             }
         }
 
