@@ -95,7 +95,8 @@ final class ResponseHandler {
         case .serverError:
             let apiError: APIError = APIError.serverError(
                 statusCode: currentURLResponse.statusCode,
-                error: error
+                error: error,
+                body: data
             )
 
             return enqueue(
@@ -106,7 +107,8 @@ final class ResponseHandler {
         case .clientError:
             let apiError: APIError = APIError.clientError(
                 statusCode: currentURLResponse.statusCode,
-                error: error
+                error: error,
+                body: data
             )
 
             enqueue(

@@ -5,8 +5,8 @@ public enum APIError: Error {
     case unexpectedError
     case responseMissing
     case decodingError(Error)
-    case clientError(statusCode: Int, error: Error?)
-    case serverError(statusCode: Int, error: Error?)
+    case clientError(statusCode: Int, error: Error?, body: Data?)
+    case serverError(statusCode: Int, error: Error?, body: Data?)
     case missingResponseBody
     case invalidURLComponents
 }

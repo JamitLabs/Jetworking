@@ -198,7 +198,7 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
 
             switch result {
-            case .failure(APIError.serverError(statusCode: 500, error: _)):
+            case .failure(APIError.serverError(statusCode: 500, error: _, body: _)):
                 XCTAssertNotNil(response)
                 XCTAssertEqual(response?.statusCode, 500)
                 expectation.fulfill()
@@ -221,7 +221,7 @@ final class ClientTests: XCTestCase {
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
 
             switch result {
-            case .failure(APIError.clientError(statusCode: 403, error: _)):
+            case .failure(APIError.clientError(statusCode: 403, error: _, body: _)):
                 XCTAssertNotNil(response)
                 XCTAssertEqual(response?.statusCode, 403)
                 expectation.fulfill()
