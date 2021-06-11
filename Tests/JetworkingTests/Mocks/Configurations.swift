@@ -7,7 +7,7 @@ enum Configurations {
         globalHeaderFields: [String: String] = HeaderFields.additional
     ) -> Configuration {
         return .init(
-            baseURL: URL(string: "https://www.jamitlabs.com/")!,
+            baseURLProvider: URL(string: "https://www.jamitlabs.com/")!,
             interceptors: [
                 AuthenticationRequestInterceptor(
                     authenticationMethod: .basicAuthentication(username: "username", password: "password")
@@ -21,7 +21,7 @@ enum Configurations {
 
     static func extendClientConfiguration(_ configuration: Configuration, with cache: URLCache) -> Configuration {
         return .init(
-            baseURL: configuration.baseURL,
+            baseURLProvider: configuration.baseURLProvider,
             interceptors: configuration.interceptors + [DefaultSessionCacheIntercepter()],
             encoder: configuration.encoder,
             decoder: configuration.decoder,

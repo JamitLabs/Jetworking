@@ -2,7 +2,7 @@ import Foundation
 
 /// The configuration used within the client.
 public struct Configuration {
-    let baseURL: URL
+    let baseURLProvider: BaseURLProvider
     let interceptors: [Interceptor]
     let encoder: Encoder
     let decoder: Decoder
@@ -25,7 +25,7 @@ public struct Configuration {
     /**
      * Initialises a new configuration instance to use within the client.
      *
-     * - Parameter baseURL: The base URL used within the client.
+     * - Parameter baseURLProvider: The provider which provides the base URL used within the client. Note: URL itself is implementing the protocol itself to pass a static baseURL.
      * - Parameter interceptors: A list of interceptors to intercept the request before sending (`RequestInterceptor`) it or intersect the response after receiving it (`ResponseInterceptor`).
      * - Parameter encoder: The standard encoder to use to encode the request body data before sending it.
      * - Parameter decoder: The standard decoder to use to decode the response body data before returning it.
@@ -35,7 +35,7 @@ public struct Configuration {
      * - Parameter cache: A cache object that realizes caching mechanism. IMPORTANT: At least one instance of `SessionCacheInterceptor` is required.
      */
     public init(
-        baseURL: URL,
+        baseURLProvider: BaseURLProvider,
         interceptors: [Interceptor],
         encoder: Encoder = JSONEncoder(),
         decoder: Decoder = JSONDecoder(),
@@ -45,7 +45,7 @@ public struct Configuration {
         responseQueue: DispatchQueue = .main,
         cache: URLCache = .shared
     ) {
-        self.baseURL = baseURL
+        self.baseURLProvider = baseURLProvider
         self.interceptors = interceptors
         self.encoder = encoder
         self.decoder = decoder

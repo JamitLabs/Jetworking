@@ -394,7 +394,7 @@ public final class Client {
         andAdditionalHeaderFields additionalHeaderFields: [String: String]
     ) throws -> URLRequest {
         var request = URLRequest(
-            url: try URLFactory.makeURL(from: endpoint, withBaseURL: configuration.baseURL),
+            url: try URLFactory.makeURL(from: endpoint, withBaseURL: configuration.baseURLProvider.baseURL),
             httpMethod: httpMethod,
             httpBody: body
         )

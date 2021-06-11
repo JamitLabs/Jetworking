@@ -169,7 +169,7 @@ final class ClientTests: XCTestCase {
 
         let expectation = self.expectation(description: "Wait for an external request")
 
-        let url = try? URLFactory.makeURL(from: Endpoints.delete, withBaseURL: defaultConfiguration.baseURL)
+        let url = try? URLFactory.makeURL(from: Endpoints.delete, withBaseURL: defaultConfiguration.baseURLProvider.baseURL)
         guard let targetURL = url else {
             XCTFail("URL not available")
             return
