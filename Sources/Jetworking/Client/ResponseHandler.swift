@@ -72,7 +72,7 @@ final class ResponseHandler {
         completion: @escaping Client.RequestCompletion<ResponseType>
     ) {
         let interceptedResponse = configuration.interceptors.reduce(urlResponse) { response, component in
-            return component.intercept(data: data, response: response, error: error)
+            return component.intercept(response: response, data: data, error: error)
         }
 
         guard let currentURLResponse = interceptedResponse as? HTTPURLResponse else {

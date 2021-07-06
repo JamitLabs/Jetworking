@@ -20,17 +20,17 @@ public protocol Interceptor {
      * # Summary
      * Intercepting the response to add the ability to modify a response of a request. Additionally it is possible handle data and errors.
      *
-     * - Parameter data:
-     *  The data returned by the data task.
      * - Parameter response:
      *  The response returned by the data task
+     * - Parameter data:
+     *  The data returned by the data task.
      * - Parameter error:
      *  The error returned by the data task.
      *
      * - Returns:
      * The intercepted and modified response.
      */
-    func intercept(data: Data?, response: URLResponse?, error: Error?) -> URLResponse?
+    func intercept(response: URLResponse?, data: Data?, error: Error?) -> URLResponse?
 }
 
 extension Interceptor {
@@ -38,7 +38,7 @@ extension Interceptor {
         return request
     }
 
-    public func intercept(data: Data?, response: URLResponse?, error: Error?) -> URLResponse? {
+    public func intercept(response: URLResponse?, data: Data?, error: Error?) -> URLResponse? {
         return response
     }
 }
