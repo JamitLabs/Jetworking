@@ -3,7 +3,7 @@ import XCTest
 
 final class HeaderFieldsRequestInterceptorTests: XCTestCase {
     func testHeaderFields() {
-        let headerFieldsRequestInterceptor: HeaderFieldsRequestInterceptor = .init(
+        let headerFieldsRequestInterceptor: HeaderFieldsInterceptor = .init(
             headerFields: [
                 "Accept": "application/json",
                 "Content-Type": "application/json"

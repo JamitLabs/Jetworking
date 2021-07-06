@@ -4,7 +4,7 @@ import Foundation
  * A request interceptor which sets specific header fields
  * which are required for a request with content empty.
  */
-internal final class EmptyContentHeaderFieldsRequestInterceptor: HeaderFieldsRequestInterceptor {
+internal final class EmptyContentHeaderFieldsInterceptor: HeaderFieldsInterceptor {
     /**
      * # Summary
      * Static header fields for a request with empty content

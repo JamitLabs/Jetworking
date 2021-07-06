@@ -406,10 +406,10 @@ public final class Client {
         // Adds custom interceptor after last interceptor for header fields
         // to avoid conflict with other custom interceptor if any.
         if body == nil && httpMethod == .POST {
-            let targetIndex = requestInterceptors.lastIndex { $0 is HeaderFieldsRequestInterceptor }
+            let targetIndex = requestInterceptors.lastIndex { $0 is HeaderFieldsInterceptor }
             let indexToInsert = targetIndex.flatMap { requestInterceptors.index(after: $0) }
             requestInterceptors.insert(
-                EmptyContentHeaderFieldsRequestInterceptor(),
+                EmptyContentHeaderFieldsInterceptor(),
                 at: indexToInsert ?? requestInterceptors.endIndex
             )
         }

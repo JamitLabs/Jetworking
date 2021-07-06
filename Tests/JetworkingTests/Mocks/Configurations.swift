@@ -9,10 +9,10 @@ enum Configurations {
         return .init(
             baseURLProvider: URL(string: "https://www.jamitlabs.com/")!,
             interceptors: [
-                AuthenticationRequestInterceptor(
+                AuthenticationInterceptor(
                     authenticationMethod: .basicAuthentication(username: "username", password: "password")
                 ),
-                HeaderFieldsRequestInterceptor(headerFields: globalHeaderFields),
+                HeaderFieldsInterceptor(headerFields: globalHeaderFields),
                 LoggingInterceptor()
             ],
             requestExecuterType: requestExecuterType
