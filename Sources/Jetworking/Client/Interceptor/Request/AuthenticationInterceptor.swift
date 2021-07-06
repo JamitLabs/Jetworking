@@ -4,7 +4,7 @@ import Foundation
 /// Currently there are four different authentication methods provided which are `none`, `basicAuthentication`, `bearerToken` and `custom`.
 /// To be able to be highly flexible to also being able to switch between authentication methods, we provided the possibility to pass in an `autoclosure`
 /// which is evaluated when this request is being intercepted.
-public final class AuthenticationRequestInterceptor: RequestInterceptor {
+public final class AuthenticationInterceptor: Interceptor {
     private struct Constants {
         static let authorizationHeaderKey: String = "Authorization"
         static let basicAuthStringPrefix: String = "Basic"

@@ -3,7 +3,7 @@ import XCTest
 
 final class AuthenticationRequestInterceptorTests: XCTestCase {
     func testAuthenticationMethodNone() {
-        let authenticationRequestInterceptor: AuthenticationRequestInterceptor = .init(authenticationMethod: .none)
+        let authenticationRequestInterceptor: AuthenticationInterceptor = .init(authenticationMethod: .none)
 
         var request: URLRequest = .init(url: URL(string: "https://www.google.com")!)
         request = authenticationRequestInterceptor.intercept(request)
@@ -12,7 +12,7 @@ final class AuthenticationRequestInterceptorTests: XCTestCase {
     }
 
     func testAuthenticationMethodBasicAuthentication() {
-        let authenticationRequestInterceptor: AuthenticationRequestInterceptor = .init(authenticationMethod: .basicAuthentication(username: "username", password: "password"))
+        let authenticationRequestInterceptor: AuthenticationInterceptor = .init(authenticationMethod: .basicAuthentication(username: "username", password: "password"))
 
         var request: URLRequest = .init(url: URL(string: "https://www.google.com")!)
         request = authenticationRequestInterceptor.intercept(request)
@@ -23,7 +23,7 @@ final class AuthenticationRequestInterceptorTests: XCTestCase {
     }
 
     func testAuthenticationMethodBearerToken() {
-        let authenticationRequestInterceptor: AuthenticationRequestInterceptor = .init(authenticationMethod: .bearerToken(token: "token"))
+        let authenticationRequestInterceptor: AuthenticationInterceptor = .init(authenticationMethod: .bearerToken(token: "token"))
 
         var request: URLRequest = .init(url: URL(string: "https://www.google.com")!)
         request = authenticationRequestInterceptor.intercept(request)
@@ -34,7 +34,7 @@ final class AuthenticationRequestInterceptorTests: XCTestCase {
     }
 
     func testAuthenticationMethodCustom() {
-        let authenticationRequestInterceptor: AuthenticationRequestInterceptor = .init(
+        let authenticationRequestInterceptor: AuthenticationInterceptor = .init(
             authenticationMethod: .custom(headerKey: "CustomAuthorizationHeaderKey", headerValue: "CustomAuthorizationHeaderValue")
         )
 

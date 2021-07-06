@@ -1,7 +1,7 @@
 import Foundation
 
 /// Implementation of a request interceptor which logs the request information.
-public final class LoggingInterceptor: RequestInterceptor, ResponseInterceptor {
+public final class LoggingInterceptor: Interceptor {
     private var logger: Logger
 
     /**
@@ -52,17 +52,17 @@ public final class LoggingInterceptor: RequestInterceptor, ResponseInterceptor {
      * # Summary
      * Intercepting the response by taking its information and creating a message to be logged.
      *
-     * - Parameter data:
-     *  The data returned by the data task.
      * - Parameter response:
      *  The response returned by the data task
+     * - Parameter data:
+     *  The data returned by the data task.
      * - Parameter error:
      *  The error returned by the data task.
      *
      * - Returns:
      * The intercepted response.
      */
-    public func intercept(data: Data?, response: URLResponse?, error: Error?) -> URLResponse? {
+    public func intercept(response: URLResponse?, data: Data?, error: Error?) -> URLResponse? {
         var message: String = "\(String(describing: self)):\n"
 
         if let url = response?.url {
