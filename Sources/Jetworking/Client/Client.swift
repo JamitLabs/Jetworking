@@ -462,7 +462,10 @@ extension Client: DownloadExecuterDelegate {
 
     public func downloadExecuter(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?) {
         // TODO handle response before calling the completion
-        guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
+        guard
+            let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler,
+            let error = error
+        else { return }
         enqueue(completionHandler(nil, downloadTask.response, error))
     }
 

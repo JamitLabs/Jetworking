@@ -295,7 +295,10 @@ final class ClientTests: XCTestCase {
             }
         ) { localURL, response, error in
             dispatchPrecondition(condition: .onQueue(DispatchQueue.main))
-            guard let localURL = localURL else { return }
+            guard let localURL = localURL else {
+                XCTFail("Failed to unwrap url")
+                return
+            }
 
             do {
                 let documentsURL = try FileManager.default.url(
