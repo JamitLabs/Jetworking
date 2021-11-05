@@ -2,13 +2,13 @@ import Foundation
 
 /// The configuration used within the client.
 public struct Configuration {
-    let baseURLProvider: BaseURLProvider
-    let interceptors: [Interceptor]
-    let encoder: Encoder
-    let decoder: Decoder
-    let requestExecuterType: RequestExecuterType
-    let responseQueue: DispatchQueue
-    let cache: URLCache
+    public let baseURLProvider: BaseURLProvider
+    public let interceptors: [Interceptor]
+    public let encoder: Encoder
+    public let decoder: Decoder
+    public let requestExecuterType: RequestExecuterType
+    public let responseQueue: DispatchQueue
+    public let cache: URLCache
 
     /**
      * Initialises a new configuration instance to use within the client.

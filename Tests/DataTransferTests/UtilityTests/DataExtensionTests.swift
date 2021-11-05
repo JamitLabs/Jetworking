@@ -1,5 +1,5 @@
 import XCTest
-@testable import Jetworking
+@testable import DataTransfer
 
 final class DataExtensionTests: XCTestCase {
     func testMultipartDataInitialisation() {

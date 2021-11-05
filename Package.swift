@@ -14,21 +14,25 @@ let package = Package(
             name: "Jetworking",
             targets: ["Jetworking"]),
         .library(
-            name: "(Up|Down)Loader",
-            targets: ["(Up|Down)Loader"])
+            name: "DataTransfer",
+            targets: ["DataTransfer"])
     ],
     targets: [
         .target(
             name: "Jetworking"
         ),
         .target(
-            name: "(Up|Down)Loader",
+            name: "DataTransfer",
             dependencies: ["Jetworking"],
-            path: "Modules/(Up|Down)Loader"
+            path: "Modules/DataTransfer"
         ),
         .testTarget(
             name: "JetworkingTests",
-            dependencies: ["Jetworking", "(Up|Down)Loader"],
+            dependencies: ["Jetworking"]
+        ),
+        .testTarget(
+            name: "DataTransferTests",
+            dependencies: ["Jetworking", "DataTransfer"],
             resources: [
                 .copy("Resources/avatar.png")
             ]
