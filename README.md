@@ -8,10 +8,10 @@ Currently, Jetworking consists of the following modules:
 
 Jetworking's most important type is the `Client`. It allows you to access custom `Endpoint`s and perform GET, POST, PUT, PATCH and DELETE operations on them:
 ```swift
-let client = Client(baseURLProvider: URL(string: "random.org")!, interceptors: [])
+let client = Client(configuration: .init(baseURLProvider: URL(string: "https://random.org")!, interceptors: []))
 
-var endpoint = Endpoint<String>(pathComponent: "integers")
-endpoint.addQueryParameters(["num": 1, "min": 1, "max": 10, "col": 1, "base:" 10, "format": "plain"])
+let endpoint = Endpoint<Int>(pathComponent: "integers")
+    .addQueryParameters(["num": "1", "min": "1", "max": "10", "col": "1", "base": "10", "format": "plain"])
 
 // Perform GET request
 client.get(endpoint: endpoint) { response, result in
@@ -19,17 +19,17 @@ client.get(endpoint: endpoint) { response, result in
     case .failure:
         print("error")
 
-    case let .success(resultData):
-        print("random number is \(String(data: resultData, encoding: .utf8)!)")
+    case let .success(result):
+        print("random number is \(result)")
     }
 }
 ```
 
-When using DataTransfer on top of Jetworking, you can perform up- and download-tasks using the same `Client`:
+When using _DataTransfer_ on top of Jetworking, you can perform up- and download-tasks using the same `Client`:
 ```swift
 let url = URL(string: "https://speed.hetzner.de/100MB.bin")!
 client.download(url: url, progressHandler: nil) { (localURL, response, error) in
-    if error != nil {
+    if error == nil, let localURL = localURL {
         print("file saved to \(localURL)!")
     }
 }
