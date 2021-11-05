@@ -1,4 +1,5 @@
 import Foundation
+import Jetworking
 
 final class BackgroundUploadExecuter: NSObject, UploadExecuter {
     var delegate: UploadExecuterDelegate?

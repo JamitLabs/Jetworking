@@ -1,4 +1,5 @@
 import Foundation
+import Jetworking
 
 final class DefaultDownloadExecuter: NSObject, DownloadExecuter {
     var delegate: DownloadExecuterDelegate?

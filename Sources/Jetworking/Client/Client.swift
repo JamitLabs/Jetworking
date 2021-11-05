@@ -15,11 +15,11 @@ public final class Client {
     public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
     
     // MARK: - Properties
-    private lazy var sessionCache: SessionCache = .init(configuration: configuration)
+    public lazy var sessionCache: SessionCache = .init(configuration: configuration)
 
-    private let configuration: Configuration
+    public let configuration: Configuration
 
-    private let session: URLSession
+    public let session: URLSession
     private lazy var responseHandler: ResponseHandler = .init(configuration: configuration)
 
     private lazy var requestExecuter: RequestExecuter = {
@@ -32,52 +32,6 @@ public final class Client {
 
         case let .custom(executerType):
             return executerType.init(session: session)
-        }
-    }()
-
-    private var executingDownloads: [Int: DownloadHandler] = [:]
-    private lazy var downloadExecuter: DownloadExecuter = {
-        switch configuration.downloadExecuterType {
-        case .default:
-            return DefaultDownloadExecuter(
-                sessionConfiguration: session.configuration,
-                downloadExecuterDelegate: self
-            )
-
-        case .background:
-            return BackgroundDownloadExecuter(
-                sessionConfiguration: session.configuration,
-                downloadExecuterDelegate: self
-            )
-
-        case let .custom(executerType):
-            return executerType.init(
-                sessionConfiguration: session.configuration,
-                downloadExecuterDelegate: self
-            )
-        }
-    }()
-
-    private var executingUploads: [Int: UploadHandler] = [:]
-    private lazy var uploadExecuter: UploadExecuter = {
-        switch configuration.uploadExecuterType {
-        case .default:
-            return DefaultUploadExecuter(
-                sessionConfiguration: session.configuration,
-                uploadExecuterDelegate: self
-            )
-
-        case .background:
-            return BackgroundUploadExecuter(
-                sessionConfiguration: session.configuration,
-                uploadExecuterDelegate: self
-            )
-
-        case let .custom(executerType):
-            return executerType.init(
-                sessionConfiguration: session.configuration,
-                uploadExecuterDelegate: self
-            )
         }
     }()
 
@@ -296,97 +250,6 @@ public final class Client {
         return requestExecuter.send(request: request, completion)
     }
 
-    @discardableResult
-    public func download(
-        url: URL,
-        isForced: Bool = false,
-        progressHandler: DownloadHandler.ProgressHandler,
-        _ completion: @escaping DownloadHandler.CompletionHandler
-    ) -> CancellableRequest? {
-        // TODO: Add correct error handling
-        guard checkForValidDownloadURL(url) else { return nil }
-
-        let request: URLRequest = .init(url: url)
-
-        // Looks up in cache (if no forced download) and
-        // performs completion handler immediately with cached URL if available,
-        // otherwise executes the download request
-        if !isForced, let url = sessionCache.queryResourceItemURL(for: request) {
-            let response = sessionCache.queryCachedResponse(for: request)?.response
-            enqueue(completion(url, response, nil))
-            return nil
-        } else {
-            let task = downloadExecuter.download(request: request)
-            task.flatMap {
-                executingDownloads[$0.identifier] = DownloadHandler(
-                    progressHandler: progressHandler,
-                    completionHandler: completion
-                )
-            }
-
-            return task
-        }
-    }
-
-    @discardableResult
-    public func upload(
-        url: URL,
-        fileURL: URL,
-        progressHandler: UploadHandler.ProgressHandler,
-        _ completion: @escaping UploadHandler.CompletionHandler
-    ) -> CancellableRequest? {
-        let request: URLRequest = .init(url: url, httpMethod: .POST)
-        let task = uploadExecuter.upload(request: request, fromFile: fileURL)
-        task.flatMap {
-            executingUploads[$0.identifier] = UploadHandler(
-                progressHandler: progressHandler,
-                completionHandler: completion
-            )
-        }
-        return task
-    }
-
-    @discardableResult
-    public func upload(
-        url: URL,
-        fileURL: URL,
-        multipartType: MultipartType,
-        multipartFileContentType: MultipartContentType,
-        formData: [String: String],
-        progressHandler: UploadHandler.ProgressHandler,
-        _ completion: @escaping UploadHandler.CompletionHandler
-    ) -> CancellableRequest? {
-        let boundary = UUID().uuidString
-
-        guard let multipartData = Data(
-                boundary: boundary,
-                formData: formData,
-                fileURL: fileURL,
-                multipartFileContentType: multipartFileContentType
-        ) else {
-            return nil
-        }
-
-        var request: URLRequest = .init(url: url, httpMethod: .POST)
-        // TODO: Extract into constants
-        request.setValue("\(multipartType.rawValue); boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
-
-        let task = uploadExecuter.upload(request: request, from: multipartData)
-        task.flatMap {
-            executingUploads[$0.identifier] = UploadHandler(
-                progressHandler: progressHandler,
-                completionHandler: completion
-            )
-        }
-        return task
-    }
-    
-    private func checkForValidDownloadURL(_ url: URL) -> Bool {
-        guard let scheme = URLComponents(string: url.absoluteString)?.scheme else { return false }
-
-        return scheme == "http" || scheme == "https"
-    }
-
     private func createRequest<ResponseType>(
         forHttpMethod httpMethod: HTTPMethod,
         and endpoint: Endpoint<ResponseType>,
@@ -424,93 +287,10 @@ public final class Client {
         }
     }
 
-    private func enqueue(_ completion: @escaping @autoclosure () -> Void) {
+    /// Perform something on the configuration's response queue.
+    public func enqueue(_ completion: @escaping @autoclosure () -> Void) {
         configuration.responseQueue.async {
             completion()
         }
-    }
-}
-
-extension Client: DownloadExecuterDelegate {
-    public func downloadExecuter(
-        _ downloadTask: URLSessionDownloadTask,
-        didWriteData bytesWritten: Int64,
-        totalBytesWritten: Int64,
-        totalBytesExpectedToWrite: Int64
-    ) {
-        guard let progressHandler = executingDownloads[downloadTask.identifier]?.progressHandler else { return }
-        enqueue(progressHandler(totalBytesWritten, totalBytesExpectedToWrite))
-    }
-
-    public func downloadExecuter(_ downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        // TODO handle response before calling the completion
-        guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
-
-        do {
-            // `location` is a URL containing a path with `tmp` directory.
-            // The files in this folder may occasionally get cleared after leaving the delegation.
-            // It is recommended to store downloaded file persistently after each download.
-            let request = downloadTask.originalRequest ?? downloadTask.currentRequest
-            let fileURL = try cacheDownloadFile(local: location, origin: request?.url)
-
-            sessionCache.store(fileURL, from: downloadTask)
-            enqueue(completionHandler(fileURL, downloadTask.response, downloadTask.error))
-        } catch {
-            enqueue(completionHandler(nil, downloadTask.response, error))
-        }
-    }
-
-    public func downloadExecuter(_ downloadTask: URLSessionDownloadTask, didCompleteWithError error: Error?) {
-        // TODO handle response before calling the completion
-        guard let completionHandler = executingDownloads[downloadTask.identifier]?.completionHandler else { return }
-        enqueue(completionHandler(nil, downloadTask.response, error))
-    }
-
-    private func cacheDownloadFile(local fileURL: URL, origin originfileURL: URL?) throws -> URL {
-        // Uses cache folder to store downloaded file.
-        let cacheURL = try FileManager.default.url(
-            for: .cachesDirectory,
-            in: .userDomainMask,
-            appropriateFor: nil,
-            create: true
-        )
-
-        // Restores file name if possible.
-        let fileName = (originfileURL ?? fileURL).lastPathComponent
-        let destinationURL = cacheURL.appendingPathComponent(fileName)
-
-        // Removes old file if any.
-        if FileManager.default.fileExists(atPath: destinationURL.path) {
-            try FileManager.default.removeItem(at: destinationURL)
-        }
-
-        // Moves file to `Library/Caches` directory.
-        try FileManager.default.moveItem(at: fileURL, to: destinationURL)
-
-        return destinationURL
-    }
-}
-
-extension Client: UploadExecuterDelegate {
-    public func uploadExecuter(
-        _ uploadTask: URLSessionUploadTask,
-        didSendBodyData bytesSent: Int64,
-        totalBytesSent: Int64,
-        totalBytesExpectedToSend: Int64
-    ) {
-        guard let progressHandler = executingUploads[uploadTask.identifier]?.progressHandler else { return }
-        enqueue(progressHandler(totalBytesSent, totalBytesExpectedToSend))
-    }
-    
-    public func uploadExecuter(didFinishWith uploadTask: URLSessionUploadTask) {
-        // TODO handle response before calling the completion
-        guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
-        enqueue(completionHandler(uploadTask.response, uploadTask.error))
-    }
-    
-    public func uploadExecuter(_ uploadTask: URLSessionUploadTask, didCompleteWithError error: Error?) {
-        // TODO handle response before calling the completion
-        guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
-        enqueue(completionHandler(uploadTask.response, error))
     }
 }

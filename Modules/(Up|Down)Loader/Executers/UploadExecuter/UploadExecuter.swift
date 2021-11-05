@@ -1,4 +1,5 @@
 import Foundation
+import Jetworking
 
 /// The protocol an upload executer has to conform to to be used to upload.
 public protocol UploadExecuter: AnyObject {
