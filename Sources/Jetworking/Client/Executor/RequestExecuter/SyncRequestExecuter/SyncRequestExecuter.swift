@@ -19,4 +19,9 @@ final class SyncRequestExecuter: RequestExecuter {
 
         return operation
     }
+
+    @available(iOS 15.0, macOS 12.0, *)
+    func send(request: URLRequest, delegate: URLSessionTaskDelegate?) async throws -> (Data?, URLResponse?) {
+        return (nil, nil)
+    }
 }

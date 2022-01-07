@@ -54,6 +54,11 @@ final class MockExecuter: RequestExecuter {
         }
     }
 
+    @available(iOS 15.0, macOS 12.0, *)
+    func send(request: URLRequest, delegate: URLSessionTaskDelegate?) async throws -> (Data?, URLResponse?) {
+        return (nil, nil)
+    }
+
     private func execute(
         request: URLRequest,
         completion: @escaping ((Data?, URLResponse?, Error?) -> Void)

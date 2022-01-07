@@ -28,4 +28,7 @@ public protocol RequestExecuter {
      *  The request to be able to cancel it if necessary.
      */
     func send(request: URLRequest, _ completion: @escaping ((Data?, URLResponse?, Error?) -> Void)) -> CancellableRequest?
+
+    @available(iOS 15.0, macOS 12.0, *)
+    func send(request: URLRequest, delegate: URLSessionTaskDelegate?) async throws -> (Data?, URLResponse?)
 }

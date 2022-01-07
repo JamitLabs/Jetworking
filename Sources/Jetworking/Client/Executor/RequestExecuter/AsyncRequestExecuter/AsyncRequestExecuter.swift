@@ -13,4 +13,9 @@ final class AsyncRequestExecuter: RequestExecuter {
 
         return dataTask
     }
+
+    @available(iOS 15.0, macOS 12.0, *)
+    func send(request: URLRequest, delegate: URLSessionTaskDelegate? = nil) async throws -> (Data?, URLResponse?) {
+        return try await session.data(for: request, delegate: delegate)
+    }
 }

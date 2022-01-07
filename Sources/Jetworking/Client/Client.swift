@@ -12,6 +12,7 @@ public enum APIError: Error {
 }
 
 public final class Client {
+    public typealias RequestResult<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>)
     public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
     
     // MARK: - Properties
@@ -125,6 +126,29 @@ public final class Client {
         }
 
         return nil
+    }
+
+    @available(iOS 15.0, macOS 12.0, *)
+    public func get<ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .GET,
+                and: endpoint,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
     }
 
     @discardableResult
