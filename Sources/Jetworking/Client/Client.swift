@@ -184,6 +184,34 @@ public final class Client {
 
         return nil
     }
+    
+    @available(iOS 15.0, macOS 12.0, *)
+    @discardableResult
+    public func post<BodyType: Encodable, ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        body: BodyType,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let encoder: Encoder = endpoint.encoder ?? configuration.encoder
+            let bodyData: Data = try encoder.encode(body)
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .POST,
+                and: endpoint,
+                and: bodyData,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
+    }
 
     @discardableResult
     public func post<ResponseType>(
@@ -214,6 +242,31 @@ public final class Client {
         }
 
         return nil
+    }
+
+    @available(iOS 15.0, macOS 12.0, *)
+    @discardableResult
+    public func post<ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        body: ExpressibleByNilLiteral? = nil,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .POST,
+                and: endpoint,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
     }
 
     @discardableResult
