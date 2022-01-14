@@ -454,6 +454,17 @@ public final class Client {
         return requestExecuter.send(request: request, completion)
     }
 
+    @available(iOS 15.0, macOS 12.0, *)
+    @discardableResult
+    public func send(request: URLRequest) async -> (Data?, URLResponse?, Error?) {
+        do {
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return (data, urlResponse, nil)
+        } catch {
+            return (nil, nil, error)
+        }
+    }
+
     @discardableResult
     public func download(
         url: URL,
