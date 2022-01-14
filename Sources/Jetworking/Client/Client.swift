@@ -424,6 +424,31 @@ public final class Client {
         return nil
     }
 
+    @available(iOS 15.0, macOS 12.0, *)
+    @discardableResult
+    public func delete<ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        parameter: [String: Any] = [:],
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .DELETE,
+                and: endpoint,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
+    }
+
     @discardableResult
     public func send(request: URLRequest, _ completion: @escaping (Data?, URLResponse?, Error?) -> Void) -> CancellableRequest? {
         return requestExecuter.send(request: request, completion)
