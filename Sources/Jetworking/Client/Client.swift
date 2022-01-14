@@ -14,7 +14,7 @@ public enum APIError: Error {
 public final class Client {
     public typealias RequestResult<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>)
     public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
-    
+
     // MARK: - Properties
     private lazy var sessionCache: SessionCache = .init(configuration: configuration)
 
@@ -184,7 +184,7 @@ public final class Client {
 
         return nil
     }
-    
+
     @available(iOS 15.0, macOS 12.0, *)
     @discardableResult
     public func post<BodyType: Encodable, ResponseType: Decodable>(
@@ -301,6 +301,34 @@ public final class Client {
         }
 
         return nil
+    }
+
+    @available(iOS 15.0, macOS 12.0, *)
+    @discardableResult
+    public func put<BodyType: Encodable, ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        body: BodyType,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let encoder: Encoder = endpoint.encoder ?? configuration.encoder
+            let bodyData: Data = try encoder.encode(body)
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .PUT,
+                and: endpoint,
+                and: bodyData,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
     }
 
     @discardableResult
@@ -457,7 +485,7 @@ public final class Client {
         }
         return task
     }
-    
+
     private func checkForValidDownloadURL(_ url: URL) -> Bool {
         guard let scheme = URLComponents(string: url.absoluteString)?.scheme else { return false }
 
@@ -578,13 +606,13 @@ extension Client: UploadExecuterDelegate {
         guard let progressHandler = executingUploads[uploadTask.identifier]?.progressHandler else { return }
         enqueue(progressHandler(totalBytesSent, totalBytesExpectedToSend))
     }
-    
+
     public func uploadExecuter(didFinishWith uploadTask: URLSessionUploadTask) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
         enqueue(completionHandler(uploadTask.response, uploadTask.error))
     }
-    
+
     public func uploadExecuter(_ uploadTask: URLSessionUploadTask, didCompleteWithError error: Error?) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
