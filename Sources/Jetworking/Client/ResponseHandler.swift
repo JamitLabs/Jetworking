@@ -29,6 +29,15 @@ final class ResponseHandler {
         evaluate(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completionWrapper: makeDecodableCompletionWrapper, completion: completion)
     }
 
+    @available(iOS 13.0, macOS 10.15.0, *)
+    func handleDecodableResponse<ResponseType: Decodable>(
+        data: Data?,
+        urlResponse: URLResponse?,
+        endpoint: Endpoint<ResponseType>? = nil
+    ) async -> (HTTPURLResponse?, Result<ResponseType, Error>) {
+        await evaluate(data: data, urlResponse: urlResponse, endpoint: endpoint)
+    }
+
     private func makeVoidCompletionWrapper<ResponseType>(
         currentURLResponse: HTTPURLResponse?,
         data: Data?,
@@ -118,6 +127,54 @@ final class ResponseHandler {
 
         default:
             return
+        }
+    }
+
+    @available(iOS 13.0, macOS 10.15.0, *)
+    private func evaluate<ResponseType: Decodable>(
+        data: Data?,
+        urlResponse: URLResponse?,
+        endpoint: Endpoint<ResponseType>? = nil
+    ) async -> (HTTPURLResponse?, Result<ResponseType, Error>) {
+        let interceptedResponse = configuration.interceptors.reduce(urlResponse) { response, component in
+            return component.intercept(response: response, data: data, error: nil)
+        }
+
+        guard let currentURLResponse = interceptedResponse as? HTTPURLResponse else {
+            return (nil, .failure(APIError.responseMissing))
+        }
+
+        switch HTTPStatusCodeType(statusCode: currentURLResponse.statusCode) {
+        case .successful:
+            guard let data = data else { return (nil, .failure(APIError.missingResponseBody)) }
+            let decoder = endpoint?.decoder ?? configuration.decoder
+            do {
+                let responseType = try decoder.decode(ResponseType.self, from: data)
+                return (currentURLResponse, .success(responseType))
+            } catch {
+                return (nil, .failure(APIError.decodingError(error)))
+            }
+
+        case .serverError:
+            let apiError: APIError = APIError.serverError(
+                statusCode: currentURLResponse.statusCode,
+                error: nil,
+                body: data
+            )
+
+            return (currentURLResponse, .failure(apiError))
+
+        case .clientError:
+            let apiError: APIError = APIError.clientError(
+                statusCode: currentURLResponse.statusCode,
+                error: nil,
+                body: data
+            )
+
+            return (currentURLResponse, .failure(apiError))
+
+        default:
+            return (nil, .failure(APIError.unexpectedError))
         }
     }
 

@@ -12,8 +12,6 @@ public enum APIError: Error {
 }
 
 public final class Client {
-    public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
-    
     // MARK: - Properties
     private lazy var sessionCache: SessionCache = .init(configuration: configuration)
 
@@ -96,7 +94,61 @@ public final class Client {
         self.session = session
     }
 
-    // MARK: - Methods
+    private func checkForValidDownloadURL(_ url: URL) -> Bool {
+        guard let scheme = URLComponents(string: url.absoluteString)?.scheme else { return false }
+
+        return scheme == "http" || scheme == "https"
+    }
+
+    private func createRequest<ResponseType>(
+        forHttpMethod httpMethod: HTTPMethod,
+        and endpoint: Endpoint<ResponseType>,
+        and body: Data? = nil,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String]
+    ) throws -> URLRequest {
+        var request = URLRequest(
+            url: try URLFactory.makeURL(from: endpoint, withBaseURL: configuration.baseURLProvider.baseURL),
+            httpMethod: httpMethod,
+            httpBody: body
+        )
+
+        var requestInterceptors: [Interceptor] = configuration.interceptors
+
+        // Extra case: POST-request with empty content
+        //
+        // Adds custom interceptor after last interceptor for header fields
+        // to avoid conflict with other custom interceptor if any.
+        if body == nil && httpMethod == .POST {
+            let targetIndex = requestInterceptors.lastIndex { $0 is HeaderFieldsInterceptor }
+            let indexToInsert = targetIndex.flatMap { requestInterceptors.index(after: $0) }
+            requestInterceptors.insert(
+                EmptyContentHeaderFieldsInterceptor(),
+                at: indexToInsert ?? requestInterceptors.endIndex
+            )
+        }
+
+        // Append additional header fields.
+        additionalHeaderFields.forEach { key, value in
+            request.addValue(value, forHTTPHeaderField: key)
+        }
+
+        return requestInterceptors.reduce(request) { request, interceptor in
+            return interceptor.intercept(request)
+        }
+    }
+
+    private func enqueue(_ completion: @escaping @autoclosure () -> Void) {
+        configuration.responseQueue.async {
+            completion()
+        }
+    }
+}
+
+// MARK: - completion API
+
+extension Client {
+    public typealias RequestCompletion<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>) -> Void
+
     @discardableResult
     public func get<ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
@@ -380,56 +432,183 @@ public final class Client {
         }
         return task
     }
-    
-    private func checkForValidDownloadURL(_ url: URL) -> Bool {
-        guard let scheme = URLComponents(string: url.absoluteString)?.scheme else { return false }
+}
 
-        return scheme == "http" || scheme == "https"
-    }
+// MARK: - async / await API
 
-    private func createRequest<ResponseType>(
-        forHttpMethod httpMethod: HTTPMethod,
-        and endpoint: Endpoint<ResponseType>,
-        and body: Data? = nil,
-        andAdditionalHeaderFields additionalHeaderFields: [String: String]
-    ) throws -> URLRequest {
-        var request = URLRequest(
-            url: try URLFactory.makeURL(from: endpoint, withBaseURL: configuration.baseURLProvider.baseURL),
-            httpMethod: httpMethod,
-            httpBody: body
-        )
+extension Client {
+    public typealias RequestResult<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>)
 
-        var requestInterceptors: [Interceptor] = configuration.interceptors
-
-        // Extra case: POST-request with empty content
-        //
-        // Adds custom interceptor after last interceptor for header fields
-        // to avoid conflict with other custom interceptor if any.
-        if body == nil && httpMethod == .POST {
-            let targetIndex = requestInterceptors.lastIndex { $0 is HeaderFieldsInterceptor }
-            let indexToInsert = targetIndex.flatMap { requestInterceptors.index(after: $0) }
-            requestInterceptors.insert(
-                EmptyContentHeaderFieldsInterceptor(),
-                at: indexToInsert ?? requestInterceptors.endIndex
+    @available(iOS 13.0, macOS 10.15.0, *)
+    public func get<ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .GET,
+                and: endpoint,
+                andAdditionalHeaderFields: additionalHeaderFields
             )
-        }
 
-        // Append additional header fields.
-        additionalHeaderFields.forEach { key, value in
-            request.addValue(value, forHTTPHeaderField: key)
-        }
-
-        return requestInterceptors.reduce(request) { request, interceptor in
-            return interceptor.intercept(request)
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
         }
     }
 
-    private func enqueue(_ completion: @escaping @autoclosure () -> Void) {
-        configuration.responseQueue.async {
-            completion()
+    @available(iOS 13.0, macOS 10.15.0, *)
+    @discardableResult
+    public func post<BodyType: Encodable, ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        body: BodyType,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let encoder: Encoder = endpoint.encoder ?? configuration.encoder
+            let bodyData: Data = try encoder.encode(body)
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .POST,
+                and: endpoint,
+                and: bodyData,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
+    }
+
+    @available(iOS 13.0, macOS 10.15.0, *)
+    @discardableResult
+    public func post<ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        body: ExpressibleByNilLiteral? = nil,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .POST,
+                and: endpoint,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
+    }
+
+    @available(iOS 13.0, macOS 10.15.0, *)
+    @discardableResult
+    public func put<BodyType: Encodable, ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        body: BodyType,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let encoder: Encoder = endpoint.encoder ?? configuration.encoder
+            let bodyData: Data = try encoder.encode(body)
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .PUT,
+                and: endpoint,
+                and: bodyData,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
+    }
+
+    @available(iOS 13.0, macOS 10.15.0, *)
+    @discardableResult
+    public func patch<BodyType: Encodable, ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        body: BodyType,
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let encoder: Encoder = endpoint.encoder ?? configuration.encoder
+            let bodyData: Data = try encoder.encode(body)
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .PATCH,
+                and: endpoint,
+                and: bodyData,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
+    }
+
+    @available(iOS 13.0, macOS 10.15.0, *)
+    @discardableResult
+    public func delete<ResponseType: Decodable>(
+        endpoint: Endpoint<ResponseType>,
+        parameter: [String: Any] = [:],
+        andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
+    ) async -> RequestResult<ResponseType> {
+        do {
+            let request: URLRequest = try createRequest(
+                forHttpMethod: .DELETE,
+                and: endpoint,
+                andAdditionalHeaderFields: additionalHeaderFields
+            )
+
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return await responseHandler.handleDecodableResponse(
+                data: data,
+                urlResponse: urlResponse,
+                endpoint: endpoint
+            )
+        } catch {
+            return (nil, .failure(error))
+        }
+    }
+
+    @available(iOS 13.0, macOS 10.15.0, *)
+    @discardableResult
+    public func send(request: URLRequest) async -> (Data?, URLResponse?, Error?) {
+        do {
+            let (data, urlResponse) = try await requestExecuter.send(request: request, delegate: nil)
+            return (data, urlResponse, nil)
+        } catch {
+            return (nil, nil, error)
         }
     }
 }
+
+// MARK: - DownloadExecuterDelegate
 
 extension Client: DownloadExecuterDelegate {
     public func downloadExecuter(
@@ -491,6 +670,8 @@ extension Client: DownloadExecuterDelegate {
     }
 }
 
+// MARK: - UploadExecuterDelegate
+
 extension Client: UploadExecuterDelegate {
     public func uploadExecuter(
         _ uploadTask: URLSessionUploadTask,
@@ -501,13 +682,13 @@ extension Client: UploadExecuterDelegate {
         guard let progressHandler = executingUploads[uploadTask.identifier]?.progressHandler else { return }
         enqueue(progressHandler(totalBytesSent, totalBytesExpectedToSend))
     }
-    
+
     public func uploadExecuter(didFinishWith uploadTask: URLSessionUploadTask) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
         enqueue(completionHandler(uploadTask.response, uploadTask.error))
     }
-    
+
     public func uploadExecuter(_ uploadTask: URLSessionUploadTask, didCompleteWithError error: Error?) {
         // TODO handle response before calling the completion
         guard let completionHandler = executingUploads[uploadTask.identifier]?.completionHandler else { return }
