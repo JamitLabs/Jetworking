@@ -439,7 +439,7 @@ extension Client {
 extension Client {
     public typealias RequestResult<ResponseType> = (HTTPURLResponse?, Result<ResponseType, Error>)
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 13.0, macOS 10.15.0, *)
     public func get<ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
         andAdditionalHeaderFields additionalHeaderFields: [String: String] = [:]
@@ -462,7 +462,7 @@ extension Client {
         }
     }
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 13.0, macOS 10.15.0, *)
     @discardableResult
     public func post<BodyType: Encodable, ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
@@ -490,7 +490,7 @@ extension Client {
         }
     }
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 13.0, macOS 10.15.0, *)
     @discardableResult
     public func post<ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
@@ -515,7 +515,7 @@ extension Client {
         }
     }
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 13.0, macOS 10.15.0, *)
     @discardableResult
     public func put<BodyType: Encodable, ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
@@ -543,7 +543,7 @@ extension Client {
         }
     }
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 13.0, macOS 10.15.0, *)
     @discardableResult
     public func patch<BodyType: Encodable, ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
@@ -571,7 +571,7 @@ extension Client {
         }
     }
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 13.0, macOS 10.15.0, *)
     @discardableResult
     public func delete<ResponseType: Decodable>(
         endpoint: Endpoint<ResponseType>,
@@ -596,7 +596,7 @@ extension Client {
         }
     }
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 13.0, macOS 10.15.0, *)
     @discardableResult
     public func send(request: URLRequest) async -> (Data?, URLResponse?, Error?) {
         do {

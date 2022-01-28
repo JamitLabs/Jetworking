@@ -29,7 +29,7 @@ final class ResponseHandler {
         evaluate(data: data, urlResponse: urlResponse, error: error, endpoint: endpoint, completionWrapper: makeDecodableCompletionWrapper, completion: completion)
     }
 
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 13.0, macOS 10.15.0, *)
     func handleDecodableResponse<ResponseType: Decodable>(
         data: Data?,
         urlResponse: URLResponse?,
@@ -130,7 +130,7 @@ final class ResponseHandler {
         }
     }
 
-    @available(iOS 13.0.0, macOS 12.0, *)
+    @available(iOS 13.0, macOS 10.15.0, *)
     private func evaluate<ResponseType: Decodable>(
         data: Data?,
         urlResponse: URLResponse?,
