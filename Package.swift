@@ -12,10 +12,12 @@ let package = Package(
     products: [
         .library(
             name: "Jetworking",
-            targets: ["Jetworking"]),
+            targets: ["Jetworking"]
+        ),
         .library(
             name: "DataTransfer",
-            targets: ["DataTransfer"])
+            targets: ["DataTransfer"]
+        )
     ],
     targets: [
         .target(
