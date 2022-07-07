@@ -1,6 +1,6 @@
 import Foundation
 
-extension URLRequest {
+public extension URLRequest {
     init(url: URL, httpMethod: HTTPMethod, httpBody: Data? = nil) {
         self = URLRequest(url: url)
 

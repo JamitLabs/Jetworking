@@ -2,15 +2,13 @@ import Foundation
 
 /// The configuration used within the client.
 public struct Configuration {
-    let baseURLProvider: BaseURLProvider
-    let interceptors: [Interceptor]
-    let encoder: Encoder
-    let decoder: Decoder
-    let requestExecuterType: RequestExecuterType
-    let downloadExecuterType: DownloadExecuterType
-    let uploadExecuterType: UploadExecuterType
-    let responseQueue: DispatchQueue
-    let cache: URLCache
+    public let baseURLProvider: BaseURLProvider
+    public let interceptors: [Interceptor]
+    public let encoder: Encoder
+    public let decoder: Decoder
+    public let requestExecuterType: RequestExecuterType
+    public let responseQueue: DispatchQueue
+    public let cache: URLCache
 
     /**
      * Initialises a new configuration instance to use within the client.
@@ -20,8 +18,6 @@ public struct Configuration {
      * - Parameter encoder: The standard encoder to use to encode the request body data before sending it.
      * - Parameter decoder: The standard decoder to use to decode the response body data before returning it.
      * - Parameter requestExecuterType: The request executer type to use to execute the requests.
-     * - Parameter downloadExecuterType: The download executer type to use to execute downloads.
-     * - Parameter uploadExecuterType: The upload executer type to use to execute uploads
      * - Parameter cache: A cache object that realizes caching mechanism. IMPORTANT: At least one instance of `SessionCacheInterceptor` is required.
      */
     public init(
@@ -30,8 +26,6 @@ public struct Configuration {
         encoder: Encoder = JSONEncoder(),
         decoder: Decoder = JSONDecoder(),
         requestExecuterType: RequestExecuterType = .async,
-        downloadExecuterType: DownloadExecuterType = .default,
-        uploadExecuterType: UploadExecuterType = .default,
         responseQueue: DispatchQueue = .main,
         cache: URLCache = .shared
     ) {
@@ -40,8 +34,6 @@ public struct Configuration {
         self.encoder = encoder
         self.decoder = decoder
         self.requestExecuterType = requestExecuterType
-        self.downloadExecuterType = downloadExecuterType
-        self.uploadExecuterType = uploadExecuterType
         self.responseQueue = responseQueue
         self.cache = cache
     }

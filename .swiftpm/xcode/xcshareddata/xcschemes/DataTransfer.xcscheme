@@ -14,9 +14,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "Jetworking"
-               BuildableName = "Jetworking"
-               BlueprintName = "Jetworking"
+               BlueprintIdentifier = "DataTransfer"
+               BuildableName = "DataTransfer"
+               BlueprintName = "DataTransfer"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -28,9 +28,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "JetworkingTests"
-               BuildableName = "JetworkingTests"
-               BlueprintName = "JetworkingTests"
+               BlueprintIdentifier = "DataTransferTests"
+               BuildableName = "DataTransferTests"
+               BlueprintName = "DataTransferTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
@@ -40,16 +40,15 @@
       buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
-      shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES">
+      shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
          <TestableReference
             skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "JetworkingTests"
-               BuildableName = "JetworkingTests"
-               BlueprintName = "JetworkingTests"
+               BlueprintIdentifier = "DataTransferTests"
+               BuildableName = "DataTransferTests"
+               BlueprintName = "DataTransferTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>
@@ -75,9 +74,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "Jetworking"
-            BuildableName = "Jetworking"
-            BlueprintName = "Jetworking"
+            BlueprintIdentifier = "DataTransfer"
+            BuildableName = "DataTransfer"
+            BlueprintName = "DataTransfer"
             ReferencedContainer = "container:">
          </BuildableReference>
       </MacroExpansion>

@@ -1,6 +1,6 @@
 import Foundation
 
-extension URLSessionConfiguration {
+public extension URLSessionConfiguration {
     class func background(
         withIdentifier identifier: String,
         andIsDiscretionaryFlag isDiscretionary: Bool,

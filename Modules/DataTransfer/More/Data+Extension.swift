@@ -1,6 +1,6 @@
 import Foundation
 
-extension Data {
+public extension Data {
     init?(boundary: String, formData: [String: String], fileURL: URL, multipartFileContentType: MultipartContentType) {
         guard let fileData: Data = try? Data(contentsOf: fileURL) else { return nil }
 

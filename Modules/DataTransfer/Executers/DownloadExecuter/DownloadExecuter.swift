@@ -1,4 +1,5 @@
 import Foundation
+import Jetworking
 
 /// The protocol a download executer has to conform to to be used to download.
 public protocol DownloadExecuter: AnyObject {
