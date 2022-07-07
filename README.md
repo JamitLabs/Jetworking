@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/JamitLabs/Jetworking/feature/readme/Logo.png" width=600>
+    <img src="https://raw.githubusercontent.com/JamitLabs/Jetworking/feature/readme/Logo.png" width=500>
 </p>
 
 <p align="center">
@@ -35,25 +35,38 @@
   • <a href="https://github.com/JamitLabs/Jetworking/pulls">Pull Requests</a>
 </p>
 
-Jetworking is a multi-module library providing an implementation for common networking tasks.
+`Jetworking` is a **multi-module** iOS and macOS library providing a **user-friendly interface for common networking tasks**.
 
 ## Installation
 
-TODO
+`Jetworking` can only be installed via the **Swift Package Manager**. 
 
-## Usage
+Supported platforms are `iOS (10.0+)` and `macOS (10.12+)`.
 
-TODO
+### Swift Package Manager (Xcode-integrated)
 
-An example project demonstrating the use of Jetworking is currently in development and will be provided soon.
+To integrate SFSafeSymbols using the Xcode-built-in SPM, choose `File` → `Swift Packages` → `Add Package Dependency`. Enter the following url: `https://github.com/JamitLabs/Jetworking` and click `Next`. When asked about the version, leave the preselection and click `Next`. In the following step, select `Jetworking` and any further modules you may need and click `Finish`.
+
+### Swift Package Manager (standalone)
+
+To integrate using the standalone version of Apple's Swift Package Manager, add the following as a dependency to your `Package.swift` (replacing `<current-version>` with the current version, e. g. `0.9.0`):
+
+```swift
+.package(url: "https://github.com/SFSafeSymbols/SFSafeSymbols.git", .upToNextMajor(from: "<current-version>"))
+```
+
+After specifying `"Jetworking"` and all further modules that you may need as a dependency of the target in which you want to use them, run `swift package update`.
 
 ## Modules
 
 Currently, Jetworking consists of the following modules:
-  - `Jetworking`: The base library, defining fundamental types and protocols and providing basic HTTP networking functionality, in particular encompassing the common HTTP methods.
-  - `DataTransfer`: A module containing functionality concerning uploading and downloading.
-  
-TODO: Move Module Documentation to respective README
+
+| `Jetworking` | The base library, defining fundamental types and protocols and providing basic HTTP networking functionality, in particular encompassing the common HTTP methods. | [Documentation](#usage) |
+| `DataTransfer` | A module containing functionality concerning uploading and downloading. | [Documentation](Modules/DataTransfer) |
+
+## Usage
+
+In this section, the base module, `Jetworking`, is documented. For more insights, you might want to take a look at the `JetworkingTests`. Also, feel free to submit a PR with improvements to this documentation.
 
 Jetworking's most important type is the `Client`. It allows you to access custom `Endpoint`s and perform GET, POST, PUT, PATCH and DELETE operations on them:
 
@@ -75,22 +88,9 @@ client.get(endpoint: endpoint) { response, result in
 }
 ```
 
-When using _DataTransfer_ on top of Jetworking, you can perform up- and download-tasks using the same `Client`:
+### Example project
 
-```swift
-let url = URL(string: "https://speed.hetzner.de/100MB.bin")!
-client.download(url: url, progressHandler: nil) { (localURL, response, error) in
-    if error == nil, let localURL = localURL {
-        print("file saved to \(localURL)!")
-    }
-}
-```
-
-If you want up- or downloads to occur in the background, you must configure the client before calling `up-` or `download` the first time:
-
-```swift
-client.setupForDownloading(downloadExecutorType: .background)
-```
+An example project demonstrating the use of Jetworking is currently in development and will be provided soon.
 
 ## Contributing
 
