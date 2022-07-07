@@ -63,7 +63,7 @@ Currently, Jetworking consists of the following modules:
 
 | Name | Description | Documentation |
 | ---  | ----------- | ------------- |
-| `Jetworking` | The base library, defining fundamental types and protocols and providing basic HTTP networking functionality, in particular encompassing the common HTTP methods. | [Documentation](#usage) |
+| `Jetworking` | The **base library**, defining fundamental types and protocols and providing basic HTTP networking functionality, in particular encompassing the common HTTP methods. | <a href="#usage">Documentation</a> |
 | `DataTransfer` | A module containing functionality concerning uploading and downloading. | [Documentation](Modules/DataTransfer/README.md) |
 
 ## Usage
