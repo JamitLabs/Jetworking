@@ -45,14 +45,14 @@ Supported platforms are `iOS (10.0+)` and `macOS (10.12+)`.
 
 ### Swift Package Manager (Xcode-integrated)
 
-To integrate SFSafeSymbols using the Xcode-built-in SPM, choose `File` → `Swift Packages` → `Add Package Dependency`. Enter the following url: `https://github.com/JamitLabs/Jetworking` and click `Next`. When asked about the version, leave the preselection and click `Next`. In the following step, select `Jetworking` and any further modules you may need and click `Finish`.
+To integrate `Jetworking` using the Xcode-built-in SPM, choose `File` → `Swift Packages` → `Add Package Dependency`. Enter the following url: `https://github.com/JamitLabs/Jetworking` and click `Next`. When asked about the version, leave the preselection and click `Next`. In the following step, select `Jetworking` and any further modules you may need and click `Finish`.
 
 ### Swift Package Manager (standalone)
 
 To integrate using the standalone version of Apple's Swift Package Manager, add the following as a dependency to your `Package.swift` (replacing `<current-version>` with the current version, e. g. `0.9.0`):
 
 ```swift
-.package(url: "https://github.com/SFSafeSymbols/SFSafeSymbols.git", .upToNextMajor(from: "<current-version>"))
+.package(url: "https://github.com/JamitLabs/Jetworking.git", .upToNextMajor(from: "<current-version>"))
 ```
 
 After specifying `"Jetworking"` and all further modules that you may need as a dependency of the target in which you want to use them, run `swift package update`.
