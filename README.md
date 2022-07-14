@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/JamitLabs/Jetworking/feature/readme/Logo.png" width=500>
+    <img src="https://raw.githubusercontent.com/JamitLabs/Jetworking/develop/Logo.png" width=500>
 </p>
 
 <p align="center">
