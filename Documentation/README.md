@@ -24,5 +24,5 @@ When a new sub module is added, is is also required to update the documentation 
 1. Create the `Guides/SubGuides/NewModuleName` folder with a file `Simple Sample Usage.md` in it (analogously to the way it is done for the `DataTransfer` sub module).
 2. In the `Guides/MainGuide.md` file, add the new sub module to the list of available references.
 3. Create a new jazzy configuration `NewModuleName.yaml` in the `Jazzy Configurations` folder. It may sensible to just copy and adjust `DataTransfer.yaml` for this.
-4. In the Makefile, add a line to also generate documentation for the new sub module when `make generate-docs` is run.
+4. In the Makefile, check all scripts and, where needed, add a line to also generate documentation for the new sub module (analogously to the `DataTransfer`submodule).
 5. Finally run `make generate-docs`.

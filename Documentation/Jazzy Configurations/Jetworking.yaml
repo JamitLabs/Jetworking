@@ -11,7 +11,6 @@ copyright: '© 2022 [JamitLabs](https://jamitlabs.com) under MIT.'
 module: Jetworking
 readme: ../Guides/MainGuide.md
 documentation: Documentation/Guides/SubGuides/Jetworking/*.md
-output: ../../docs
 custom_categories:
   - name: Guides
     children:
