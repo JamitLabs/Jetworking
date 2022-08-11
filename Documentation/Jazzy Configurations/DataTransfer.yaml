@@ -11,7 +11,7 @@ copyright: '© 2022 [JamitLabs](https://jamitlabs.com) under MIT.'
 module: DataTransfer
 readme: ../Guides/MainGuide.md
 documentation: Documentation/Guides/SubGuides/DataTransfer/*.md
-output: ../Generated/Modules/DataTransfer
+output: ../../docs/Modules/DataTransfer
 custom_categories:
   - name: Guides
     children:

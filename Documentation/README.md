@@ -1,10 +1,11 @@
 # Documentation
 
-This folder organizes everything needed for the [documentation of `Jetworking`](https://jamitlabs.github.io/Jetworking/):
+This folder organizes everything needed to generate the [documentation of `Jetworking`](https://jamitlabs.github.io/Jetworking/):
 
 - `Guides`: Markdown files to be included in the generated documentation.
 - `Jazzy Configurations`: Used to configure the documentation generation engine.
-- `Generated`: The generated documentation HTML.
+
+The actual generated documentation files are stored in the top-level `docs` folder.
 
 ## Regenerating documentation
 
@@ -16,7 +17,7 @@ To generate the docs, [Jazzy](https://github.com/realm/jazzy) is required, which
 sudo gem install jazzy
 ```
 
-## Adding documentation for a new submodule
+## Adding documentation for a new sub module
 
 When a new sub module is added, is is also required to update the documentation generation mechanism:
 
