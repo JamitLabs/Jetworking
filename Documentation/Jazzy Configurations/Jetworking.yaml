@@ -1,0 +1,27 @@
+author: JamitLabs
+author_url: https://www.jamitlabs.com
+root_url: https://jamitlabs.github.io/Jetworking/
+github_url: https://github.com/JamitLabs/Jetworking
+github_file_prefix: https://github.com/JamitLabs/Jetworking/tree/develop
+swift_build_tool: spm
+theme: fullwidth
+clean: true
+copyright: '© 2022 [JamitLabs](https://jamitlabs.com) under MIT.'
+
+module: Jetworking
+readme: ../Guides/MainGuide.md
+documentation: Documentation/Guides/SubGuides/Jetworking/*.md
+output: ../Generated
+custom_categories:
+  - name: Guides
+    children:
+      - Simple Sample Usage
+  - name: Core Types
+    children:
+      - Client
+      - Endpoint
+  - name: Interceptors
+    children:
+      - AuthenticationInterceptor
+      - HeaderFieldsInterceptor
+      - LoggingInterceptor

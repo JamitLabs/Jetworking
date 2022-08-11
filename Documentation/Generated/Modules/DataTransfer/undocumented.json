@@ -1,0 +1,306 @@
+{
+  "warnings": [
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Client+Download.swift",
+      "line": 49,
+      "symbol": "Client.download(url:isForced:progressHandler:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Client+Upload.swift",
+      "line": 49,
+      "symbol": "Client.upload(url:fileURL:progressHandler:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Client+Upload.swift",
+      "line": 67,
+      "symbol": "Client.upload(url:fileURL:multipartType:multipartFileContentType:formData:progressHandler:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Executers/DownloadExecuter/Delegate/DownloadExecuterDelegate.swift",
+      "line": 4,
+      "symbol": "DownloadExecuterDelegate",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Executers/DownloadExecuter/DownloadExecuterType.swift",
+      "line": 8,
+      "symbol": "DownloadExecuterType.default",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Executers/DownloadExecuter/DownloadExecuterType.swift",
+      "line": 9,
+      "symbol": "DownloadExecuterType.background",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Executers/DownloadExecuter/DownloadExecuterType.swift",
+      "line": 10,
+      "symbol": "DownloadExecuterType.custom(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Executers/UploadExecuter/Delegate/UploadExecuterDelegate.swift",
+      "line": 4,
+      "symbol": "UploadExecuterDelegate",
+      "symbol_kind": "source.lang.swift.decl.protocol",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Executers/UploadExecuter/UploadExecuterType.swift",
+      "line": 8,
+      "symbol": "UploadExecuterType.default",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Executers/UploadExecuter/UploadExecuterType.swift",
+      "line": 9,
+      "symbol": "UploadExecuterType.background",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/Executers/UploadExecuter/UploadExecuterType.swift",
+      "line": 10,
+      "symbol": "UploadExecuterType.custom(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/Data+Extension.swift",
+      "line": 4,
+      "symbol": "Data.init(boundary:formData:fileURL:multipartFileContentType:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 3,
+      "symbol": "MultipartContentType",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 4,
+      "symbol": "MultipartContentType.applicationOctetStream",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 5,
+      "symbol": "MultipartContentType.applicationPDF",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 6,
+      "symbol": "MultipartContentType.applicationPKCS8",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 7,
+      "symbol": "MultipartContentType.applicationPKCS10",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 8,
+      "symbol": "MultipartContentType.applicationPKCS12",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 9,
+      "symbol": "MultipartContentType.applicationZip",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 10,
+      "symbol": "MultipartContentType.applicationGzip",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 11,
+      "symbol": "MultipartContentType.applicationJSON",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 12,
+      "symbol": "MultipartContentType.applicationJWT",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 13,
+      "symbol": "MultipartContentType.applicationMP4",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 14,
+      "symbol": "MultipartContentType.applicationRTF",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 15,
+      "symbol": "MultipartContentType.applicationVCardJSON",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 16,
+      "symbol": "MultipartContentType.applicationVCardXML",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 17,
+      "symbol": "MultipartContentType.applicationXML",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 19,
+      "symbol": "MultipartContentType.audioAAC",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 20,
+      "symbol": "MultipartContentType.audioMPEG",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 21,
+      "symbol": "MultipartContentType.audioVorbis",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 23,
+      "symbol": "MultipartContentType.imageJPEG",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 24,
+      "symbol": "MultipartContentType.imagePNG",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 25,
+      "symbol": "MultipartContentType.imageSVG",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 26,
+      "symbol": "MultipartContentType.imageHEIC",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 27,
+      "symbol": "MultipartContentType.imageTIFF",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 29,
+      "symbol": "MultipartContentType.textPlain",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 30,
+      "symbol": "MultipartContentType.textCSV",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 31,
+      "symbol": "MultipartContentType.textHTML",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 32,
+      "symbol": "MultipartContentType.textMarkdown",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 33,
+      "symbol": "MultipartContentType.textRTF",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 34,
+      "symbol": "MultipartContentType.textXML",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/MultipartContentType.swift",
+      "line": 36,
+      "symbol": "MultipartContentType.videoMP4",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking/Modules/DataTransfer/More/URLSessionConfiguration+Extension.swift",
+      "line": 4,
+      "symbol": "URLSessionConfiguration.background(withIdentifier:andIsDiscretionaryFlag:andConfiguration:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.class",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "/Users/Frederick/Documents/Dev/Git.nosync/Jetworking"
+}

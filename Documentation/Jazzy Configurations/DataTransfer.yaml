@@ -1,0 +1,18 @@
+author: JamitLabs
+author_url: https://www.jamitlabs.com
+root_url: https://jamitlabs.github.io/Jetworking/
+github_url: https://github.com/JamitLabs/Jetworking
+github_file_prefix: https://github.com/JamitLabs/Jetworking/tree/develop
+swift_build_tool: spm
+theme: fullwidth
+clean: true
+copyright: '© 2022 [JamitLabs](https://jamitlabs.com) under MIT.'
+
+module: DataTransfer
+readme: ../Guides/MainGuide.md
+documentation: Documentation/Guides/SubGuides/DataTransfer/*.md
+output: ../Generated/Modules/DataTransfer
+custom_categories:
+  - name: Guides
+    children:
+      - Simple Sample Usage
