@@ -16,6 +16,8 @@
 		A4A23AF5FC7313694326F4D0 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5109ECBEA204AF7DA179C443 /* MainViewController.swift */; };
 		B6AE9CDCE62F1FA36075B229 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2A533514B66F81D5E2B6BAA0 /* LaunchScreen.storyboard */; };
 		BB9B64AA9697D4B30E43C9DB /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = FB126B1B25ECED878DED1145 /* Colors.xcassets */; };
+		CCD7AA2728B0FD6D007FA5F7 /* DataTransfer in Frameworks */ = {isa = PBXBuildFile; productRef = CCD7AA2628B0FD6D007FA5F7 /* DataTransfer */; };
+		CCD7AA2928B0FD6D007FA5F7 /* Jetworking in Frameworks */ = {isa = PBXBuildFile; productRef = CCD7AA2828B0FD6D007FA5F7 /* Jetworking */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +52,8 @@
 		9638C520D95FF652C21CCFFB /* UITests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = UITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		ACFEA50978E8C5D73EA0AEF1 /* Tests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE15B813EE094248E1C5D245 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		CC5C802C28B0FB4100248D59 /* Jetworking */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Jetworking; path = ..; sourceTree = "<group>"; };
+		CC5C802D28B0FB8200248D59 /* Jetworking */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Jetworking; path = ..; sourceTree = "<group>"; };
 		CCB74D82288046FC0046E3B7 /* Jetworking */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = Jetworking; path = ..; sourceTree = "<group>"; };
 		E8111A93C6A5CD2664405A19 /* AppTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppTests.swift; sourceTree = "<group>"; };
 		FB126B1B25ECED878DED1145 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
@@ -60,6 +64,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CCD7AA2928B0FD6D007FA5F7 /* Jetworking in Frameworks */,
+				CCD7AA2728B0FD6D007FA5F7 /* DataTransfer in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -112,6 +118,7 @@
 				279B48795A9CAD2104D07D02 /* Tests */,
 				C1A167926700303A985591BC /* UITests */,
 				3031F8ABC084F8D43CC56342 /* Products */,
+				CCD7AA2528B0FD6D007FA5F7 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -197,8 +204,17 @@
 			isa = PBXGroup;
 			children = (
 				CCB74D82288046FC0046E3B7 /* Jetworking */,
+				CC5C802C28B0FB4100248D59 /* Jetworking */,
+				CC5C802D28B0FB8200248D59 /* Jetworking */,
 			);
 			name = Packages;
+			sourceTree = "<group>";
+		};
+		CCD7AA2528B0FD6D007FA5F7 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		D25E19B1996B8B45B3174DBD /* SupportingFiles */ = {
@@ -226,6 +242,8 @@
 			);
 			name = App;
 			packageProductDependencies = (
+				CCD7AA2628B0FD6D007FA5F7 /* DataTransfer */,
+				CCD7AA2828B0FD6D007FA5F7 /* Jetworking */,
 			);
 			productName = App;
 			productReference = 42BF4FC3244A3968C039D6DC /* App.app */;
@@ -633,6 +651,17 @@
 			defaultConfigurationName = Development;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		CCD7AA2628B0FD6D007FA5F7 /* DataTransfer */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DataTransfer;
+		};
+		CCD7AA2828B0FD6D007FA5F7 /* Jetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = Jetworking;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = CA8E1E974698BC95958F017F /* Project object */;
 }
