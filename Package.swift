@@ -26,7 +26,8 @@ let package = Package(
         .target(
             name: "DataTransfer",
             dependencies: ["Jetworking"],
-            path: "Modules/DataTransfer"
+            path: "Modules/DataTransfer",
+            exclude: ["README.md"]
         ),
         .testTarget(
             name: "JetworkingTests",

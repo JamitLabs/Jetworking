@@ -67,7 +67,7 @@ The documentation is split into multiple parts representing the main module (`Je
 | `Jetworking` | The **base library**, defining fundamental types and protocols and providing basic HTTP networking functionality, in particular encompassing the common HTTP methods. | <img src="https://jamitlabs.github.io/Jetworking/badge.svg" alt="Documentation Coverage"> |
 | `DataTransfer` | A module containing functionality concerning **uploading and downloading**. | <img src="https://jamitlabs.github.io/Jetworking/Modules/DataTransfer/badge.svg" alt="Documentation Coverage"> |
 
-An **example project** demonstrating the use of Jetworking is currently in development and will be provided soon.
+A very simple **iOS example project** demonstrating basic use of Jetworking is available in the [Example folder](/Example).
 
 ## Contributing
 
