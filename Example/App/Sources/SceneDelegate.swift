@@ -4,10 +4,13 @@ import UIKit
 
 @available(iOS 13.0, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-    // NOTE: Multiple windows can be enabled in the info.plist
-    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        guard let windowScene = scene as? UIWindowScene else { return }
+    var window: UIWindow?
 
-        let window: UIWindow = .init(windowScene: windowScene)
+    func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        let window = UIWindow(windowScene: windowScene)
+        window.rootViewController = UIStoryboard(name: "MainViewController", bundle: nil).instantiateInitialViewController()
+        self.window = window
+        window.makeKeyAndVisible()
     }
 }

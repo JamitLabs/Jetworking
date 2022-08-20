@@ -3,6 +3,7 @@
 import UIKit
 
 @UIApplicationMain
+
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
@@ -12,7 +13,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             // NOTE: If iOS 13 is available SceneDelegate will be used to initialize the view
         } else {
             window = UIWindow(frame: UIScreen.main.bounds)
+            window?.rootViewController = UIStoryboard(name: "MainViewController", bundle: nil).instantiateInitialViewController()
+            window?.makeKeyAndVisible()
         }
+        
         return true
     }
 }
