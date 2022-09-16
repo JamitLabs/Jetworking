@@ -3,3 +3,7 @@
 /Packages
 /*.xcodeproj
 xcuserdata/
+
+# Temporary folder for documentation generation
+/Documentation/
+
