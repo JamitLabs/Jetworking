@@ -20,3 +20,11 @@ generate_documentation_site_xcode:
 		--output-path "docs" 																									\
 		--hosting-base-path "Jetworking"
 
+generate_documentation_site_swift_docc_plugin:
+	swift package --allow-writing-to-directory "docs"	\
+		generate-documentation --target "Jetworking" 		\
+		--disable-indexing 															\
+		--transform-for-static-hosting 									\
+		--hosting-base-path "Jetworking" 								\
+		--output-path "docs"
+
