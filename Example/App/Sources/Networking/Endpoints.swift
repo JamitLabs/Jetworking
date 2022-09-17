@@ -1,6 +1,5 @@
 // Copyright © 2022 Jamit Labs GmbH. All rights reserved.
 
-import Foundation
 import Jetworking
 
 enum Endpoints {

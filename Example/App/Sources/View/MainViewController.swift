@@ -1,11 +1,14 @@
 // Copyright © 2022 Jamit Labs GmbH. All rights reserved.
 
+import Combine
 import UIKit
 
 final class MainViewController: UIViewController {
     // MARK: - Properties
     /// Set method to perform the requests: Combine or plain completion handlers
-    let useCombineVariant: Bool = false
+    private let useCombineVariant: Bool = false
+
+    private var cancellables: Set<AnyCancellable> = .init()
 
     // MARK: - Methods
     @IBAction func getTodosPressed(_ sender: Any) {

@@ -6,9 +6,9 @@
 
 ---
 
-The source code and an example project are hosted [on GitHub](https://github.com/JamitLabs/Jetworking), while all `public` or `open` interfaces of `Jetworking` are documented here. For each module, the documentation also includes a guide with simple sample usage instructions.
+The source code including a sample project is hosted on [GitHub](https://github.com/JamitLabs/Jetworking), while all of its `public` and `open` interfaces are documented here. For each module, the documentation includes a guide with simple examples and usage instructions
 
-The documentation is split into parts representing the main module (`Jetworking`) and the different sub modules:
+The documentation is split into different parts, covering the main module (`Jetworking`) as well as the different submodules:
 
 - [`Jetworking` main module reference](https://jamitlabs.github.io/Jetworking/)
-- [`DataTransfer` sub module reference](https://jamitlabs.github.io/Jetworking/Modules/DataTransfer)
+- [`DataTransfer` submodule reference](https://jamitlabs.github.io/Jetworking/Modules/DataTransfer)

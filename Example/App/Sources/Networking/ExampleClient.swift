@@ -4,8 +4,6 @@ import Combine
 import Foundation
 import Jetworking
 
-var cancellables: Set<AnyCancellable> = .init()
-
 /// This is a helper class that wraps a `Client` instance
 public final class ExampleClient {
     // MARK: - Properties
@@ -62,7 +60,7 @@ public final class ExampleClient {
         .mapError { (error: Error) -> Error in
             if case APIError.clientError(statusCode: 401, error: _, body: _) = error {
                 // Here it is e. g. possible to map to a custom error type
-                return error
+                return ExampleError.unauthorized
             } else {
                 return error
             }

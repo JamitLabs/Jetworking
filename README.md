@@ -58,24 +58,24 @@ After specifying `"Jetworking"` and all further modules that you may need as a d
 
 ## Documentation
 
-The documentation of every `public` / `open` interface of `Jetworking` can be browsed at [https://jamitlabs.github.io/Jetworking](https://jamitlabs.github.io/Jetworking). Also, simple sample usage instructions are given over there.
+The documentation of every `public` / `open` interface of `Jetworking` can be browsed at [https://jamitlabs.github.io/Jetworking](https://jamitlabs.github.io/Jetworking). Simple sample usage instructions are also given over there.
 
-The documentation is split into multiple parts representing the main module (`Jetworking`) and the different sub modules:
+The documentation is split into different parts, covering the main module (`Jetworking`) as well as the different submodules:
 
 | Name | Description | Documentation Coverage |
 | ---  | ----------- | ------------- |
 | `Jetworking` | The **base library**, defining fundamental types and protocols and providing basic HTTP networking functionality, in particular encompassing the common HTTP methods. | <img src="https://jamitlabs.github.io/Jetworking/badge.svg" alt="Documentation Coverage"> |
 | `DataTransfer` | A module containing functionality concerning **uploading and downloading**. | <img src="https://jamitlabs.github.io/Jetworking/Modules/DataTransfer/badge.svg" alt="Documentation Coverage"> |
 
-A very simple **iOS example project** demonstrating basic use of Jetworking is available in the [Example folder](/Example).
+A very simple **iOS sample project** demonstrating basic use of Jetworking is available in the [Sample Project folder](/Sample Project).
 
 ## Contributing
 
-We welcome everyone to work with us together delivering helpful tooling to our open source community. Feel free to create an issue to ask questions, give feedback, report bugs or share your new feature ideas.
+We welcome everyone to work with us together, delivering helpful tooling to our open source community. Feel free to create an issue to ask questions, give feedback, report bugs or share your ideas for new features.
 
 Before creating pull requests, please ensure that you have created a related issue ticket.
 
-When posting a pull request with changes to the `public` / `open` interfaces and / or their documentation, make sure to run `make generate-docs` before. For further information, refer to the [Documentation Guide](/Documentation).
+When creating a pull request with changes to the `public` / `open` interfaces and / or their documentation, make sure to update the documentation by running `make generate-docs` before. For further information, refer to the [Documentation Guide](/Documentation).
 
 ## License
 

@@ -1,5 +1,5 @@
-# iOS Example Project
+# iOS Sample Project
 
-This is an example project that demonstrates basic use of `Jetworking` in a simple app.
+This is a sample project to show a basic usage of the `Jetworking` library.
 
-Refer to the full documentation for a complete overview of features.
+Refer to the full documentation for a complete overview of all features.

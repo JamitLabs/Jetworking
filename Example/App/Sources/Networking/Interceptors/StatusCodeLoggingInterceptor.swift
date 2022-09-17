@@ -6,7 +6,7 @@ import Jetworking
 /// This is an example of an interceptor that specifically logs when one specific status code occurs.
 public final class StatusCodeLoggingInterceptor: Interceptor {
     // MARK: - Properties
-    private var logger: Logger
+    private let logger: Logger
 
     // MARK: - Initializers
     public init(logger: Logger = DefaultLogger()) {

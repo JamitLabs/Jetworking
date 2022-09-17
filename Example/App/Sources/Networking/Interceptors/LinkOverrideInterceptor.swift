@@ -6,15 +6,15 @@ import Jetworking
 /// This is an example of an interceptor that can be used to override the request url.
 public final class LinkOverrideInterceptor: Interceptor {
     // MARK: - Properties
-    static let `default` = LinkOverrideInterceptor()
-    var overrideUrl: String? = nil
+    static let `default`: LinkOverrideInterceptor = .init()
+    var overrideUrlString: String? = nil
 
     // MARK: - Methods
     public func intercept(_ request: URLRequest) -> URLRequest {
-        if let overrideUrl = overrideUrl {
+        if let overrideUrlString = overrideUrlString {
             var newRequest = request
-            newRequest.url = URL(string: overrideUrl)!
-            self.overrideUrl = nil
+            newRequest.url = URL(string: overrideUrlString)!
+            self.overrideUrlString = nil
 
             return newRequest
         } else {

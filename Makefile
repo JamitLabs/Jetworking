@@ -7,7 +7,7 @@ generate-docs:
 	sed -i '' -e "s|$(PROJ_DIR)|Root|g" docs/undocumented.json; \
 	jazzy --config 'Documentation/Jazzy Configurations/DataTransfer.yaml' --output docs/Modules/DataTransfer; \
 	sed -i '' -e "s|$(PROJ_DIR)|Root|g" docs/Modules/DataTransfer/undocumented.json; \
-	echo "✅ Documentation generated and stored to the docs folder";
+	echo "✅ Documentation generated and stored in the docs folder";
 
 lint-docsUpToDate:
 	@echo "📄 Generating documentation to check whether it matches the content of the docs folder..."; \
