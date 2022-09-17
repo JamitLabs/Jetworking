@@ -128,14 +128,14 @@
             
             <h1 id='code-datatransfer-code-simple-sample-usage' class='heading'><code>DataTransfer</code>: Simple Sample Usage</h1>
 
-<p>In this guide, very simple sample usage of the <code>DataTransfer</code> sub module is presented. For more insights, refer to the full documentation, the example project and / or the tests.</p>
+<p>In this guide, a very simple example of the <code>DataTransfer</code> submodule usage is presented. For more insights refer to the full documentation, the sample project and the tests.</p>
 
 <hr>
 
 <p>When using the <code>DataTransfer</code> module on top of <code>Jetworking</code>, you can perform up- and download-tasks using a <code>Client</code> instance (which may be the same as the one used for endpoint calls):</p>
-<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">client</span> <span class="o">=</span> <span class="kt">Client</span><span class="p">(</span><span class="nv">configuration</span><span class="p">:</span> <span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">baseURLProvider</span><span class="p">:</span> <span class="kt">URL</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="s">"https://random.org"</span><span class="p">)</span><span class="o">!</span><span class="p">,</span> <span class="nv">interceptors</span><span class="p">:</span> <span class="p">[]))</span> <span class="c1">// or use existing one</span>
+<pre class="highlight swift"><code><span class="k">let</span> <span class="nv">client</span><span class="p">:</span> <span class="kt">Client</span> <span class="o">=</span> <span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">configuration</span><span class="p">:</span> <span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">baseURLProvider</span><span class="p">:</span> <span class="kt">URL</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="s">"https://random.org"</span><span class="p">)</span><span class="o">!</span><span class="p">,</span> <span class="nv">interceptors</span><span class="p">:</span> <span class="p">[]))</span> <span class="c1">// or use existing one</span>
 
-<span class="k">let</span> <span class="nv">url</span> <span class="o">=</span> <span class="kt">URL</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="s">"https://speed.hetzner.de/100MB.bin"</span><span class="p">)</span><span class="o">!</span>
+<span class="k">let</span> <span class="nv">url</span><span class="p">:</span> <span class="kt">URL</span> <span class="o">=</span> <span class="o">.</span><span class="nf">init</span><span class="p">(</span><span class="nv">string</span><span class="p">:</span> <span class="s">"https://speed.hetzner.de/100MB.bin"</span><span class="p">)</span><span class="o">!</span>
 <span class="n">client</span><span class="o">.</span><span class="nf">download</span><span class="p">(</span><span class="nv">url</span><span class="p">:</span> <span class="n">url</span><span class="p">,</span> <span class="nv">progressHandler</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span> <span class="p">{</span> <span class="p">(</span><span class="n">localURL</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="n">error</span><span class="p">)</span> <span class="k">in</span>
     <span class="k">if</span> <span class="n">error</span> <span class="o">==</span> <span class="kc">nil</span><span class="p">,</span> <span class="k">let</span> <span class="nv">localURL</span> <span class="o">=</span> <span class="n">localURL</span> <span class="p">{</span>
         <span class="nf">print</span><span class="p">(</span><span class="s">"file saved to </span><span class="se">\(</span><span class="n">localURL</span><span class="se">)</span><span class="s">!"</span><span class="p">)</span>
@@ -143,7 +143,7 @@
 <span class="p">}</span>
 </code></pre>
 
-<p>If you want up- or downloads to occur in the background, you must configure the client before calling <code>up-</code> or <code>download</code> the first time:</p>
+<p>If you want to run uploads or downloads in the background, the client must have been configured before calling the corresponding method:</p>
 <pre class="highlight swift"><code><span class="n">client</span><span class="o">.</span><span class="nf">setupForDownloading</span><span class="p">(</span><span class="nv">downloadExecutorType</span><span class="p">:</span> <span class="o">.</span><span class="n">background</span><span class="p">)</span>
 </code></pre>
 
