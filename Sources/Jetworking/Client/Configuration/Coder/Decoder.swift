@@ -1,5 +1,6 @@
 import Foundation
 
+/// A protocol providing a `decode<T: Decodable>(: T.Type, from: Data) -> T` interface.
 public protocol Decoder {
     /**
      * Decodes data to an instance of the indicated type.

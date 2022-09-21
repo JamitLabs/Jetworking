@@ -1,6 +1,6 @@
 import Foundation
 
-/// Empty Response type
+/// Empty response type, conforming to `Codable`.
 public struct Empty: Codable {
     public init() {}
 }

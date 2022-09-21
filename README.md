@@ -27,8 +27,7 @@
 
 <p align="center">
     <a href="#installation">Installation</a>
-  • <a href="#usage">Usage</a>
-  • <a href="#modules">Modules</a>
+  • <a href="#documentation">Documentation</a>
   • <a href="#contributing">Contributing</a>
   • <a href="#license">License</a>
   • <a href="https://github.com/JamitLabs/Jetworking/issues">Issues</a>
@@ -57,46 +56,26 @@ To integrate using the standalone version of Apple's Swift Package Manager, add 
 
 After specifying `"Jetworking"` and all further modules that you may need as a dependency of the target in which you want to use them, run `swift package update`.
 
-## Modules
+## Documentation
 
-Currently, Jetworking consists of the following modules:
+The documentation of every `public` / `open` interface of `Jetworking` can be browsed at [https://jamitlabs.github.io/Jetworking](https://jamitlabs.github.io/Jetworking). Simple sample usage instructions are also given over there.
 
-| Name | Description | Documentation |
+The documentation is split into different parts, covering the main module (`Jetworking`) as well as the different submodules:
+
+| Name | Description | Documentation Coverage |
 | ---  | ----------- | ------------- |
-| `Jetworking` | The **base library**, defining fundamental types and protocols and providing basic HTTP networking functionality, in particular encompassing the common HTTP methods. | <a href="#usage">Documentation</a> |
-| `DataTransfer` | A module containing functionality concerning uploading and downloading. | [Documentation](Modules/DataTransfer/README.md) |
+| `Jetworking` | The **base library**, defining fundamental types and protocols and providing basic HTTP networking functionality, in particular encompassing the common HTTP methods. | <img src="https://jamitlabs.github.io/Jetworking/badge.svg" alt="Documentation Coverage"> |
+| `DataTransfer` | A module containing functionality concerning **uploading and downloading**. | <img src="https://jamitlabs.github.io/Jetworking/Modules/DataTransfer/badge.svg" alt="Documentation Coverage"> |
 
-## Usage
-
-In this section, the base module, `Jetworking`, is documented. For more insights, you might want to take a look at the `JetworkingTests`. Also, feel free to submit a PR with improvements to this documentation.
-
-Jetworking's most important type is the `Client`. It allows you to access custom `Endpoint`s and perform GET, POST, PUT, PATCH and DELETE operations on them:
-
-```swift
-let client = Client(configuration: .init(baseURLProvider: URL(string: "https://random.org")!, interceptors: []))
-
-let endpoint = Endpoint<Int>(pathComponent: "integers")
-    .addQueryParameters(["num": "1", "min": "1", "max": "10", "col": "1", "base": "10", "format": "plain"])
-
-// Perform GET request
-client.get(endpoint: endpoint) { response, result in
-    switch result {
-    case .failure:
-        print("error")
-
-    case let .success(result):
-        print("random number is \(result)")
-    }
-}
-```
-
-### Example project
-
-An example project demonstrating the use of Jetworking is currently in development and will be provided soon.
+A very simple **iOS sample project** demonstrating basic use of Jetworking is available in the [Sample Project folder](/Sample Project).
 
 ## Contributing
 
-We welcome everyone to work with us together delivering helpful tooling to our open source community. Feel free to create an issue to ask questions, give feedback, report bugs or share your new feature ideas. Before creating pull requests, please ensure that you have created a related issue ticket.
+We welcome everyone to work with us together, delivering helpful tooling to our open source community. Feel free to create an issue to ask questions, give feedback, report bugs or share your ideas for new features.
+
+Before creating pull requests, please ensure that you have created a related issue ticket.
+
+When creating a pull request with changes to the `public` / `open` interfaces and / or their documentation, make sure to update the documentation by running `make generate-docs` before. For further information, refer to the [Documentation Guide](/Documentation).
 
 ## License
 

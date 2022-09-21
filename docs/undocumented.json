@@ -1,0 +1,439 @@
+{
+  "warnings": [
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 5,
+      "symbol": "APIError.unexpectedError",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 6,
+      "symbol": "APIError.responseMissing",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 7,
+      "symbol": "APIError.decodingError(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 8,
+      "symbol": "APIError.clientError(statusCode:error:body:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 9,
+      "symbol": "APIError.serverError(statusCode:error:body:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 10,
+      "symbol": "APIError.missingResponseBody",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 11,
+      "symbol": "APIError.invalidURLComponents",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 14,
+      "symbol": "Client",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 15,
+      "symbol": "Client.RequestCompletion",
+      "symbol_kind": "source.lang.swift.decl.typealias",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 18,
+      "symbol": "Client.sessionCache",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 20,
+      "symbol": "Client.configuration",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 22,
+      "symbol": "Client.session",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 55,
+      "symbol": "Client.get(endpoint:andAdditionalHeaderFields:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 85,
+      "symbol": "Client.post(endpoint:body:andAdditionalHeaderFields:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 119,
+      "symbol": "Client.post(endpoint:body:andAdditionalHeaderFields:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 150,
+      "symbol": "Client.put(endpoint:body:andAdditionalHeaderFields:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 184,
+      "symbol": "Client.patch(endpoint:body:andAdditionalHeaderFields:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 218,
+      "symbol": "Client.delete(endpoint:parameter:andAdditionalHeaderFields:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Client.swift",
+      "line": 249,
+      "symbol": "Client.send(request:_:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Configuration/BaseURLProvider/BaseURLProvider.swift",
+      "line": 7,
+      "symbol": "BaseURLProvider.baseURL",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Configuration/Configuration.swift",
+      "line": 5,
+      "symbol": "Configuration.baseURLProvider",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Configuration/Configuration.swift",
+      "line": 6,
+      "symbol": "Configuration.interceptors",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Configuration/Configuration.swift",
+      "line": 7,
+      "symbol": "Configuration.encoder",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Configuration/Configuration.swift",
+      "line": 8,
+      "symbol": "Configuration.decoder",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Configuration/Configuration.swift",
+      "line": 9,
+      "symbol": "Configuration.requestExecuterType",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Configuration/Configuration.swift",
+      "line": 10,
+      "symbol": "Configuration.responseQueue",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Configuration/Configuration.swift",
+      "line": 11,
+      "symbol": "Configuration.cache",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Endpoint/Empty.swift",
+      "line": 5,
+      "symbol": "Empty.init()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Endpoint/Endpoint.swift",
+      "line": 3,
+      "symbol": "Endpoint",
+      "symbol_kind": "source.lang.swift.decl.struct",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Executer/RequestExecuter/RequestExecuterType.swift",
+      "line": 8,
+      "symbol": "RequestExecuterType.async",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Executer/RequestExecuter/RequestExecuterType.swift",
+      "line": 9,
+      "symbol": "RequestExecuterType.sync",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Executer/RequestExecuter/RequestExecuterType.swift",
+      "line": 10,
+      "symbol": "RequestExecuterType.custom(_:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/HTTP/HTTPMethod.swift",
+      "line": 3,
+      "symbol": "HTTPMethod",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/HTTP/HTTPMethod.swift",
+      "line": 4,
+      "symbol": "HTTPMethod.GET",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/HTTP/HTTPMethod.swift",
+      "line": 5,
+      "symbol": "HTTPMethod.POST",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/HTTP/HTTPMethod.swift",
+      "line": 6,
+      "symbol": "HTTPMethod.PUT",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/HTTP/HTTPMethod.swift",
+      "line": 7,
+      "symbol": "HTTPMethod.PATCH",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/HTTP/HTTPMethod.swift",
+      "line": 8,
+      "symbol": "HTTPMethod.DELETE",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Interceptor/Request/AuthenticationInterceptor.swift",
+      "line": 16,
+      "symbol": "AuthenticationInterceptor.AuthenticationMethod.none",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Interceptor/Request/AuthenticationInterceptor.swift",
+      "line": 17,
+      "symbol": "AuthenticationInterceptor.AuthenticationMethod.basicAuthentication(username:password:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Interceptor/Request/AuthenticationInterceptor.swift",
+      "line": 18,
+      "symbol": "AuthenticationInterceptor.AuthenticationMethod.bearerToken(token:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Interceptor/Request/AuthenticationInterceptor.swift",
+      "line": 19,
+      "symbol": "AuthenticationInterceptor.AuthenticationMethod.custom(headerKey:headerValue:)",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Interceptor/SessionCache/DefaultSessionCacheInterceptor.swift",
+      "line": 5,
+      "symbol": "DefaultSessionCacheIntercepter.expectedSchemes",
+      "symbol_kind": "source.lang.swift.decl.var.static",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Client/Interceptor/SessionCache/DefaultSessionCacheInterceptor.swift",
+      "line": 10,
+      "symbol": "DefaultSessionCacheIntercepter.init(storagePolicy:for:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Extensions/URL+BaseURLProvider.swift",
+      "line": 5,
+      "symbol": "URL.baseURL",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Extensions/URLRequest+Extension.swift",
+      "line": 4,
+      "symbol": "URLRequest.init(url:httpMethod:httpBody:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Protocols/CancellableRequest.swift",
+      "line": 5,
+      "symbol": "CancellableRequest.identifier",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Protocols/CancellableRequest.swift",
+      "line": 11,
+      "symbol": "URLSessionTask.identifier",
+      "symbol_kind": "source.lang.swift.decl.var.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/Logger/Default/DefaultLogger.swift",
+      "line": 6,
+      "symbol": "DefaultLogger.init()",
+      "symbol_kind": "source.lang.swift.decl.function.method.instance",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 3,
+      "symbol": "MultipartType",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 4,
+      "symbol": "MultipartType.formData",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 5,
+      "symbol": "MultipartType.mixed",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 6,
+      "symbol": "MultipartType.byteRanges",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 7,
+      "symbol": "MultipartType.encrypted",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 8,
+      "symbol": "MultipartType.headerSet",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 9,
+      "symbol": "MultipartType.multilingual",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 10,
+      "symbol": "MultipartType.related",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 11,
+      "symbol": "MultipartType.report",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/MultipartType.swift",
+      "line": 12,
+      "symbol": "MultipartType.signed",
+      "symbol_kind": "source.lang.swift.decl.enumelement",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/SessionCache.swift",
+      "line": 4,
+      "symbol": "SessionCache",
+      "symbol_kind": "source.lang.swift.decl.class",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/URLFactory.swift",
+      "line": 3,
+      "symbol": "URLFactory",
+      "symbol_kind": "source.lang.swift.decl.enum",
+      "warning": "undocumented"
+    },
+    {
+      "file": "Root/Sources/Jetworking/Utility/URLFactory.swift",
+      "line": 4,
+      "symbol": "URLFactory.makeURL(from:withBaseURL:)",
+      "symbol_kind": "source.lang.swift.decl.function.method.static",
+      "warning": "undocumented"
+    }
+  ],
+  "source_directory": "Root"
+}
