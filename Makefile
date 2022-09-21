@@ -23,3 +23,4 @@ lint-docsUpToDate:
 	rm -rf .docsGeneratedByLint;
 
 .PHONY: generate-docs
+
